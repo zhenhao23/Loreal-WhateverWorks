@@ -1,0 +1,294 @@
+import {
+  InboxOutlined,
+  UploadOutlined,
+  DeleteOutlined,
+  PlayCircleOutlined,
+} from "@ant-design/icons";
+import { Button, Upload, Typography, Space, message } from "antd";
+import { useState, useEffect } from "react";
+
+const { Dragger } = Upload;
+const { Title, Text } = Typography;
+
+export interface UploadedFile {
+  id: number;
+  originalName: string;
+  filename: string;
+  size: number;
+  uploadDate: string;
+}
+
+interface FileUploadSectionProps {
+  onStartAnalysis: () => void;
+}
+
+const FileUploadSection = ({ onStartAnalysis }: FileUploadSectionProps) => {
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  // Fetch uploaded files on component mount
+  useEffect(() => {
+    fetchFiles();
+  }, []);
+
+  const fetchFiles = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/files");
+      const data = await response.json();
+      setUploadedFiles(data.files || []);
+    } catch (error) {
+      console.error("Failed to fetch files:", error);
+    }
+  };
+
+  const handleDelete = async (fileId: number) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/files/${fileId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        message.success("File deleted successfully");
+        fetchFiles(); // Refresh file list
+      } else {
+        message.error("Failed to delete file");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      message.error("Failed to delete file");
+    }
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  const uploadProps = {
+    name: "file",
+    multiple: true,
+    action: "http://localhost:5000/api/upload",
+    onChange(info: any) {
+      const { status } = info.file;
+
+      if (status === "uploading") {
+        setUploading(true);
+      } else if (status === "done") {
+        message.success(`${info.file.name} uploaded successfully`);
+        setUploading(false);
+        fetchFiles(); // Refresh file list
+      } else if (status === "error") {
+        message.error(`${info.file.name} upload failed`);
+        setUploading(false);
+      }
+    },
+    onDrop(e: any) {
+      console.log("Dropped files", e.dataTransfer.files);
+    },
+    showUploadList: false, // We'll show our custom list
+  };
+
+  return (
+    <div style={{ maxWidth: 800, margin: "0 auto" }}>
+      <div style={{ marginBottom: 32 }}>
+        <Title level={3} style={{ color: "#5A67BA", marginBottom: 8 }}>
+          Upload Dataset
+        </Title>
+        <Text style={{ color: "rgba(166, 171, 200, 1)", fontSize: 16 }}>
+          Upload your dataset files to get started with analysis
+        </Text>
+      </div>
+
+      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+        {/* Upload Button */}
+        <div>
+          <Upload {...uploadProps} showUploadList={false}>
+            <Button
+              icon={<UploadOutlined />}
+              size="large"
+              loading={uploading}
+              style={{
+                backgroundColor: "#5A67BA",
+                borderColor: "#5A67BA",
+                color: "white",
+                height: 48,
+                fontSize: 16,
+                fontWeight: 500,
+                borderRadius: 8,
+                padding: "0 32px",
+              }}
+              onMouseEnter={(e) => {
+                if (!uploading) {
+                  e.currentTarget.style.backgroundColor = "#4A57A8";
+                  e.currentTarget.style.borderColor = "#4A57A8";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!uploading) {
+                  e.currentTarget.style.backgroundColor = "#5A67BA";
+                  e.currentTarget.style.borderColor = "#5A67BA";
+                }
+              }}
+            >
+              {uploading ? "Uploading..." : "Upload Files"}
+            </Button>
+          </Upload>
+        </div>
+
+        {/* Drop Zone */}
+        <Dragger
+          {...uploadProps}
+          style={{
+            backgroundColor: "#F1F2F7",
+            border: "2px dashed rgba(166, 171, 200, 0.6)",
+            borderRadius: 12,
+            padding: "48px 24px",
+          }}
+        >
+          <p className="ant-upload-drag-icon" style={{ marginBottom: 16 }}>
+            <InboxOutlined
+              style={{
+                fontSize: 48,
+                color: "rgba(166, 171, 200, 0.8)",
+              }}
+            />
+          </p>
+          <p
+            className="ant-upload-text"
+            style={{
+              fontSize: 18,
+              fontWeight: 500,
+              color: "#5A67BA",
+              marginBottom: 8,
+            }}
+          >
+            Drop your files here
+          </p>
+          <p
+            className="ant-upload-hint"
+            style={{
+              fontSize: 14,
+              color: "rgba(166, 171, 200, 1)",
+              margin: 0,
+            }}
+          >
+            Support for CSV, Excel, JSON files. You can upload multiple files at
+            once.
+          </p>
+        </Dragger>
+
+        {/* Start Analysis Button */}
+        {uploadedFiles.length > 0 && (
+          <div style={{ textAlign: "center", margin: "32px 0" }}>
+            <Button
+              type="primary"
+              size="large"
+              icon={<PlayCircleOutlined />}
+              onClick={onStartAnalysis}
+              style={{
+                backgroundColor: "#5A67BA",
+                borderColor: "#5A67BA",
+                height: 56,
+                fontSize: 18,
+                fontWeight: 600,
+                borderRadius: 8,
+                padding: "0 48px",
+                boxShadow: "0 4px 12px rgba(90, 103, 186, 0.3)",
+              }}
+            >
+              🚀 Start Analysis
+            </Button>
+          </div>
+        )}
+
+        {/* Uploaded Files List */}
+        {uploadedFiles.length > 0 && (
+          <div>
+            <Title level={4} style={{ color: "#5A67BA", marginBottom: 16 }}>
+              Uploaded Files ({uploadedFiles.length})
+            </Title>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+            >
+              {uploadedFiles.map((file) => (
+                <div
+                  key={file.id}
+                  style={{
+                    backgroundColor: "#F8F9FB",
+                    border: "1px solid #E8EAED",
+                    borderRadius: 8,
+                    padding: "16px 20px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div>
+                    <Text strong style={{ color: "#5A67BA", fontSize: 14 }}>
+                      {file.originalName}
+                    </Text>
+                    <br />
+                    <Text
+                      style={{ color: "rgba(166, 171, 200, 1)", fontSize: 12 }}
+                    >
+                      {formatFileSize(file.size)} •{" "}
+                      {new Date(file.uploadDate).toLocaleString()}
+                    </Text>
+                  </div>
+                  <Button
+                    type="text"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => handleDelete(file.id)}
+                    style={{
+                      color: "#ff4d4f",
+                      borderRadius: 6,
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* File Requirements */}
+        <div
+          style={{
+            backgroundColor: "#F8F9FB",
+            padding: 20,
+            borderRadius: 8,
+            border: "1px solid #E8EAED",
+          }}
+        >
+          <Text
+            strong
+            style={{ color: "#5A67BA", fontSize: 14, marginBottom: 8 }}
+          >
+            File Requirements:
+          </Text>
+          <ul
+            style={{
+              margin: "8px 0 0 0",
+              paddingLeft: 20,
+              color: "rgba(166, 171, 200, 1)",
+            }}
+          >
+            <li>Maximum file size: 10MB</li>
+            <li>Supported formats: .csv, .xlsx, .json</li>
+            <li>Files should contain structured data with headers</li>
+          </ul>
+        </div>
+      </Space>
+    </div>
+  );
+};
+
+export default FileUploadSection;
