@@ -172,7 +172,7 @@ const ExecutiveOverview = ({
         content: "24.5K",
       },
     },
-    width: 422, // CSS width
+    width: 422,
     height: 200,
     // pixelRatio: 1,
   };
