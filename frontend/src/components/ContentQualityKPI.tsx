@@ -9,7 +9,6 @@ import {
   CloudOutlined,
   TableOutlined,
   DotChartOutlined,
-  RightOutlined,
   HeartOutlined,
 } from "@ant-design/icons";
 import {
