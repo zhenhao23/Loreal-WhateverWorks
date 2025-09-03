@@ -10,6 +10,7 @@ import {
   TableOutlined,
   DotChartOutlined,
   RightOutlined,
+  HeartOutlined,
 } from "@ant-design/icons";
 import {
   ResponsiveContainer,
@@ -19,8 +20,8 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Cell,
 } from "recharts";
+
 import type { ColumnsType } from "antd/es/table";
 
 interface ContentQualityKPIProps {
@@ -52,24 +53,35 @@ const ContentQualityKPI = ({
 
   // Sample data for sentiment by topics
   const sentimentByTopics = [
-    { topic: "Scent & Fragrance", score: 0.85, color: "#52c41a" },
-    { topic: "Product Packaging", score: 0.78, color: "#73d13d" },
-    { topic: "Delivery Experience", score: 0.72, color: "#95de64" },
-    { topic: "Product Quality", score: 0.68, color: "#b7eb8f" },
-    { topic: "Customer Service", score: 0.64, color: "#d9f7be" },
-    { topic: "Value for Money", score: 0.58, color: "#f6ffed" },
+    { topic: "Scent & Fragrance", score: 0.85, value: 0.85, color: "#5A6ACF" },
+    { topic: "Product Packaging", score: 0.78, value: 0.78, color: "#707FDD" },
+    {
+      topic: "Delivery Experience",
+      score: 0.72,
+      value: 0.72,
+      color: "#8B92E8",
+    },
+    { topic: "Product Quality", score: 0.68, value: 0.68, color: "#A6A5F2" },
+    { topic: "Customer Service", score: 0.64, value: 0.64, color: "#C1B8FC" },
+    { topic: "Value for Money", score: 0.58, value: 0.58, color: "#DCCBFF" },
   ].sort((a, b) => b.score - a.score);
 
-  // Word cloud data (simplified as tags for now)
+  // Word cloud data (for react-wordcloud)
   const wordCloudData = [
-    { word: "amazing", size: 24, color: "#52c41a" },
-    { word: "luxurious", size: 20, color: "#1890ff" },
-    { word: "smooth", size: 18, color: "#722ed1" },
-    { word: "hydrating", size: 16, color: "#eb2f96" },
-    { word: "elegant", size: 14, color: "#fa8c16" },
-    { word: "vibrant", size: 12, color: "#13c2c2" },
-    { word: "lasting", size: 10, color: "#52c41a" },
-    { word: "perfect", size: 8, color: "#1890ff" },
+    { text: "amazing", value: 95 },
+    { text: "luxurious", value: 78 },
+    { text: "smooth", value: 67 },
+    { text: "hydrating", value: 54 },
+    { text: "elegant", value: 48 },
+    { text: "vibrant", value: 42 },
+    { text: "lasting", value: 38 },
+    { text: "perfect", value: 35 },
+    { text: "sophisticated", value: 32 },
+    { text: "glowing", value: 28 },
+    { text: "pigmented", value: 25 },
+    { text: "quality", value: 22 },
+    { text: "recommend", value: 18 },
+    { text: "beautiful", value: 15 },
   ];
 
   // Top comments data
@@ -123,15 +135,75 @@ const ContentQualityKPI = ({
 
   // Bubble chart data
   const bubbleData = [
-    { x: 45, y: 8.5, z: 120, word: "amazing", sentiment: "positive" },
-    { x: 38, y: 7.8, z: 95, word: "love", sentiment: "positive" },
-    { x: 42, y: 6.2, z: 78, word: "disappointing", sentiment: "negative" },
-    { x: 35, y: 8.1, z: 110, word: "perfect", sentiment: "positive" },
-    { x: 28, y: 5.8, z: 65, word: "okay", sentiment: "neutral" },
-    { x: 32, y: 7.9, z: 88, word: "smooth", sentiment: "positive" },
-    { x: 25, y: 6.5, z: 70, word: "average", sentiment: "neutral" },
-    { x: 48, y: 8.9, z: 135, word: "fantastic", sentiment: "positive" },
+    // Existing bubbles with bigger sizes
+    { x: 45, y: 8.5, z: 45, word: "amazing", sentiment: "positive" },
+    { x: 38, y: 7.8, z: 50, word: "love", sentiment: "positive" },
+    { x: 42, y: 6.2, z: 25, word: "disappointing", sentiment: "negative" },
+    { x: 35, y: 8.1, z: 48, word: "perfect", sentiment: "positive" },
+    { x: 28, y: 5.8, z: 22, word: "okay", sentiment: "neutral" },
+    { x: 32, y: 7.9, z: 42, word: "smooth", sentiment: "positive" },
+    { x: 25, y: 6.5, z: 24, word: "average", sentiment: "neutral" },
+    { x: 48, y: 8.9, z: 55, word: "fantastic", sentiment: "positive" },
+    { x: 52, y: 9.1, z: 60, word: "luxurious", sentiment: "positive" },
+    { x: 29, y: 7.6, z: 46, word: "elegant", sentiment: "positive" },
+
+    // New scattered bubble data points
+    { x: 15, y: 3.2, z: 18, word: "terrible", sentiment: "negative" },
+    { x: 58, y: 4.8, z: 20, word: "boring", sentiment: "negative" },
+    { x: 22, y: 8.7, z: 38, word: "gorgeous", sentiment: "positive" },
+    { x: 8, y: 6.1, z: 26, word: "decent", sentiment: "neutral" },
+    { x: 61, y: 7.2, z: 44, word: "stunning", sentiment: "positive" },
+    { x: 12, y: 2.5, z: 15, word: "awful", sentiment: "negative" },
+    { x: 55, y: 9.4, z: 52, word: "incredible", sentiment: "positive" },
+    { x: 18, y: 5.3, z: 28, word: "mediocre", sentiment: "neutral" },
+    { x: 44, y: 3.8, z: 19, word: "disappointing", sentiment: "negative" },
+    { x: 33, y: 9.2, z: 49, word: "outstanding", sentiment: "positive" },
+    { x: 6, y: 4.7, z: 21, word: "bland", sentiment: "neutral" },
+    { x: 59, y: 8.3, z: 43, word: "marvelous", sentiment: "positive" },
+    { x: 24, y: 2.1, z: 16, word: "horrible", sentiment: "negative" },
+    { x: 40, y: 6.9, z: 35, word: "pleasant", sentiment: "positive" },
+    { x: 14, y: 7.4, z: 37, word: "delightful", sentiment: "positive" },
+    { x: 50, y: 3.6, z: 17, word: "unsatisfactory", sentiment: "negative" },
+    { x: 36, y: 5.9, z: 29, word: "acceptable", sentiment: "neutral" },
+    { x: 26, y: 8.8, z: 47, word: "exceptional", sentiment: "positive" },
+    { x: 9, y: 4.2, z: 23, word: "fair", sentiment: "neutral" },
+    { x: 53, y: 6.7, z: 33, word: "satisfying", sentiment: "positive" },
   ];
+
+  // Custom bubble component for scatter chart
+  const CustomBubble = (props: any) => {
+    const { cx, cy, payload } = props;
+
+    // Define colors based on sentiment
+    const getColor = (sentiment: string) => {
+      switch (sentiment) {
+        case "positive":
+          return "#52c41a";
+        case "neutral":
+          return "#faad14";
+        case "negative":
+          return "#ff4d4f";
+        default:
+          return "#666";
+      }
+    };
+
+    // Use z value for radius, with some scaling
+    const radius = Math.max(4, payload.z * 0.6); // Minimum radius of 4, scale z value
+
+    return (
+      <circle
+        cx={cx}
+        cy={cy}
+        r={radius}
+        fill={getColor(payload.sentiment)}
+        fillOpacity={0.7}
+        stroke={getColor(payload.sentiment)}
+        strokeWidth={2}
+        strokeOpacity={1}
+      />
+    );
+  };
 
   const commentColumns: ColumnsType<any> = [
     {
@@ -192,7 +264,7 @@ const ContentQualityKPI = ({
       render: (record: any) => (
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <MessageOutlined style={{ color: "#ff4d4f" }} />
+            <HeartOutlined style={{ color: "#ff4d4f" }} />
             <span style={{ fontWeight: 600 }}>{record.likes}</span>
             <span style={{ color: "#8c8c8c", fontSize: "12px" }}>likes</span>
           </div>
@@ -456,9 +528,10 @@ const ContentQualityKPI = ({
                 // coordinate={{
                 //   transpose: false,
                 // }}
-                color={({ topic }: any) => {
-                  const item = sentimentByTopics.find((d) => d.topic === topic);
-                  return item ? item.color : "#5A6ACF";
+                scale={{
+                  color: {
+                    range: sentimentByTopics.map((item) => item.color),
+                  },
                 }}
                 barWidthRatio={0.8}
                 intervalPadding={0.1}
@@ -486,23 +559,26 @@ const ContentQualityKPI = ({
                     offset: 10,
                   },
                 }}
-                tooltip={{
-                  formatter: (datum: any) => {
-                    return {
-                      name: datum.topic,
-                      value: `${(datum.score * 100).toFixed(1)}%`,
-                    };
-                  },
-                }}
+                // tooltip={{
+                //   formatter: (datum: any) => {
+                //     return {
+                //       name: datum.value,
+                //       value: "1",
+                //     };
+                //   },
+                // }}
                 label={{
                   position: "right",
                   style: {
                     fill: "#444",
                     fontSize: 12,
                     fontWeight: 600,
+                    dx: 32,
                   },
-                  content: (datum: any) => `${(datum.score * 100).toFixed(1)}%`,
+                  // content: (datum: any) => `${(datum.score * 100).toFixed(1)}%`,
                 }}
+                width={875}
+                height={320}
               />
             </div>
           </Card>
@@ -540,34 +616,80 @@ const ContentQualityKPI = ({
             <div
               style={{
                 height: "320px",
-                padding: "24px",
+                padding: "16px",
                 display: "flex",
                 flexWrap: "wrap",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: "8px",
+                gap: "12px",
+                position: "relative",
               }}
             >
-              {wordCloudData.map((item, index) => (
-                <span
-                  key={index}
-                  style={{
-                    fontSize: `${item.size}px`,
-                    color: item.color,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "scale(1.1)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "scale(1)";
-                  }}
-                >
-                  {item.word}
-                </span>
-              ))}
+              {wordCloudData.map((item, index) => {
+                // Calculate font size based on value (min: 14px, max: 36px)
+                const fontSize = Math.max(
+                  14,
+                  Math.min(40, (item.value / 100) * 40)
+                );
+                // Get color from purple palette based on index
+                const colors = [
+                  "#5A6ACF",
+                  "#8B5CF6",
+                  "#44c5e1",
+                  "#707FDD",
+                  "#ff7875",
+                ];
+                const color = colors[index % colors.length];
+
+                return (
+                  <span
+                    key={index}
+                    style={{
+                      fontSize: `${fontSize}px`,
+                      color: color,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                      fontFamily:
+                        "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                      textShadow: "0 1px 2px rgba(0,0,0,0.1)",
+                      transform:
+                        index % 3 === 0
+                          ? "rotate(-5deg)"
+                          : index % 3 === 1
+                          ? "rotate(5deg)"
+                          : "rotate(0deg)",
+                      display: "inline-block",
+                      margin: "2px 4px",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = `scale(1.15) ${
+                        index % 3 === 0
+                          ? "rotate(-5deg)"
+                          : index % 3 === 1
+                          ? "rotate(5deg)"
+                          : "rotate(0deg)"
+                      }`;
+                      e.currentTarget.style.textShadow =
+                        "0 2px 8px rgba(90, 106, 207, 0.3)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = `scale(1) ${
+                        index % 3 === 0
+                          ? "rotate(-5deg)"
+                          : index % 3 === 1
+                          ? "rotate(5deg)"
+                          : "rotate(0deg)"
+                      }`;
+                      e.currentTarget.style.textShadow =
+                        "0 1px 2px rgba(0,0,0,0.1)";
+                    }}
+                    title={`${item.text}: ${item.value} mentions`}
+                  >
+                    {item.text}
+                  </span>
+                );
+              })}
             </div>
           </Card>
         </Col>
@@ -675,6 +797,7 @@ const ContentQualityKPI = ({
                     dataKey="y"
                     name="sentiment"
                     domain={[0, 10]}
+                    tickCount={6}
                     tick={{ fontSize: 12, fill: "#666" }}
                     axisLine={false}
                     tickLine={false}
@@ -704,31 +827,70 @@ const ContentQualityKPI = ({
                         : "Engagement",
                     ]}
                     labelFormatter={(_label, payload) =>
-                      payload && payload[0]
+                      payload && payload[0] && payload[0].payload
                         ? `Word: "${payload[0].payload.word}"`
                         : ""
                     }
-                    contentStyle={{
-                      backgroundColor: "white",
-                      border: "1px solid #f0f0f0",
-                      borderRadius: "8px",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length > 0) {
+                        const data = payload[0].payload;
+                        return (
+                          <div
+                            style={{
+                              backgroundColor: "white",
+                              border: "1px solid #f0f0f0",
+                              borderRadius: "8px",
+                              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                              padding: "12px",
+                            }}
+                          >
+                            <div
+                              style={{
+                                fontWeight: 600,
+                                marginBottom: "8px",
+                                color: "#333",
+                              }}
+                            >
+                              Word: "{data.word}"
+                            </div>
+                            <div
+                              style={{
+                                fontSize: "12px",
+                                color: "#666",
+                                lineHeight: "1.5",
+                              }}
+                            >
+                              <div>Frequency: {data.x} mentions</div>
+                              <div>KPI Score: {data.y}/10</div>
+                              <div>Engagement: {data.z} interactions</div>
+                              <div
+                                style={{
+                                  marginTop: "4px",
+                                  color:
+                                    data.sentiment === "positive"
+                                      ? "#52c41a"
+                                      : data.sentiment === "neutral"
+                                      ? "#faad14"
+                                      : "#ff4d4f",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                Sentiment:{" "}
+                                {data.sentiment.charAt(0).toUpperCase() +
+                                  data.sentiment.slice(1)}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
                     }}
                   />
-                  <Scatter name="Words" dataKey="z">
-                    {bubbleData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={
-                          entry.sentiment === "positive"
-                            ? "#52c41a"
-                            : entry.sentiment === "neutral"
-                            ? "#faad14"
-                            : "#ff4d4f"
-                        }
-                      />
-                    ))}
-                  </Scatter>
+                  <Scatter
+                    name="Words"
+                    data={bubbleData}
+                    shape={<CustomBubble />}
+                  />
                 </ScatterChart>
               </ResponsiveContainer>
             </div>
