@@ -4,9 +4,11 @@ import {
   CalendarOutlined,
   FilterOutlined,
   BarChartOutlined,
+  VideoCameraOutlined,
 } from "@ant-design/icons";
 import ExecutiveOverview from "../components/ExecutiveOverview";
 import ContentQualityKPI from "../components/ContentQualityKPI";
+import VideoBreakdown from "../components/VideoBreakdown";
 import type { TabsProps } from "antd";
 import type { Dayjs } from "dayjs";
 
@@ -48,6 +50,22 @@ function Dashboard() {
       ),
       children: (
         <ContentQualityKPI
+          dateFilter={selectedDate}
+          categoryFilter={selectedCategory}
+          languageFilter={selectedLanguage}
+        />
+      ),
+    },
+    {
+      key: "3",
+      label: (
+        <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <VideoCameraOutlined />
+          Video Breakdown
+        </span>
+      ),
+      children: (
+        <VideoBreakdown
           dateFilter={selectedDate}
           categoryFilter={selectedCategory}
           languageFilter={selectedLanguage}
