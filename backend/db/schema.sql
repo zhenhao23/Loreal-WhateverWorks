@@ -54,3 +54,54 @@ COPY comments (
 )
 FROM 'C:\Users\weezh\OneDrive\Desktop\Loreal WhateverWorks\full_sample_final_output.csv'
 WITH (FORMAT CSV, HEADER true, ENCODING 'UTF8');
+
+
+
+
+-- Drop the existing videos table if it exists
+DROP TABLE IF EXISTS videos;
+
+-- Create the videos table with the correct structure based on your CSV
+CREATE TABLE IF NOT EXISTS videos (
+    id SERIAL PRIMARY KEY,
+    kind VARCHAR(50),
+    video_id BIGINT,
+    published_at TIMESTAMP WITH TIME ZONE,
+    channel_id BIGINT,
+    title TEXT,
+    description TEXT,
+    tags TEXT,
+    default_language VARCHAR(10),
+    default_audio_language VARCHAR(10),
+    content_duration VARCHAR(20), -- Keeping as VARCHAR since it's in PT format (PT9S, PT45S)
+    view_count DECIMAL(10,1),
+    like_count DECIMAL(10,1),
+    favourite_count DECIMAL(10,1),
+    comment_count DECIMAL(10,1),
+    topic_categories TEXT, -- JSON array as text
+    extracted_topics TEXT, -- JSON array as text
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Import the CSV with the correct column mapping
+COPY videos (
+    kind, video_id, published_at, channel_id, title, description, tags,
+    default_language, default_audio_language, content_duration, view_count,
+    like_count, favourite_count, comment_count, topic_categories, extracted_topics
+)
+FROM 'C:/Users/weezh/OneDrive/Desktop/Loreal WhateverWorks/videos_with_extracted_topics.csv'
+WITH (FORMAT CSV, HEADER true, ENCODING 'UTF8');
+
+-- Verify the import
+SELECT COUNT(*) FROM videos;
+SELECT kind, video_id, title, view_count, extracted_topics FROM videos LIMIT 5;
+
+-- Check some statistics
+SELECT 
+    COUNT(*) as total_videos,
+    MIN(published_at) as earliest_video,
+    MAX(published_at) as latest_video,
+    AVG(view_count) as avg_views,
+    SUM(view_count) as total_views
+FROM videos;

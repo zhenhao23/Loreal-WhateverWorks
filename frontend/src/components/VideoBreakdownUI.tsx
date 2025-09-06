@@ -10,15 +10,43 @@ import type { VideoBreakdownData } from "./VideoBreakdownMockData";
 
 interface VideoBreakdownUIProps {
   data: VideoBreakdownData;
+  onPaginationChange?: (page: number, pageSize: number) => void;
+  loading?: boolean;
 }
 
-const VideoBreakdownUI = ({ data }: VideoBreakdownUIProps) => {
-  const { videoCategoryData, categoryLeaderboardData } = data;
+const VideoBreakdownUI = ({
+  data,
+  onPaginationChange,
+  loading = false,
+}: VideoBreakdownUIProps) => {
+  const { videoCategoryData, categoryLeaderboardData, videoMetrics } = data;
 
-  const totalVideos = videoCategoryData.reduce(
-    (sum, item) => sum + item.videos,
-    0
-  );
+  // Handle both paginated and array data formats
+  const leaderboardData = Array.isArray(categoryLeaderboardData)
+    ? categoryLeaderboardData
+    : categoryLeaderboardData?.data || [];
+
+  const paginationConfig = Array.isArray(categoryLeaderboardData)
+    ? {
+        current: 1,
+        pageSize: 10,
+        total: categoryLeaderboardData.length,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        showTotal: (total: number, range: [number, number]) =>
+          `${range[0]}-${range[1]} of ${total} categories`,
+      }
+    : {
+        current: categoryLeaderboardData?.current || 1,
+        pageSize: categoryLeaderboardData?.pageSize || 10,
+        total: categoryLeaderboardData?.total || 0,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        showTotal: (total: number, range: [number, number]) =>
+          `${range[0]}-${range[1]} of ${total} categories`,
+        onChange: onPaginationChange,
+        onShowSizeChange: onPaginationChange,
+      };
 
   // Bar chart configuration (vertical bar chart like Sentiment Score by Topic)
   const barConfig = {
@@ -64,7 +92,7 @@ const VideoBreakdownUI = ({ data }: VideoBreakdownUIProps) => {
         fill: "#444",
         fontSize: 12,
         fontWeight: 600,
-        dx: 32,
+        dx: 40,
       },
     },
     width: 875,
@@ -90,7 +118,7 @@ const VideoBreakdownUI = ({ data }: VideoBreakdownUIProps) => {
       sorter: (a, b) => a.videoCount - b.videoCount,
       render: (value: number) => (
         <div style={{ fontWeight: 600, textAlign: "center" }}>
-          {value.toLocaleString()}
+          {value?.toLocaleString() || "0"}
         </div>
       ),
     },
@@ -101,7 +129,9 @@ const VideoBreakdownUI = ({ data }: VideoBreakdownUIProps) => {
       width: "12%",
       sorter: (a, b) => a.totalComments - b.totalComments,
       render: (value: number) => (
-        <div style={{ textAlign: "center" }}>{value.toLocaleString()}</div>
+        <div style={{ textAlign: "center" }}>
+          {value?.toLocaleString() || "0"}
+        </div>
       ),
     },
     {
@@ -111,7 +141,9 @@ const VideoBreakdownUI = ({ data }: VideoBreakdownUIProps) => {
       width: "12%",
       sorter: (a, b) => a.uniqueAuthors - b.uniqueAuthors,
       render: (value: number) => (
-        <div style={{ textAlign: "center" }}>{value.toLocaleString()}</div>
+        <div style={{ textAlign: "center" }}>
+          {value?.toLocaleString() || "0"}
+        </div>
       ),
     },
     {
@@ -121,7 +153,9 @@ const VideoBreakdownUI = ({ data }: VideoBreakdownUIProps) => {
       width: "12%",
       sorter: (a, b) => a.totalLikes - b.totalLikes,
       render: (value: number) => (
-        <div style={{ textAlign: "center" }}>{value.toLocaleString()}</div>
+        <div style={{ textAlign: "center" }}>
+          {value?.toLocaleString() || "0"}
+        </div>
       ),
     },
     {
@@ -158,7 +192,7 @@ const VideoBreakdownUI = ({ data }: VideoBreakdownUIProps) => {
             textAlign: "center",
           }}
         >
-          {value}%
+          {Math.round(value)}%
         </div>
       ),
     },
@@ -173,7 +207,7 @@ const VideoBreakdownUI = ({ data }: VideoBreakdownUIProps) => {
           style={{
             fontWeight: 600,
             color:
-              value >= 8.0 ? "#52c41a" : value >= 7.0 ? "#faad14" : "#ff4d4f",
+              value > 6.67 ? "#52c41a" : value < 3.33 ? "#ff4d4f" : "#faad14",
             textAlign: "center",
           }}
         >
@@ -230,7 +264,7 @@ const VideoBreakdownUI = ({ data }: VideoBreakdownUIProps) => {
                       marginBottom: "6px",
                     }}
                   >
-                    {totalVideos.toLocaleString()}
+                    {videoMetrics?.total_videos?.toLocaleString() || "0"}
                   </div>
                   <div
                     style={{
@@ -282,7 +316,7 @@ const VideoBreakdownUI = ({ data }: VideoBreakdownUIProps) => {
                       marginBottom: "6px",
                     }}
                   >
-                    {videoCategoryData.length}
+                    {videoMetrics?.unique_categories || 0}
                   </div>
                   <div
                     style={{
@@ -383,15 +417,11 @@ const VideoBreakdownUI = ({ data }: VideoBreakdownUIProps) => {
             }}
           >
             <Table
-              dataSource={categoryLeaderboardData}
+              dataSource={leaderboardData}
               columns={columns}
-              pagination={{
-                pageSize: 10,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) =>
-                  `${range[0]}-${range[1]} of ${total} categories`,
-              }}
+              rowKey="key"
+              loading={loading}
+              pagination={paginationConfig}
               size="middle"
               scroll={{ x: 1200 }}
             />

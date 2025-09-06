@@ -4,6 +4,8 @@ const {
   getVideoPlatformDistribution,
   getVideoUploadTrends,
   getVideoDurationAnalysis,
+  getVideoMetrics,
+  getCategoryLeaderboardData,
 } = require("../db/queries/videos.queries");
 
 const {
@@ -24,7 +26,10 @@ const {
  * Video Breakdown Service
  * Combines data from video breakdown queries and builds the response expected by the frontend
  */
-async function getVideoBreakdown(filters = {}) {
+async function getVideoBreakdown(
+  filters = {},
+  pagination = { limit: 10, offset: 0 }
+) {
   try {
     console.log("Fetching video breakdown data with filters:", filters);
 
@@ -32,15 +37,22 @@ async function getVideoBreakdown(filters = {}) {
     const parsedFilters = parseFilters(filters);
 
     // Fetch all data in parallel for better performance
-    const [videoCategoryData, categoryLeaderboardData] = await Promise.all([
-      getVideoCategoryData(parsedFilters),
-      getCreatorLeaderboard(parsedFilters),
-    ]);
+    const [videoCategoryData, categoryLeaderboardData, videoMetrics] =
+      await Promise.all([
+        getVideoCategoryData(parsedFilters),
+        getCategoryLeaderboardData(
+          parsedFilters,
+          pagination.limit,
+          pagination.offset
+        ),
+        getVideoMetrics(parsedFilters),
+      ]);
 
     // Combine into one JSON object matching frontend expectations
     const result = {
       videoCategoryData,
       categoryLeaderboardData,
+      videoMetrics,
     };
 
     console.log("Successfully combined video breakdown data");

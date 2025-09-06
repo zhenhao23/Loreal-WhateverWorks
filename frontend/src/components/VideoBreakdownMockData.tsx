@@ -101,7 +101,22 @@ export const mockCategoryLeaderboardData = [
   },
 ];
 
+export const mockVideoMetrics = {
+  total_videos: 5670,
+  unique_categories: 8,
+};
+
+export interface CategoryLeaderboardData {
+  data: typeof mockCategoryLeaderboardData;
+  total: number;
+  pageSize: number;
+  current: number;
+}
+
 export interface VideoBreakdownData {
   videoCategoryData: typeof mockVideoCategoryData;
-  categoryLeaderboardData: typeof mockCategoryLeaderboardData;
+  categoryLeaderboardData:
+    | typeof mockCategoryLeaderboardData
+    | CategoryLeaderboardData;
+  videoMetrics: typeof mockVideoMetrics;
 }

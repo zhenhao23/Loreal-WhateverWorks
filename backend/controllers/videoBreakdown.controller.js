@@ -28,10 +28,19 @@ async function videoBreakdownHandler(req, res) {
         req.body.languageFilter || req.query.languageFilter || "all",
     };
 
+    // Extract pagination parameters
+    const pagination = {
+      limit: parseInt(req.body.pageSize || req.query.pageSize || 10),
+      offset:
+        (parseInt(req.body.current || req.query.current || 1) - 1) *
+        parseInt(req.body.pageSize || req.query.pageSize || 10),
+    };
+
     console.log("Processed filters:", filters);
+    console.log("Pagination params:", pagination);
 
     // Get data from service
-    const data = await getVideoBreakdown(filters);
+    const data = await getVideoBreakdown(filters, pagination);
 
     // Add metadata
     const response = {
@@ -39,6 +48,7 @@ async function videoBreakdownHandler(req, res) {
       metadata: {
         generatedAt: new Date().toISOString(),
         filters: filters,
+        pagination: pagination,
         dataSource: "database",
       },
     };

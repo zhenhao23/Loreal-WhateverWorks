@@ -4,6 +4,7 @@ import VideoBreakdownUI from "./VideoBreakdownUI";
 import {
   mockVideoCategoryData,
   mockCategoryLeaderboardData,
+  mockVideoMetrics,
   type VideoBreakdownData,
 } from "./VideoBreakdownMockData";
 
@@ -21,22 +22,34 @@ const VideoBreakdown = ({
   const [data, setData] = useState<VideoBreakdownData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
 
   // Function to fetch data from API
-  const fetchVideoBreakdownData = async (): Promise<VideoBreakdownData> => {
+  const fetchVideoBreakdownData = async (
+    page = 1,
+    pageSize = 10
+  ): Promise<VideoBreakdownData> => {
     try {
       // Replace this with your actual API endpoint
-      const response = await fetch("/api/video-breakdown", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          dateFilter,
-          categoryFilter,
-          languageFilter,
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/video-breakdown",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            dateFilter,
+            categoryFilter,
+            languageFilter,
+            current: page,
+            pageSize: pageSize,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
@@ -47,8 +60,13 @@ const VideoBreakdown = ({
       // Transform API data to match expected format if needed
       return {
         videoCategoryData: apiData.videoCategoryData || mockVideoCategoryData,
-        categoryLeaderboardData:
-          apiData.categoryLeaderboardData || mockCategoryLeaderboardData,
+        categoryLeaderboardData: apiData.categoryLeaderboardData || {
+          data: mockCategoryLeaderboardData,
+          total: mockCategoryLeaderboardData.length,
+          pageSize: pageSize,
+          current: page,
+        },
+        videoMetrics: apiData.videoMetrics || mockVideoMetrics,
       };
     } catch (error) {
       console.error("Failed to fetch video breakdown data:", error);
@@ -60,8 +78,19 @@ const VideoBreakdown = ({
   const getMockData = (): VideoBreakdownData => {
     return {
       videoCategoryData: mockVideoCategoryData,
-      categoryLeaderboardData: mockCategoryLeaderboardData,
+      categoryLeaderboardData: {
+        data: mockCategoryLeaderboardData,
+        total: mockCategoryLeaderboardData.length,
+        pageSize: pagination.pageSize,
+        current: pagination.current,
+      },
+      videoMetrics: mockVideoMetrics,
     };
+  };
+
+  // Handle pagination changes
+  const handlePaginationChange = (page: number, pageSize: number) => {
+    setPagination({ current: page, pageSize });
   };
 
   useEffect(() => {
@@ -71,7 +100,10 @@ const VideoBreakdown = ({
 
       try {
         // Try to fetch from API first
-        const apiData = await fetchVideoBreakdownData();
+        const apiData = await fetchVideoBreakdownData(
+          pagination.current,
+          pagination.pageSize
+        );
         setData(apiData);
         console.log("Video breakdown data loaded from API successfully");
       } catch (apiError) {
@@ -86,7 +118,13 @@ const VideoBreakdown = ({
     };
 
     loadData();
-  }, [dateFilter, categoryFilter, languageFilter]);
+  }, [
+    dateFilter,
+    categoryFilter,
+    languageFilter,
+    pagination.current,
+    pagination.pageSize,
+  ]);
 
   if (loading) {
     return (
@@ -125,7 +163,11 @@ const VideoBreakdown = ({
           closable
         />
       )}
-      <VideoBreakdownUI data={data} />
+      <VideoBreakdownUI
+        data={data}
+        onPaginationChange={handlePaginationChange}
+        loading={loading}
+      />
     </div>
   );
 };
