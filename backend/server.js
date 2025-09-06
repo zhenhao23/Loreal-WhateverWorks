@@ -1,14 +1,23 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const scriptRoutes = require("./routes/scriptRoutes");
+const executiveOverviewRoutes = require("./routes/executiveOverview.routes");
+const contentQualityRoutes = require("./routes/contentQuality.routes");
+const videoBreakdownRoutes = require("./routes/videoBreakdown.routes");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/api", scriptRoutes);
 
-const PORT = 5000;
+// Routes
+app.use("/api", scriptRoutes);
+app.use("/api/executive-overview", executiveOverviewRoutes);
+app.use("/api/content-quality-kpi", contentQualityRoutes);
+app.use("/api/video-breakdown", videoBreakdownRoutes);
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
   console.log(`Backend running on http://localhost:${PORT}`)
 );

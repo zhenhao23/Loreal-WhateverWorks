@@ -29,7 +29,7 @@ const ExecutiveOverview = ({
   const fetchExecutiveOverviewData =
     async (): Promise<ExecutiveOverviewData> => {
       try {
-        // Replace this with your actual API endpoint
+        // Updated API endpoint to match new backend structure
         const response = await fetch("/api/executive-overview", {
           method: "POST",
           headers: {
@@ -48,7 +48,7 @@ const ExecutiveOverview = ({
 
         const apiData = await response.json();
 
-        // Transform API data to match expected format if needed
+        // The new API returns data in the exact format expected by frontend
         return {
           sentimentData: apiData.sentimentData || mockSentimentData,
           overallSentimentScore:
