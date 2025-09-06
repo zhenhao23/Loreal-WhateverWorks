@@ -1,11 +1,11 @@
 // Mock data for Executive Overview component
 export const mockSentimentData = [
-  { type: "Negative", value: 42, percentage: "42%" },
-  { type: "Neutral", value: 15, percentage: "15%" },
-  { type: "Positive", value: 43, percentage: "43%" },
+  { type: "Negative", value: 42, percentage_numeric: 42, percentage: "42%" },
+  { type: "Neutral", value: 15, percentage_numeric: 15, percentage: "15%" },
+  { type: "Positive", value: 43, percentage_numeric: 43, percentage: "43%" },
 ];
 
-export const mockOverallSentimentScore = 3.6; // Out of 5
+export const mockOverallSentimentScore = 2.2; // Out of 10
 
 export const mockTimelineData = [
   {

@@ -84,9 +84,13 @@ function parseFilters(filters) {
 
   // Date filters
   if (filters.dateFilter) {
+    console.log("Raw dateFilter received:", filters.dateFilter);
+
     if (Array.isArray(filters.dateFilter) && filters.dateFilter.length === 2) {
       parsed.dateFrom = filters.dateFilter[0];
       parsed.dateTo = filters.dateFilter[1];
+      console.log("Parsed dateFrom:", parsed.dateFrom);
+      console.log("Parsed dateTo:", parsed.dateTo);
     } else if (filters.dateFilter.from && filters.dateFilter.to) {
       parsed.dateFrom = filters.dateFilter.from;
       parsed.dateTo = filters.dateFilter.to;

@@ -11,6 +11,7 @@ import ContentQualityKPI from "../components/ContentQualityKPI";
 import VideoBreakdown from "../components/VideoBreakdown";
 import type { TabsProps } from "antd";
 import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -19,7 +20,10 @@ type YearRange = [Dayjs | null, Dayjs | null] | null;
 
 function Dashboard() {
   const [activeTab, setActiveTab] = useState("1");
-  const [selectedYearRange, setSelectedYearRange] = useState<YearRange>(null);
+  const [selectedYearRange, setSelectedYearRange] = useState<YearRange>([
+    dayjs("2020"),
+    dayjs("2025"),
+  ]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedLanguage, setSelectedLanguage] = useState("all");
 
@@ -103,6 +107,7 @@ function Dashboard() {
                   picker="year"
                   style={{ width: "100%" }}
                   placeholder={["Start Year", "End Year"]}
+                  value={selectedYearRange}
                   suffixIcon={<CalendarOutlined style={{ color: "#A6ABC8" }} />}
                   onChange={(dates) => setSelectedYearRange(dates)}
                   disabledDate={(current) => {

@@ -39,7 +39,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
   const pieConfig = {
     autoFit: false,
     data: sentimentData,
-    angleField: "value",
+    angleField: "percentage_numeric",
     colorField: "type",
     scale: {
       color: {
@@ -51,6 +51,16 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
     label: {
       text: "percentage",
       position: "outside",
+    },
+    tooltip: {
+      title: (d: any) => d.type,
+      items: [
+        {
+          field: "value",
+          name: "Comments",
+          valueFormatter: (value: number) => value.toLocaleString(),
+        },
+      ],
     },
     interactions: [{ type: "element-active" }],
     legend: {
@@ -615,7 +625,8 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                       }}
                     >
                       <ReactSpeedometer
-                        maxValue={5}
+                        maxValue={10}
+                        minValue={0}
                         value={overallSentimentScore}
                         needleColor="#5A6ACF"
                         needleHeightRatio={0.7}
@@ -626,8 +637,9 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                         textColor="#5A6ACF"
                         valueTextFontSize="24px"
                         labelFontSize="12px"
-                        currentValueText={`${overallSentimentScore}/5`}
+                        currentValueText={`${overallSentimentScore}/10`}
                         paddingVertical={20}
+                        customSegmentStops={[0, 3.33, 6.67, 10]}
                         customSegmentLabels={[
                           {
                             text: "Negative",
@@ -659,25 +671,25 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                         }}
                       >
                         <span style={{ fontSize: "22px", marginRight: "8px" }}>
-                          {overallSentimentScore >= 3.33
+                          {overallSentimentScore >= 6.67
                             ? "😊"
-                            : overallSentimentScore >= 1.66
+                            : overallSentimentScore >= 3.33
                             ? "😐"
                             : "😞"}
                         </span>
                         <span
                           style={{
                             color:
-                              overallSentimentScore >= 3.33
+                              overallSentimentScore >= 6.67
                                 ? "#8CD47E"
-                                : overallSentimentScore >= 1.66
+                                : overallSentimentScore >= 3.33
                                 ? "#FFB54C"
                                 : "#FF6961",
                           }}
                         >
-                          {overallSentimentScore >= 3.33
+                          {overallSentimentScore >= 6.67
                             ? "Positive"
-                            : overallSentimentScore >= 1.66
+                            : overallSentimentScore >= 3.33
                             ? "Neutral"
                             : "Negative"}
                         </span>

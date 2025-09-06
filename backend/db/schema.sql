@@ -52,5 +52,5 @@ COPY comments (
     is_spam, is_english, relevance_score, negative, neutral, positive, 
     corrected_text, aspect, sentiment
 )
-FROM 'C:\Users\weezh\OneDrive\Desktop\Loreal WhateverWorks\sample_final_output.csv'
+FROM 'C:\Users\weezh\OneDrive\Desktop\Loreal WhateverWorks\full_sample_final_output.csv'
 WITH (FORMAT CSV, HEADER true, ENCODING 'UTF8');

@@ -29,18 +29,38 @@ const ExecutiveOverview = ({
   const fetchExecutiveOverviewData =
     async (): Promise<ExecutiveOverviewData> => {
       try {
+        // Convert dateFilter to year-only format to avoid timezone issues
+        let processedDateFilter = null;
+        if (
+          dateFilter &&
+          Array.isArray(dateFilter) &&
+          dateFilter.length === 2
+        ) {
+          processedDateFilter = [
+            dateFilter[0]?.year?.() ||
+              dateFilter[0]?.format?.("YYYY") ||
+              String(dateFilter[0]),
+            dateFilter[1]?.year?.() ||
+              dateFilter[1]?.format?.("YYYY") ||
+              String(dateFilter[1]),
+          ];
+        }
+
         // Updated API endpoint to match new backend structure
-        const response = await fetch("/api/executive-overview", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            dateFilter,
-            categoryFilter,
-            languageFilter,
-          }),
-        });
+        const response = await fetch(
+          "http://localhost:5000/api/executive-overview",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              dateFilter: processedDateFilter,
+              categoryFilter,
+              languageFilter,
+            }),
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`API request failed with status ${response.status}`);
