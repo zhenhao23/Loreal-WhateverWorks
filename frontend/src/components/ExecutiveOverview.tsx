@@ -1,25 +1,14 @@
-import { Row, Col, Card, Progress } from "antd";
-import { Pie } from "@ant-design/plots";
-import ReactSpeedometer from "react-d3-speedometer";
+import { useEffect, useState } from "react";
+import { Spin, Alert } from "antd";
+import ExecutiveOverviewUI from "./ExecutiveOverviewUI";
 import {
-  ComposedChart,
-  Bar,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import {
-  UserOutlined,
-  SafetyOutlined,
-  MessageOutlined,
-  PieChartOutlined,
-  BarChartOutlined,
-  LineChartOutlined,
-} from "@ant-design/icons";
+  mockSentimentData,
+  mockOverallSentimentScore,
+  mockTimelineData,
+  mockMetricsData,
+  mockCategoryData,
+  type ExecutiveOverviewData,
+} from "./ExecutiveOverviewMockData";
 
 interface ExecutiveOverviewProps {
   dateFilter: any;
@@ -32,802 +21,121 @@ const ExecutiveOverview = ({
   categoryFilter,
   languageFilter,
 }: ExecutiveOverviewProps) => {
-  // Filters would be used here in a real implementation
-  console.log("Filters:", { dateFilter, categoryFilter, languageFilter });
+  const [data, setData] = useState<ExecutiveOverviewData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Chart data
-  const sentimentData = [
-    { type: "Negative", value: 42, percentage: "42%" },
-    { type: "Neutral", value: 15, percentage: "15%" },
-    { type: "Positive", value: 43, percentage: "43%" },
-  ];
+  // Function to fetch data from API
+  const fetchExecutiveOverviewData =
+    async (): Promise<ExecutiveOverviewData> => {
+      try {
+        // Replace this with your actual API endpoint
+        const response = await fetch("/api/executive-overview", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            dateFilter,
+            categoryFilter,
+            languageFilter,
+          }),
+        });
 
-  const overallSentimentScore = 3.6; // Out of 5
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
 
-  const timelineData = [
-    {
-      month: "Jan",
-      positive: 1200,
-      neutral: 720,
-      negative: 480,
-      avgSentiment: 7.2,
-    },
-    {
-      month: "Feb",
-      positive: 1400,
-      neutral: 840,
-      negative: 560,
-      avgSentiment: 7.8,
-    },
-    {
-      month: "Mar",
-      positive: 1600,
-      neutral: 960,
-      negative: 640,
-      avgSentiment: 6.9,
-    },
-    {
-      month: "Apr",
-      positive: 1450,
-      neutral: 870,
-      negative: 580,
-      avgSentiment: 8.1,
-    },
-    {
-      month: "May",
-      positive: 1750,
-      neutral: 1050,
-      negative: 700,
-      avgSentiment: 8.4,
-    },
-    {
-      month: "Jun",
-      positive: 2050,
-      neutral: 1230,
-      negative: 820,
-      avgSentiment: 7.9,
-    },
-    {
-      month: "Jul",
-      positive: 1900,
-      neutral: 1140,
-      negative: 760,
-      avgSentiment: 8.2,
-    },
-    {
-      month: "Aug",
-      positive: 2100,
-      neutral: 1260,
-      negative: 840,
-      avgSentiment: 8.7,
-    },
-    {
-      month: "Sep",
-      positive: 1800,
-      neutral: 1080,
-      negative: 720,
-      avgSentiment: 7.6,
-    },
-    {
-      month: "Oct",
-      positive: 1950,
-      neutral: 1170,
-      negative: 780,
-      avgSentiment: 8.0,
-    },
-    {
-      month: "Nov",
-      positive: 2200,
-      neutral: 1320,
-      negative: 880,
-      avgSentiment: 8.3,
-    },
-    {
-      month: "Dec",
-      positive: 2400,
-      neutral: 1440,
-      negative: 960,
-      avgSentiment: 8.5,
-    },
-  ];
+        const apiData = await response.json();
 
-  const pieConfig = {
-    // forceFit: true,
-    autoFit: false,
-    data: sentimentData,
-    angleField: "value",
-    colorField: "type",
-    scale: {
-      color: {
-        range: ["#FF6961", "#FFB54C", "#8CD47E"],
-      },
-    },
-    radius: 0.9,
-    innerRadius: 0.5,
-    label: {
-      text: "percentage",
-      position: "outside",
-    },
-    interactions: [{ type: "element-active" }],
-    legend: {
-      color: {
-        position: "right",
-      },
-    },
-    statistic: {
-      title: {
-        style: {
-          fontSize: "14px",
-          fontWeight: 600,
-          color: "#666",
-        },
-        content: "Comments",
-      },
-      content: {
-        style: {
-          fontSize: "20px",
-          fontWeight: 700,
-          color: "#333",
-        },
-        content: "24.5K",
-      },
-    },
-    width: 422,
-    height: 200,
-    // pixelRatio: 1,
+        // Transform API data to match expected format if needed
+        return {
+          sentimentData: apiData.sentimentData || mockSentimentData,
+          overallSentimentScore:
+            apiData.overallSentimentScore || mockOverallSentimentScore,
+          timelineData: apiData.timelineData || mockTimelineData,
+          metricsData: apiData.metricsData || mockMetricsData,
+          categoryData: apiData.categoryData || mockCategoryData,
+        };
+      } catch (error) {
+        console.error("Failed to fetch executive overview data:", error);
+        throw error;
+      }
+    };
+
+  // Function to get mock data as fallback
+  const getMockData = (): ExecutiveOverviewData => {
+    return {
+      sentimentData: mockSentimentData,
+      overallSentimentScore: mockOverallSentimentScore,
+      timelineData: mockTimelineData,
+      metricsData: mockMetricsData,
+      categoryData: mockCategoryData,
+    };
   };
 
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Try to fetch from API first
+        const apiData = await fetchExecutiveOverviewData();
+        setData(apiData);
+        console.log("Data loaded from API successfully");
+      } catch (apiError) {
+        console.warn("API failed, falling back to mock data:", apiError);
+        // Fallback to mock data if API fails
+        const mockData = getMockData();
+        setData(mockData);
+        setError("Using mock data - API unavailable");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [dateFilter, categoryFilter, languageFilter]);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "400px",
+        }}
+      >
+        <Spin size="large" tip="Loading executive overview..." />
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <Alert
+        message="Error"
+        description="Failed to load executive overview data"
+        type="error"
+        style={{ margin: "20px" }}
+      />
+    );
+  }
+
   return (
-    <div style={{ padding: "0 4px" }}>
-      {/* 📌 Row 1 – Key Metric Cards (Snapshot KPIs) */}
-      <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
-        {/* Engagement Coverage */}
-        <Col xs={24} sm={12} lg={6}>
-          <Card
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              border: "1px solid #f0f2f7",
-              height: "140px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <div
-                  style={{
-                    color: "#5A6ACF",
-                    fontSize: "32px",
-                    fontWeight: 700,
-                    lineHeight: 1,
-                    marginBottom: "4px",
-                  }}
-                >
-                  24,567
-                </div>
-                <div
-                  style={{
-                    color: "#666",
-                    fontSize: "14px",
-                    marginBottom: "8px",
-                  }}
-                >
-                  Total Comments Analyzed
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
-                >
-                  <UserOutlined
-                    style={{ color: "#707FDD", fontSize: "14px" }}
-                  />
-                  <span
-                    style={{
-                      color: "#707FDD",
-                      fontSize: "16px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    8,943
-                  </span>
-                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
-                    Unique Users
-                  </span>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-
-        {/* Language & Quality */}
-        <Col xs={24} sm={12} lg={6}>
-          <Card
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              border: "1px solid #f0f2f7",
-              height: "140px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <div
-                  style={{
-                    color: "#707FDD",
-                    fontSize: "32px",
-                    fontWeight: 700,
-                    lineHeight: 1,
-                    marginBottom: "4px",
-                  }}
-                >
-                  78%
-                </div>
-                <div
-                  style={{
-                    color: "#666",
-                    fontSize: "14px",
-                    marginBottom: "8px",
-                  }}
-                >
-                  English vs Non-English
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
-                >
-                  <SafetyOutlined
-                    style={{ color: "#FF6961", fontSize: "14px" }}
-                  />
-                  <span
-                    style={{
-                      color: "#FF6961",
-                      fontSize: "16px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    2.3%
-                  </span>
-                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
-                    Spam Detected
-                  </span>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-
-        {/* Engagement Depth */}
-        <Col xs={24} sm={12} lg={6}>
-          <Card
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              border: "1px solid #f0f2f7",
-              height: "140px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <div
-                  style={{
-                    color: "#44c5e1",
-                    fontSize: "32px",
-                    fontWeight: 700,
-                    lineHeight: 1,
-                    marginBottom: "4px",
-                  }}
-                >
-                  14.2
-                </div>
-                <div
-                  style={{
-                    color: "#666",
-                    fontSize: "14px",
-                    marginBottom: "8px",
-                  }}
-                >
-                  Avg Likes per Comment
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
-                >
-                  <MessageOutlined
-                    style={{ color: "#60ccefff", fontSize: "14px" }}
-                  />
-                  <span
-                    style={{
-                      color: "#60ccefff",
-                      fontSize: "16px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    3.7
-                  </span>
-                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
-                    Avg Replies per Comment
-                  </span>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-
-        {/* Engagement Quality */}
-        <Col xs={24} sm={12} lg={6}>
-          <Card
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 4px 12px rgba(90, 106, 207, 0.15)",
-              border: "2px solid #5A6ACF",
-              height: "140px",
-              background: "linear-gradient(135deg, #5A6ACF 0%, #707FDD 100%)",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                color: "white",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  textAlign: "center",
-                }}
-              >
-                <div
-                  style={{
-                    color: "white",
-                    fontSize: "36px",
-                    fontWeight: 700,
-                    lineHeight: 1,
-                  }}
-                >
-                  8.7
-                </div>
-                <div
-                  style={{
-                    color: "rgba(255,255,255,0.8)",
-                    fontSize: "13px",
-                    marginTop: "4px",
-                  }}
-                >
-                  Avg KPI Score per Comment
-                </div>
-                <div
-                  style={{
-                    color: "rgba(255,255,255,0.9)",
-                    fontSize: "11px",
-                    marginTop: "6px",
-                    background: "rgba(255,255,255,0.2)",
-                    padding: "2px 8px",
-                    borderRadius: "10px",
-                    display: "inline-block",
-                  }}
-                >
-                  ↗ +12% vs last month
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* 📊 Row 2 – Sentiment Overview (Macro View) */}
-      <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
-        {/* Left: Sentiment Distribution (Semi-Donut Chart) */}
-        <Col xs={24} lg={16}>
-          <Card
-            title={
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
-              >
-                <PieChartOutlined style={{ color: "#5A6ACF" }} />
-                <span
-                  style={{
-                    color: "#5A6ACF",
-                    fontSize: "18px",
-                    fontWeight: 600,
-                  }}
-                >
-                  Sentiment Distribution
-                </span>
-              </div>
-            }
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              height: "400px",
-            }}
-            headStyle={{
-              background: "#fafbfc",
-              borderBottom: "1px solid #f0f2f7",
-            }}
-          >
-            <div style={{ height: "320px", padding: "8px" }}>
-              <Row gutter={[16, 0]} style={{ height: "100%" }}>
-                {/* Left: Overall Sentiment Gauge */}
-                <Col xs={24} md={12}>
-                  <div
-                    style={{
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: 600,
-                        color: "#5A6ACF",
-                        marginBottom: "8px",
-                        textAlign: "center",
-                      }}
-                    >
-                      Overall Sentiment Level
-                    </div>
-                    <div
-                      style={{
-                        height: "200px",
-                        width: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <ReactSpeedometer
-                        maxValue={5}
-                        value={overallSentimentScore}
-                        needleColor="#5A6ACF"
-                        needleHeightRatio={0.7}
-                        startColor="#FF6961"
-                        segments={3}
-                        segmentColors={["#FF6961", "#FFB54C", "#8CD47E"]}
-                        endColor="#8CD47E"
-                        textColor="#5A6ACF"
-                        valueTextFontSize="24px"
-                        labelFontSize="12px"
-                        currentValueText={`${overallSentimentScore}/5`}
-                        paddingVertical={20}
-                        customSegmentLabels={[
-                          {
-                            text: "Negative",
-                            color: "#fff",
-                            fontSize: "10px",
-                          },
-                          {
-                            text: "Neutral",
-                            color: "#fff",
-                            fontSize: "10px",
-                          },
-                          {
-                            text: "Positive",
-                            color: "#fff",
-                            fontSize: "10px",
-                          },
-                        ]}
-                        ringWidth={20}
-                        needleTransitionDuration={1000}
-                        width={200}
-                        height={150}
-                      />
-                      <div
-                        style={{
-                          marginTop: "8px",
-                          textAlign: "center",
-                          fontSize: "18px",
-                          fontWeight: 600,
-                        }}
-                      >
-                        <span style={{ fontSize: "22px", marginRight: "8px" }}>
-                          {overallSentimentScore >= 3.33
-                            ? "😊"
-                            : overallSentimentScore >= 1.66
-                            ? "😐"
-                            : "😞"}
-                        </span>
-                        <span
-                          style={{
-                            color:
-                              overallSentimentScore >= 3.33
-                                ? "#8CD47E"
-                                : overallSentimentScore >= 1.66
-                                ? "#FFB54C"
-                                : "#FF6961",
-                          }}
-                        >
-                          {overallSentimentScore >= 3.33
-                            ? "Positive"
-                            : overallSentimentScore >= 1.66
-                            ? "Neutral"
-                            : "Negative"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-
-                {/* Right: Comments Sentiment Distribution */}
-                <Col xs={24} md={12}>
-                  <div
-                    style={{
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: 600,
-                        color: "#5A6ACF",
-                        marginBottom: "8px",
-                        textAlign: "center",
-                      }}
-                    >
-                      Comments by Sentiment
-                    </div>
-                    <div style={{ height: "200px", width: "100%" }}>
-                      <Pie {...pieConfig} />
-                    </div>
-                  </div>
-                </Col>
-              </Row>
-            </div>
-          </Card>
-        </Col>
-
-        {/* Right: Comments by Category */}
-        <Col xs={24} lg={8}>
-          <Card
-            title={
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
-              >
-                <BarChartOutlined style={{ color: "#5A6ACF" }} />
-                <span
-                  style={{
-                    color: "#5A6ACF",
-                    fontSize: "18px",
-                    fontWeight: 600,
-                  }}
-                >
-                  By Category
-                </span>
-              </div>
-            }
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              height: "400px",
-            }}
-            headStyle={{
-              background: "#fafbfc",
-              borderBottom: "1px solid #f0f2f7",
-            }}
-          >
-            <div style={{ padding: "0" }}>
-              {[
-                { category: "Skincare", value: 35, color: "#5A6ACF" },
-                { category: "Makeup", value: 28, color: "#707FDD" },
-                { category: "Fragrance", value: 18, color: "#44c5e1" },
-                { category: "Hair Care", value: 12, color: "#8B5CF6" },
-                { category: "Men's", value: 7, color: "#ff7875" },
-              ].map((item, index) => (
-                <div key={index} style={{ marginBottom: "16px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "4px",
-                    }}
-                  >
-                    <span style={{ color: "#333", fontWeight: 600 }}>
-                      {item.category}
-                    </span>
-                    <span style={{ color: item.color, fontWeight: 700 }}>
-                      {item.value}%
-                    </span>
-                  </div>
-                  <Progress
-                    percent={item.value}
-                    strokeColor={item.color}
-                    showInfo={false}
-                    size="small"
-                  />
-                </div>
-              ))}
-            </div>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* 📈 Row 3 – Sentiment Timeline (Trend Analysis) */}
-      <Row gutter={[24, 24]}>
-        <Col xs={24}>
-          <Card
-            title={
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
-              >
-                <LineChartOutlined style={{ color: "#5A6ACF" }} />
-                <span
-                  style={{
-                    color: "#5A6ACF",
-                    fontSize: "18px",
-                    fontWeight: 600,
-                  }}
-                >
-                  Sentiment Timeline - Comments Volume & Average Score
-                </span>
-              </div>
-            }
-            extra={
-              <div style={{ fontSize: "12px", color: "#8B92B8" }}>
-                Click bars to drill-down: Year → Month → Day
-              </div>
-            }
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-            }}
-            headStyle={{
-              background: "#fafbfc",
-              borderBottom: "1px solid #f0f2f7",
-            }}
-          >
-            <div style={{ height: "300px", padding: "16px" }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={timelineData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis
-                    dataKey="month"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: "#666" }}
-                  />
-                  <YAxis
-                    yAxisId="comments"
-                    orientation="left"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: "#666" }}
-                    label={{
-                      value: "Number of Comments",
-                      angle: -90,
-                      position: "insideLeft",
-                      style: {
-                        textAnchor: "middle",
-                        fill: "#666",
-                        fontSize: "12px",
-                      },
-                    }}
-                  />
-                  <YAxis
-                    yAxisId="sentiment"
-                    orientation="right"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: "#666" }}
-                    domain={[0, 10]}
-                    label={{
-                      value: "Average Sentiment Score",
-                      angle: 90,
-                      position: "insideRight",
-                      style: {
-                        textAnchor: "middle",
-                        fill: "#666",
-                        fontSize: "12px",
-                      },
-                    }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "white",
-                      border: "1px solid #f0f0f0",
-                      borderRadius: "8px",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                    }}
-                    formatter={(value, name) => [
-                      typeof name === "string" && name.includes("Sentiment")
-                        ? `${value}/10`
-                        : `${value} comments`,
-                      name,
-                    ]}
-                  />
-                  <Legend
-                    wrapperStyle={{ paddingTop: "0px", paddingBottom: "20px" }}
-                    verticalAlign="top"
-                  />
-                  <Bar
-                    yAxisId="comments"
-                    dataKey="positive"
-                    stackId="sentiment"
-                    fill="#8CD47E"
-                    radius={[0, 0, 0, 0]}
-                    name="Positive"
-                  />
-                  <Bar
-                    yAxisId="comments"
-                    dataKey="neutral"
-                    stackId="sentiment"
-                    fill="#FFB54C"
-                    radius={[0, 0, 0, 0]}
-                    name="Neutral"
-                  />
-                  <Bar
-                    yAxisId="comments"
-                    dataKey="negative"
-                    stackId="sentiment"
-                    fill="#FF6961"
-                    radius={[4, 4, 0, 0]}
-                    name="Negative"
-                  />
-                  <Line
-                    yAxisId="sentiment"
-                    type="monotone"
-                    dataKey="avgSentiment"
-                    stroke="#5A6ACF"
-                    strokeWidth={3}
-                    dot={{ fill: "#5A6ACF", strokeWidth: 2, r: 5 }}
-                    name="Sentiment Score"
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
-        </Col>
-      </Row>
+    <div>
+      {error && (
+        <Alert
+          message="Warning"
+          description={error}
+          type="warning"
+          style={{ marginBottom: "16px" }}
+          closable
+        />
+      )}
+      <ExecutiveOverviewUI data={data} />
     </div>
   );
 };
