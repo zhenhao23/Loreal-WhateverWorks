@@ -82,219 +82,9 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
 
   return (
     <div style={{ padding: "0 4px" }}>
-      {/* 📌 Row 1 – Key Metric Cards (Snapshot KPIs) */}
-      <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
-        {/* Engagement Coverage */}
-        <Col xs={24} sm={12} lg={6}>
-          <Card
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              border: "1px solid #f0f2f7",
-              height: "140px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <div
-                  style={{
-                    color: "#5A6ACF",
-                    fontSize: "32px",
-                    fontWeight: 700,
-                    lineHeight: 1,
-                    marginBottom: "4px",
-                  }}
-                >
-                  {metricsData.totalComments.toLocaleString()}
-                </div>
-                <div
-                  style={{
-                    color: "#666",
-                    fontSize: "14px",
-                    marginBottom: "8px",
-                  }}
-                >
-                  Total Comments Analyzed
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
-                >
-                  <UserOutlined
-                    style={{ color: "#707FDD", fontSize: "14px" }}
-                  />
-                  <span
-                    style={{
-                      color: "#707FDD",
-                      fontSize: "16px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {metricsData.uniqueUsers.toLocaleString()}
-                  </span>
-                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
-                    Unique Users
-                  </span>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-
-        {/* Language & Quality */}
-        <Col xs={24} sm={12} lg={6}>
-          <Card
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              border: "1px solid #f0f2f7",
-              height: "140px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <div
-                  style={{
-                    color: "#707FDD",
-                    fontSize: "32px",
-                    fontWeight: 700,
-                    lineHeight: 1,
-                    marginBottom: "4px",
-                  }}
-                >
-                  {metricsData.englishPercentage}%
-                </div>
-                <div
-                  style={{
-                    color: "#666",
-                    fontSize: "14px",
-                    marginBottom: "8px",
-                  }}
-                >
-                  English vs Non-English
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
-                >
-                  <SafetyOutlined
-                    style={{ color: "#FF6961", fontSize: "14px" }}
-                  />
-                  <span
-                    style={{
-                      color: "#FF6961",
-                      fontSize: "16px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {metricsData.spamPercentage}%
-                  </span>
-                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
-                    Spam Detected
-                  </span>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-
-        {/* Engagement Depth */}
-        <Col xs={24} sm={12} lg={6}>
-          <Card
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              border: "1px solid #f0f2f7",
-              height: "140px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <div
-                  style={{
-                    color: "#44c5e1",
-                    fontSize: "32px",
-                    fontWeight: 700,
-                    lineHeight: 1,
-                    marginBottom: "4px",
-                  }}
-                >
-                  {metricsData.avgLikesPerComment}
-                </div>
-                <div
-                  style={{
-                    color: "#666",
-                    fontSize: "14px",
-                    marginBottom: "8px",
-                  }}
-                >
-                  Avg Likes per Comment
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
-                >
-                  <MessageOutlined
-                    style={{ color: "#60ccefff", fontSize: "14px" }}
-                  />
-                  <span
-                    style={{
-                      color: "#60ccefff",
-                      fontSize: "16px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {metricsData.avgRepliesPerComment}
-                  </span>
-                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
-                    Avg Replies per Comment
-                  </span>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-
-        {/* Engagement Quality */}
+      {/* 📌 Row 1 – Key Metric Cards (4 cards) */}
+      <Row gutter={[24, 24]} style={{ marginBottom: "24px" }}>
+        {/* Avg KPI Score per Comment - Featured */}
         <Col xs={24} sm={12} lg={6}>
           <Card
             style={{
@@ -353,7 +143,406 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     display: "inline-block",
                   }}
                 >
-                  ↗ +{metricsData.kpiScoreChange}% vs last month
+                  ↗ +{metricsData.kpiScoreChange}% vs last year
+                </div>
+              </div>
+            </div>
+          </Card>
+        </Col>
+
+        {/* Spam Detected */}
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              border: "1px solid #f0f2f7",
+              height: "140px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    color: "#FF6961",
+                    fontSize: "32px",
+                    fontWeight: 700,
+                    lineHeight: 1,
+                    marginBottom: "4px",
+                  }}
+                >
+                  {metricsData.spamPercentage}%
+                </div>
+                <div
+                  style={{
+                    color: "#666",
+                    fontSize: "14px",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Spam Detected
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    justifyContent: "center",
+                  }}
+                >
+                  <SafetyOutlined
+                    style={{ color: "#FF6961", fontSize: "14px" }}
+                  />
+                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
+                    Quality Control
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </Col>
+
+        {/* Total Comments Analyzed */}
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              border: "1px solid #f0f2f7",
+              height: "140px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    color: "#5A6ACF",
+                    fontSize: "32px",
+                    fontWeight: 700,
+                    lineHeight: 1,
+                    marginBottom: "4px",
+                  }}
+                >
+                  {metricsData.totalComments.toLocaleString()}
+                </div>
+                <div
+                  style={{
+                    color: "#666",
+                    fontSize: "14px",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Total Comments Analyzed
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    justifyContent: "center",
+                  }}
+                >
+                  <MessageOutlined
+                    style={{ color: "#707FDD", fontSize: "14px" }}
+                  />
+                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
+                    Coverage
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </Col>
+
+        {/* Unique Users */}
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              border: "1px solid #f0f2f7",
+              height: "140px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    color: "#707FDD",
+                    fontSize: "32px",
+                    fontWeight: 700,
+                    lineHeight: 1,
+                    marginBottom: "4px",
+                  }}
+                >
+                  {metricsData.uniqueUsers.toLocaleString()}
+                </div>
+                <div
+                  style={{
+                    color: "#666",
+                    fontSize: "14px",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Unique Users
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    justifyContent: "center",
+                  }}
+                >
+                  <UserOutlined
+                    style={{ color: "#707FDD", fontSize: "14px" }}
+                  />
+                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
+                    Engagement
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* 📌 Row 2 – Additional Metric Cards (3 cards) */}
+      <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
+        {/* English vs Non-English */}
+        <Col xs={24} sm={12} lg={8}>
+          <Card
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              border: "1px solid #f0f2f7",
+              height: "140px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    color: "#707FDD",
+                    fontSize: "32px",
+                    fontWeight: 700,
+                    lineHeight: 1,
+                    marginBottom: "4px",
+                  }}
+                >
+                  {metricsData.englishPercentage}%
+                </div>
+                <div
+                  style={{
+                    color: "#666",
+                    fontSize: "14px",
+                    marginBottom: "8px",
+                  }}
+                >
+                  English vs Non-English
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    justifyContent: "center",
+                  }}
+                >
+                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
+                    Language Distribution
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </Col>
+
+        {/* Avg Likes per Comment */}
+        <Col xs={24} sm={12} lg={8}>
+          <Card
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              border: "1px solid #f0f2f7",
+              height: "140px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    color: "#44c5e1",
+                    fontSize: "32px",
+                    fontWeight: 700,
+                    lineHeight: 1,
+                    marginBottom: "4px",
+                  }}
+                >
+                  {metricsData.avgLikesPerComment}
+                </div>
+                <div
+                  style={{
+                    color: "#666",
+                    fontSize: "14px",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Avg Likes per Comment
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    justifyContent: "center",
+                  }}
+                >
+                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
+                    Like Engagement
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </Col>
+
+        {/* Avg Replies per Comment */}
+        <Col xs={24} sm={12} lg={8}>
+          <Card
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              border: "1px solid #f0f2f7",
+              height: "140px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    color: "#60ccefff",
+                    fontSize: "32px",
+                    fontWeight: 700,
+                    lineHeight: 1,
+                    marginBottom: "4px",
+                  }}
+                >
+                  {metricsData.avgRepliesPerComment}
+                </div>
+                <div
+                  style={{
+                    color: "#666",
+                    fontSize: "14px",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Avg Replies per Comment
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    justifyContent: "center",
+                  }}
+                >
+                  <MessageOutlined
+                    style={{ color: "#60ccefff", fontSize: "14px" }}
+                  />
+                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
+                    Reply Engagement
+                  </span>
                 </div>
               </div>
             </div>

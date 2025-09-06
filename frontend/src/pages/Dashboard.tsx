@@ -15,11 +15,11 @@ import type { Dayjs } from "dayjs";
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-type DateRange = [Dayjs | null, Dayjs | null] | null;
+type YearRange = [Dayjs | null, Dayjs | null] | null;
 
 function Dashboard() {
   const [activeTab, setActiveTab] = useState("1");
-  const [selectedDate, setSelectedDate] = useState<DateRange>(null);
+  const [selectedYearRange, setSelectedYearRange] = useState<YearRange>(null);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedLanguage, setSelectedLanguage] = useState("all");
 
@@ -34,7 +34,7 @@ function Dashboard() {
       ),
       children: (
         <ExecutiveOverview
-          dateFilter={selectedDate}
+          dateFilter={selectedYearRange}
           categoryFilter={selectedCategory}
           languageFilter={selectedLanguage}
         />
@@ -50,7 +50,7 @@ function Dashboard() {
       ),
       children: (
         <ContentQualityKPI
-          dateFilter={selectedDate}
+          dateFilter={selectedYearRange}
           categoryFilter={selectedCategory}
           languageFilter={selectedLanguage}
         />
@@ -66,7 +66,7 @@ function Dashboard() {
       ),
       children: (
         <VideoBreakdown
-          dateFilter={selectedDate}
+          dateFilter={selectedYearRange}
           categoryFilter={selectedCategory}
           languageFilter={selectedLanguage}
         />
@@ -97,13 +97,18 @@ function Dashboard() {
                     fontWeight: 500,
                   }}
                 >
-                  DATE RANGE
+                  YEAR RANGE
                 </div>
                 <RangePicker
+                  picker="year"
                   style={{ width: "100%" }}
-                  placeholder={["Start Date", "End Date"]}
+                  placeholder={["Start Year", "End Year"]}
                   suffixIcon={<CalendarOutlined style={{ color: "#A6ABC8" }} />}
-                  onChange={(dates) => setSelectedDate(dates)}
+                  onChange={(dates) => setSelectedYearRange(dates)}
+                  disabledDate={(current) => {
+                    const year = current.year();
+                    return year < 2020 || year > 2025;
+                  }}
                 />
               </Col>
               <Col xs={24} sm={8} md={6}>

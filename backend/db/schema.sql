@@ -1,75 +1,56 @@
 -- Database Schema for L'Oreal Analytics Platform
 -- This file contains the SQL schema needed for the executive overview functionality
 
--- Create the main feedback table
-CREATE TABLE IF NOT EXISTS feedback (
+DROP DATABASE IF EXISTS loreal_analytics;
+CREATE DATABASE loreal_analytics WITH ENCODING 'UTF8';
+\c loreal_analytics;
+
+SET client_encoding = 'UTF8';
+
+-- Drop the existing table
+DROP TABLE IF EXISTS comments;
+
+-- Create the main comments table (based on the actual CSV dataset)
+CREATE TABLE IF NOT EXISTS comments (
     id SERIAL PRIMARY KEY,
-    user_id VARCHAR(255),
-    content TEXT NOT NULL,
-    sentiment VARCHAR(20) CHECK (sentiment IN ('positive', 'negative', 'neutral')),
-    category VARCHAR(100),
-    language VARCHAR(50) DEFAULT 'english',
-    likes_count INTEGER DEFAULT 0,
-    replies_count INTEGER DEFAULT 0,
-    is_spam BOOLEAN DEFAULT false,
-    kpi_score DECIMAL(3,2), -- Score between 0.00 and 10.00
+    unnamed_0_1 INTEGER, -- First unnamed column from CSV
+    unnamed_0 INTEGER, -- Second unnamed column from CSV
+    comment_id BIGINT,
+    channel_id BIGINT,
+    video_id BIGINT,
+    author_id BIGINT,
+    text_original TEXT,
+    parent_comment_id DECIMAL, -- Changed to DECIMAL to handle values like "1888757.0"
+    like_count INTEGER DEFAULT 0,
+    published_at TIMESTAMP WITH TIME ZONE,
+    updated_at TIMESTAMP WITH TIME ZONE,
+    duplicated_flag INTEGER DEFAULT 0,
+    cleaned_text TEXT,
+    cleaned_text_sentiment TEXT,
+    predicted_spam DECIMAL(3,2) DEFAULT 0.0,
+    is_spam INTEGER DEFAULT 0,
+    is_english INTEGER DEFAULT 1,
+    relevance_score DECIMAL(10,9),
+    negative DECIMAL(10,9),
+    neutral DECIMAL(10,9),
+    positive DECIMAL(10,9),
+    corrected_text TEXT,
+    aspect TEXT, -- JSON array stored as text
+    sentiment TEXT, -- JSON array stored as text
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    modified_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_feedback_sentiment ON feedback(sentiment);
-CREATE INDEX IF NOT EXISTS idx_feedback_category ON feedback(category);
-CREATE INDEX IF NOT EXISTS idx_feedback_created_at ON feedback(created_at);
-CREATE INDEX IF NOT EXISTS idx_feedback_language ON feedback(language);
-CREATE INDEX IF NOT EXISTS idx_feedback_user_id ON feedback(user_id);
+-- Unnamed: 0.1,Unnamed: 0,commentId,channelId,videoId,authorId,textOriginal,parentCommentId,likeCount,publishedAt,updatedAt,duplicatedFlag,cleanedText,cleanedTextSentiment,predictedSpam,isSpam,is_english,relevance_score,negative,neutral,positive,correctedText,aspect,sentiment
+-- 0,0,3166243,41024,6217,26499,Good Information... Will  definitely try it... Thanks 😊,,0,2020-01-01 16:00:58+00:00,2020-01-01 16:00:58+00:00,0,good information definitely try thanks,good information definitely try thanks : smiling_face_with_smiling_eyes :,0.0,0,1,0.120976724,0.019711794,0.11281153,0.8674767,Good information definitely try thanks thanks.,['information'],['Positive']
+-- 1,2,0,10004,86296,164837,Yes but I am charged $8 to cover your free shipping. If you don’t have a rep. I would love you be yours,1888757.0,0,2020-01-04 07:53:24+00:00,2020-01-04 07:53:24+00:00,0,yes charged $ 8 cover free shipping not rep would love,yes charged $ 8 cover free shipping not rep would love,0.0,0,1,0.07398073,0.8556126,0.094974376,0.049413033,Yes charged $ 8 cover free shipping not rep would love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love,['shipping'],['Positive']
 
--- Create a composite index for common filter combinations
-CREATE INDEX IF NOT EXISTS idx_feedback_filters ON feedback(created_at, category, language);
-
--- Function to update the updated_at timestamp
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
--- Trigger to automatically update the updated_at column
-CREATE TRIGGER update_feedback_updated_at 
-    BEFORE UPDATE ON feedback 
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- Sample data for testing (optional)
--- INSERT INTO feedback (user_id, content, sentiment, category, language, likes_count, replies_count, kpi_score) VALUES
--- ('user1', 'Love this new skincare product!', 'positive', 'skincare', 'english', 15, 3, 8.5),
--- ('user2', 'The makeup quality is not great', 'negative', 'makeup', 'english', 2, 1, 3.2),
--- ('user3', 'Average fragrance, nothing special', 'neutral', 'fragrance', 'english', 5, 0, 6.0),
--- ('user4', 'Amazing hair care results!', 'positive', 'hair care', 'english', 25, 8, 9.1),
--- ('user5', 'Good value for money', 'positive', 'mens', 'english', 12, 4, 7.8);
-
--- Create a view for common analytics queries
-CREATE OR REPLACE VIEW analytics_summary AS
-SELECT 
-    DATE_TRUNC('month', created_at) as month,
-    category,
-    sentiment,
-    language,
-    COUNT(*) as count,
-    AVG(likes_count) as avg_likes,
-    AVG(replies_count) as avg_replies,
-    AVG(kpi_score) as avg_kpi_score
-FROM feedback 
-GROUP BY DATE_TRUNC('month', created_at), category, sentiment, language;
-
--- Add comments to document the schema
-COMMENT ON TABLE feedback IS 'Main table storing user feedback data for analytics';
-COMMENT ON COLUMN feedback.sentiment IS 'Sentiment analysis result: positive, negative, or neutral';
-COMMENT ON COLUMN feedback.category IS 'Product category (skincare, makeup, fragrance, hair care, mens)';
-COMMENT ON COLUMN feedback.kpi_score IS 'Key Performance Indicator score from 0.00 to 10.00';
-COMMENT ON COLUMN feedback.is_spam IS 'Flag indicating if the feedback is identified as spam';
-
--- Performance monitoring queries (for DBAs)
--- SELECT * FROM pg_stat_user_tables WHERE relname = 'feedback';
--- SELECT * FROM pg_stat_user_indexes WHERE relname LIKE 'idx_feedback%';
+COPY comments (
+    unnamed_0_1, unnamed_0, comment_id, channel_id, video_id, author_id, 
+    text_original, parent_comment_id, like_count, published_at, updated_at, 
+    duplicated_flag, cleaned_text, cleaned_text_sentiment, predicted_spam, 
+    is_spam, is_english, relevance_score, negative, neutral, positive, 
+    corrected_text, aspect, sentiment
+)
+FROM 'C:\Users\weezh\OneDrive\Desktop\Loreal WhateverWorks\sample_final_output.csv'
+WITH (FORMAT CSV, HEADER true, ENCODING 'UTF8');
