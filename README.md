@@ -187,3 +187,70 @@ Skipped steps (future improvement):
 ## 🚀 Future Work
 
 - Apply contextual spelling correction with transformer-based models
+
+---
+
+# 🏗️ Web Application Tech Stack
+
+This project is built using a modern full-stack architecture with **React (frontend)**, **Node.js (backend)**, **PostgreSQL (database)**, and additional tools for **data analysis** and **AI chatbot features**.
+
+![Architecture Diagram](./assets/architecture.png)
+
+---
+
+## 🖥️ Frontend
+
+- **React**
+
+  - Provides the user interface.
+  - Built with **HTML, CSS, JavaScript**.
+  - Users can upload datasets or prompts and view results interactively.
+
+---
+
+## ⚙️ Backend
+
+- **Node.js**
+
+  - Handles application logic, routes, and API requests.
+  - Connects the frontend with the database, data analysis, and chatbot services.
+  - Provides **RESTful APIs** with JSON responses.
+
+---
+
+## 🗄️ Database
+
+- **PostgreSQL**
+
+  - Relational database for storing datasets and processed results.
+  - Accessed through SQL queries from the backend.
+
+---
+
+## 📊 Data Analysis
+
+- **Python**
+
+  - Used for data cleaning, aggregation, and feature extraction.
+  - Processes raw datasets and returns results back to the backend.
+
+---
+
+## 🤖 Chatbot & AI
+
+- **Dify**
+
+  - Provides agentic AI workflows and Retrieval-Augmented Generation (RAG) pipelines.
+
+- **OpenAI**
+
+  - Embedding models and LLM APIs for natural language understanding and responses.
+
+---
+
+## 🔗 How It All Connects
+
+1. Users provide datasets or prompts via the **React frontend**.
+2. **Node.js backend** sends data to the database, Python services, or chatbot.
+3. Results are processed and returned as JSON.
+4. The **frontend displays results** to users in real time.
