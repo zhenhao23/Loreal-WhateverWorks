@@ -165,14 +165,14 @@ Skipped steps (future improvement):
 
 ## ⚙️ Models Used
 
-| Task                   | Model/Method                                              |
-| ---------------------- | --------------------------------------------------------- |
-| Spam Detection         | `prajjwal1/bert-tiny` (semi-supervised)                   |
-| Translation            | Google Translator (skipped in pipeline)                   |
-| Sentence Transformer   | `all-MiniLM-L6-v2`                                        |
-| Sentiment Analysis     | `nlptown/bert-base-multilingual-uncased-sentiment`, VADER |
-| Aspect-Based Sentiment | `pyabsa`                                                  |
-| Video Categorization   | CountVectorizer + NMF                                     |
+| Task                   | Model/Method                                                        |
+| ---------------------- | ------------------------------------------------------------------- |
+| Spam Detection         | `prajjwal1/bert-tiny` (semi-supervised)                             |
+| Translation            | Google Translator (skipped in pipeline)                             |
+| Sentence Transformer   | `all-MiniLM-L6-v2`                                                  |
+| Sentiment Analysis     | `nlptown/bert-base-multilingual-uncased-sentiment`, VADER, TextBlob |
+| Aspect-Based Sentiment | `pyabsa`                                                            |
+| Video Categorization   | CountVectorizer + NMF                                               |
 
 ---
 
