@@ -7,7 +7,7 @@ This project builds a full pipeline for analyzing **YouTube videos and comments*
 1. Understand and clean raw data
 2. Detect and filter spam comments
 3. Preprocess videos and comments for NLP tasks
-4. Perform similarity scoring and sentiment analysis
+4. Perform relevance scoring and sentiment analysis
 5. Categorize videos into meaningful groups
 
 The workflow integrates classical preprocessing with modern transformer models for text classification, sentiment, and similarity tasks.
@@ -143,6 +143,8 @@ Skipped steps (future improvement):
 
 - **VADER** (baseline)
 
+- **TextBlob**
+
 #### Aspect-Based Sentiment
 
 - Used `pyabsa`
@@ -167,7 +169,7 @@ Skipped steps (future improvement):
 | ---------------------- | --------------------------------------------------------- |
 | Spam Detection         | `prajjwal1/bert-tiny` (semi-supervised)                   |
 | Translation            | Google Translator (skipped in pipeline)                   |
-| Similarity Score       | `all-MiniLM-L6-v2`                                        |
+| Sentence Transformer   | `all-MiniLM-L6-v2`                                        |
 | Sentiment Analysis     | `nlptown/bert-base-multilingual-uncased-sentiment`, VADER |
 | Aspect-Based Sentiment | `pyabsa`                                                  |
 | Video Categorization   | CountVectorizer + NMF                                     |
