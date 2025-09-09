@@ -96,7 +96,7 @@ export const mockTimelineData = [
 
 export const mockMetricsData = {
   totalComments: 24567,
-  uniqueUsers: 8943,
+  totalVideos: 1247,
   englishPercentage: 78,
   spamPercentage: 2.3,
   avgLikesPerComment: 14.2,

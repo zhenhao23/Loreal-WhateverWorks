@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { Layout, Menu, Typography } from "antd";
+import { Layout, Menu, Typography, Button } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   DashboardOutlined,
   RobotOutlined,
   PlusOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
 } from "@ant-design/icons";
 
 const { Header, Sider, Content } = Layout;
@@ -18,6 +20,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedKey, setSelectedKey] = useState("1");
+  const [collapsed, setCollapsed] = useState(false);
 
   // Map routes to menu keys
   const routeToKeyMap: { [key: string]: string } = {
@@ -48,6 +51,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     }
   };
 
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed);
+  };
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       {/* Header spanning full width */}
@@ -66,6 +73,17 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           gap: "12px",
         }}
       >
+        <Button
+          type="text"
+          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          onClick={toggleCollapsed}
+          style={{
+            fontSize: "16px",
+            width: 40,
+            height: 40,
+            marginRight: "8px",
+          }}
+        />
         <div
           style={{
             width: "26px",
@@ -93,23 +111,28 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       <Layout style={{ marginTop: 64 }}>
         {/* Sidebar */}
         <Sider
+          collapsible
+          collapsed={collapsed}
+          trigger={null}
           style={{
             background: "#F1F2F7",
             minHeight: "calc(100vh - 64px)",
           }}
           theme="light"
         >
-          <div
-            style={{
-              padding: "16px 16px 8px 16px",
-              color: "rgba(166, 171, 200, 1)",
-              fontSize: "12px",
-              fontWeight: 500,
-              letterSpacing: "0.5px",
-            }}
-          >
-            MENU
-          </div>
+          {!collapsed && (
+            <div
+              style={{
+                padding: "16px 16px 8px 16px",
+                color: "rgba(166, 171, 200, 1)",
+                fontSize: "12px",
+                fontWeight: 500,
+                letterSpacing: "0.5px",
+              }}
+            >
+              MENU
+            </div>
+          )}
           <Menu
             mode="inline"
             selectedKeys={[selectedKey]}

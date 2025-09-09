@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Row, Col, Select, DatePicker, Tabs, Card } from "antd";
 import {
   CalendarOutlined,
-  FilterOutlined,
   BarChartOutlined,
   VideoCameraOutlined,
+  UserOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import ExecutiveOverview from "../components/ExecutiveOverview";
 import ContentQualityKPI from "../components/ContentQualityKPI";
@@ -25,7 +26,8 @@ function Dashboard() {
     dayjs("2025"),
   ]);
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedLanguage, setSelectedLanguage] = useState("all");
+  const [selectedLanguage, setSelectedLanguage] = useState("english");
+  const [selectedSentiment, setSelectedSentiment] = useState("negative");
 
   const tabItems: TabsProps["items"] = [
     {
@@ -48,8 +50,8 @@ function Dashboard() {
       key: "2",
       label: (
         <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <FilterOutlined />
-          Content Quality & KPI
+          <ExclamationCircleOutlined />
+          Pain Points & Opportunities
         </span>
       ),
       children: (
@@ -65,7 +67,7 @@ function Dashboard() {
       label: (
         <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <VideoCameraOutlined />
-          Video Breakdown
+          Video Engagement
         </span>
       ),
       children: (
@@ -74,6 +76,20 @@ function Dashboard() {
           categoryFilter={selectedCategory}
           languageFilter={selectedLanguage}
         />
+      ),
+    },
+    {
+      key: "4",
+      label: (
+        <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <UserOutlined />
+          Influencer & Content Intelligence
+        </span>
+      ),
+      children: (
+        <div style={{ padding: "24px", textAlign: "center", color: "#666" }}>
+          Content coming soon...
+        </div>
       ),
     },
   ];
@@ -158,17 +174,35 @@ function Dashboard() {
                   style={{ width: "100%" }}
                   placeholder="Select language"
                 >
-                  <Option value="all">All Languages</Option>
-                  <Option value="en">English</Option>
-                  <Option value="fr">French</Option>
-                  <Option value="es">Spanish</Option>
-                  <Option value="de">German</Option>
-                  <Option value="it">Italian</Option>
-                  <Option value="pt">Portuguese</Option>
-                  <Option value="zh">Chinese</Option>
-                  <Option value="ja">Japanese</Option>
+                  <Option value="english">English</Option>
+                  <Option value="non-english">Non-English</Option>
                 </Select>
               </Col>
+              {activeTab === "2" && (
+                <Col xs={24} sm={8} md={6}>
+                  <div
+                    style={{
+                      marginBottom: "4px",
+                      color: "#666",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                    }}
+                  >
+                    SENTIMENT
+                  </div>
+                  <Select
+                    value={selectedSentiment}
+                    onChange={setSelectedSentiment}
+                    style={{ width: "100%" }}
+                    placeholder="Select sentiment"
+                  >
+                    <Option value="negative">Negative</Option>
+                    <Option value="neutral">Neutral</Option>
+                    <Option value="positive">Positive</Option>
+                    <Option value="all">All</Option>
+                  </Select>
+                </Col>
+              )}
             </Row>
           </Col>
         </Row>

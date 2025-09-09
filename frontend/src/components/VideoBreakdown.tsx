@@ -5,6 +5,7 @@ import {
   mockVideoCategoryData,
   mockCategoryLeaderboardData,
   mockVideoMetrics,
+  mockEngagementTimelineData,
   type VideoBreakdownData,
 } from "./VideoBreakdownMockData";
 
@@ -67,6 +68,8 @@ const VideoBreakdown = ({
           current: page,
         },
         videoMetrics: apiData.videoMetrics || mockVideoMetrics,
+        engagementTimelineData:
+          apiData.engagementTimelineData || mockEngagementTimelineData,
       };
     } catch (error) {
       console.error("Failed to fetch video breakdown data:", error);
@@ -85,6 +88,7 @@ const VideoBreakdown = ({
         current: pagination.current,
       },
       videoMetrics: mockVideoMetrics,
+      engagementTimelineData: mockEngagementTimelineData,
     };
   };
 

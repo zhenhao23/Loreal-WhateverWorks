@@ -3,8 +3,13 @@ import {
   VideoCameraOutlined,
   BarChartOutlined,
   TrophyOutlined,
+  EyeOutlined,
+  HeartOutlined,
+  MessageOutlined,
+  RiseOutlined,
+  LineChartOutlined,
 } from "@ant-design/icons";
-import { Bar } from "@ant-design/plots";
+import { Bar, Line } from "@ant-design/plots";
 import type { ColumnsType } from "antd/es/table";
 import type { VideoBreakdownData } from "./VideoBreakdownMockData";
 
@@ -19,7 +24,12 @@ const VideoBreakdownUI = ({
   onPaginationChange,
   loading = false,
 }: VideoBreakdownUIProps) => {
-  const { videoCategoryData, categoryLeaderboardData, videoMetrics } = data;
+  const {
+    videoCategoryData,
+    categoryLeaderboardData,
+    videoMetrics,
+    engagementTimelineData,
+  } = data;
 
   // Handle both paginated and array data formats
   const leaderboardData = Array.isArray(categoryLeaderboardData)
@@ -99,19 +109,58 @@ const VideoBreakdownUI = ({
     height: 376,
   };
 
+  // Line chart configuration for engagement rate trends
+  const lineConfig = {
+    width: 1244,
+    data: engagementTimelineData,
+    xField: "date",
+    yField: "engagementRate",
+    seriesField: "category",
+    smooth: true,
+    colorField: "category",
+    point: {
+      size: 4,
+      shape: "circle",
+    },
+    axis: {
+      y: { title: "Engagement Rate (%)" },
+      x: { title: "Time Period" },
+    },
+    height: 300,
+  };
+
   // Table columns configuration
   const columns: ColumnsType<any> = [
     {
       title: "Video Category",
       dataIndex: "category",
       key: "category",
-      width: "20%",
+      width: "18%",
       render: (text: string) => (
         <div style={{ fontWeight: 600, color: "#5A6ACF" }}>{text}</div>
       ),
     },
     {
-      title: "Videos",
+      title: "Engagement Rate",
+      dataIndex: "engagementRate",
+      key: "engagementRate",
+      width: "12%",
+      sorter: (a, b) => a.engagementRate - b.engagementRate,
+      render: (value: number) => (
+        <div
+          style={{
+            fontWeight: 600,
+            color:
+              value >= 4.5 ? "#52c41a" : value >= 3.5 ? "#faad14" : "#ff4d4f",
+            textAlign: "center",
+          }}
+        >
+          {value?.toFixed(1) || "0.0"}%
+        </div>
+      ),
+    },
+    {
+      title: "Total Videos",
       dataIndex: "videoCount",
       key: "videoCount",
       width: "10%",
@@ -123,26 +172,14 @@ const VideoBreakdownUI = ({
       ),
     },
     {
-      title: "Total Comments",
-      dataIndex: "totalComments",
-      key: "totalComments",
+      title: "Total Views",
+      dataIndex: "totalViews",
+      key: "totalViews",
       width: "12%",
-      sorter: (a, b) => a.totalComments - b.totalComments,
+      sorter: (a, b) => a.totalViews - b.totalViews,
       render: (value: number) => (
         <div style={{ textAlign: "center" }}>
-          {value?.toLocaleString() || "0"}
-        </div>
-      ),
-    },
-    {
-      title: "Unique Authors",
-      dataIndex: "uniqueAuthors",
-      key: "uniqueAuthors",
-      width: "12%",
-      sorter: (a, b) => a.uniqueAuthors - b.uniqueAuthors,
-      render: (value: number) => (
-        <div style={{ textAlign: "center" }}>
-          {value?.toLocaleString() || "0"}
+          {value ? (value / 1000000).toFixed(1) + "M" : "0"}
         </div>
       ),
     },
@@ -154,7 +191,19 @@ const VideoBreakdownUI = ({
       sorter: (a, b) => a.totalLikes - b.totalLikes,
       render: (value: number) => (
         <div style={{ textAlign: "center" }}>
-          {value?.toLocaleString() || "0"}
+          {value ? (value / 1000).toFixed(0) + "K" : "0"}
+        </div>
+      ),
+    },
+    {
+      title: "Total Comments",
+      dataIndex: "totalComments",
+      key: "totalComments",
+      width: "12%",
+      sorter: (a, b) => a.totalComments - b.totalComments,
+      render: (value: number) => (
+        <div style={{ textAlign: "center" }}>
+          {value ? (value / 1000).toFixed(0) + "K" : "0"}
         </div>
       ),
     },
@@ -181,7 +230,7 @@ const VideoBreakdownUI = ({
       title: "Spam %",
       dataIndex: "spamPercentage",
       key: "spamPercentage",
-      width: "10%",
+      width: "8%",
       sorter: (a, b) => a.spamPercentage - b.spamPercentage,
       render: (value: number) => (
         <div
@@ -219,7 +268,224 @@ const VideoBreakdownUI = ({
 
   return (
     <div style={{ padding: "0 4px" }}>
-      {/* 📊 Row 1 – Video Statistics Overview */}
+      {/* � Row 1 – Key Metrics Overview */}
+      <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
+        {/* Average Engagement Rate */}
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              border: "1px solid #f0f2f7",
+              height: "140px",
+            }}
+            bodyStyle={{ padding: "20px", height: "100%" }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+                textAlign: "center",
+              }}
+            >
+              <RiseOutlined
+                style={{
+                  fontSize: "24px",
+                  color: "#95de64",
+                  marginBottom: "8px",
+                }}
+              />
+              <div
+                style={{
+                  color: "#95de64",
+                  fontSize: "28px",
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  marginBottom: "4px",
+                }}
+              >
+                {videoMetrics?.average_engagement_rate?.toFixed(1) || "0.0"}%
+              </div>
+              <div
+                style={{
+                  color: "#666",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                }}
+              >
+                Avg Engagement Rate
+              </div>
+            </div>
+          </Card>
+        </Col>
+
+        {/* Total Views */}
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              border: "1px solid #f0f2f7",
+              height: "140px",
+            }}
+            bodyStyle={{ padding: "20px", height: "100%" }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+                textAlign: "center",
+              }}
+            >
+              <EyeOutlined
+                style={{
+                  fontSize: "24px",
+                  color: "#69c0ff",
+                  marginBottom: "8px",
+                }}
+              />
+              <div
+                style={{
+                  color: "#69c0ff",
+                  fontSize: "28px",
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  marginBottom: "4px",
+                }}
+              >
+                {videoMetrics?.total_views
+                  ? (videoMetrics.total_views / 1000000).toFixed(1) + "M"
+                  : "0"}
+              </div>
+              <div
+                style={{
+                  color: "#666",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                }}
+              >
+                Total Views
+              </div>
+            </div>
+          </Card>
+        </Col>
+
+        {/* Total Likes */}
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              border: "1px solid #f0f2f7",
+              height: "140px",
+            }}
+            bodyStyle={{ padding: "20px", height: "100%" }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+                textAlign: "center",
+              }}
+            >
+              <HeartOutlined
+                style={{
+                  fontSize: "24px",
+                  color: "#ff9c6e",
+                  marginBottom: "8px",
+                }}
+              />
+              <div
+                style={{
+                  color: "#ff9c6e",
+                  fontSize: "28px",
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  marginBottom: "4px",
+                }}
+              >
+                {videoMetrics?.total_likes
+                  ? (videoMetrics.total_likes / 1000000).toFixed(1) + "M"
+                  : "0"}
+              </div>
+              <div
+                style={{
+                  color: "#666",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                }}
+              >
+                Total Likes
+              </div>
+            </div>
+          </Card>
+        </Col>
+
+        {/* Total Comments */}
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              border: "1px solid #f0f2f7",
+              height: "140px",
+            }}
+            bodyStyle={{ padding: "20px", height: "100%" }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+                textAlign: "center",
+              }}
+            >
+              <MessageOutlined
+                style={{
+                  fontSize: "24px",
+                  color: "#b37feb",
+                  marginBottom: "8px",
+                }}
+              />
+              <div
+                style={{
+                  color: "#b37feb",
+                  fontSize: "28px",
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  marginBottom: "4px",
+                }}
+              >
+                {videoMetrics?.total_comments
+                  ? (videoMetrics.total_comments / 1000).toFixed(0) + "K"
+                  : "0"}
+              </div>
+              <div
+                style={{
+                  color: "#666",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                }}
+              >
+                Total Comments
+              </div>
+            </div>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* �📊 Row 2 – Video Statistics Overview */}
       <Row gutter={[24, 24]} style={{ marginBottom: "32px" }} align="middle">
         {/* Left: Total Videos and Categories Cards */}
         <Col xs={24} lg={6}>
@@ -360,7 +626,7 @@ const VideoBreakdownUI = ({
                     fontWeight: 600,
                   }}
                 >
-                  Video Distribution by Category
+                  Video Engagement by Category
                 </span>
               </div>
             }
@@ -381,7 +647,48 @@ const VideoBreakdownUI = ({
         </Col>
       </Row>
 
-      {/* 🏆 Row 2 – Category Leaderboard Table */}
+      {/* 📈 Row 3 – Engagement Rate Timeline */}
+      <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
+        <Col xs={24}>
+          <Card
+            title={
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                <LineChartOutlined style={{ color: "#5A6ACF" }} />
+                <span
+                  style={{
+                    color: "#5A6ACF",
+                    fontSize: "18px",
+                    fontWeight: 600,
+                  }}
+                >
+                  Engagement Rate Trends by Category
+                </span>
+              </div>
+            }
+            extra={
+              <div style={{ fontSize: "12px", color: "#8B92B8" }}>
+                Track engagement performance over time by category
+              </div>
+            }
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            }}
+            headStyle={{
+              background: "#fafbfc",
+              borderBottom: "1px solid #f0f2f7",
+            }}
+          >
+            <div style={{ height: "300px", padding: "16px 0" }}>
+              <Line {...lineConfig} />
+            </div>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* 🏆 Row 4 – Category Leaderboard Table */}
       <Row gutter={[24, 24]}>
         <Col xs={24}>
           <Card

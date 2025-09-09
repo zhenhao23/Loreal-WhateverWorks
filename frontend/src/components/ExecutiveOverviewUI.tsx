@@ -13,7 +13,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import {
-  UserOutlined,
+  VideoCameraOutlined,
   SafetyOutlined,
   MessageOutlined,
   PieChartOutlined,
@@ -294,7 +294,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
           </Card>
         </Col>
 
-        {/* Unique Users */}
+        {/* Total Videos Analyzed */}
         <Col xs={24} sm={12} lg={6}>
           <Card
             style={{
@@ -330,7 +330,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     marginBottom: "4px",
                   }}
                 >
-                  {metricsData.uniqueUsers.toLocaleString()}
+                  {metricsData.totalVideos.toLocaleString()}
                 </div>
                 <div
                   style={{
@@ -339,7 +339,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     marginBottom: "8px",
                   }}
                 >
-                  Unique Users
+                  Total Videos Analyzed
                 </div>
                 <div
                   style={{
@@ -349,11 +349,11 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     justifyContent: "center",
                   }}
                 >
-                  <UserOutlined
+                  <VideoCameraOutlined
                     style={{ color: "#707FDD", fontSize: "14px" }}
                   />
                   <span style={{ color: "#8B92B8", fontSize: "12px" }}>
-                    Engagement
+                    Content
                   </span>
                 </div>
               </div>
@@ -547,9 +547,6 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     justifyContent: "center",
                   }}
                 >
-                  <MessageOutlined
-                    style={{ color: "#60ccefff", fontSize: "14px" }}
-                  />
                   <span style={{ color: "#8B92B8", fontSize: "12px" }}>
                     Reply Engagement
                   </span>
