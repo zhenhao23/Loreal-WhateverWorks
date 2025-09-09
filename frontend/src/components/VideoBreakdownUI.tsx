@@ -294,13 +294,13 @@ const VideoBreakdownUI = ({
               <RiseOutlined
                 style={{
                   fontSize: "24px",
-                  color: "#95de64",
+                  color: "#73d13d",
                   marginBottom: "8px",
                 }}
               />
               <div
                 style={{
-                  color: "#95de64",
+                  color: "#73d13d",
                   fontSize: "28px",
                   fontWeight: 700,
                   lineHeight: 1,
@@ -346,13 +346,13 @@ const VideoBreakdownUI = ({
               <EyeOutlined
                 style={{
                   fontSize: "24px",
-                  color: "#69c0ff",
+                  color: "#40a9ff",
                   marginBottom: "8px",
                 }}
               />
               <div
                 style={{
-                  color: "#69c0ff",
+                  color: "#40a9ff",
                   fontSize: "28px",
                   fontWeight: 700,
                   lineHeight: 1,
@@ -400,13 +400,13 @@ const VideoBreakdownUI = ({
               <HeartOutlined
                 style={{
                   fontSize: "24px",
-                  color: "#ff9c6e",
+                  color: "#FF6961",
                   marginBottom: "8px",
                 }}
               />
               <div
                 style={{
-                  color: "#ff9c6e",
+                  color: "#FF6961",
                   fontSize: "28px",
                   fontWeight: 700,
                   lineHeight: 1,
@@ -454,13 +454,13 @@ const VideoBreakdownUI = ({
               <MessageOutlined
                 style={{
                   fontSize: "24px",
-                  color: "#b37feb",
+                  color: "#9254de",
                   marginBottom: "8px",
                 }}
               />
               <div
                 style={{
-                  color: "#b37feb",
+                  color: "#9254de",
                   fontSize: "28px",
                   fontWeight: 700,
                   lineHeight: 1,

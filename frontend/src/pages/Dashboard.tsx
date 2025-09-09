@@ -10,6 +10,7 @@ import {
 import ExecutiveOverview from "../components/ExecutiveOverview";
 import ContentQualityKPI from "../components/ContentQualityKPI";
 import VideoBreakdown from "../components/VideoBreakdown";
+import InfluencerIntelligence from "../components/InfluencerIntelligence";
 import type { TabsProps } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
@@ -87,9 +88,11 @@ function Dashboard() {
         </span>
       ),
       children: (
-        <div style={{ padding: "24px", textAlign: "center", color: "#666" }}>
-          Content coming soon...
-        </div>
+        <InfluencerIntelligence
+          dateFilter={selectedYearRange}
+          categoryFilter={selectedCategory}
+          languageFilter={selectedLanguage}
+        />
       ),
     },
   ];
