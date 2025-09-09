@@ -21,8 +21,8 @@ interface InfluencerIntelligenceUIProps {
 
 const InfluencerIntelligenceUI = ({
   data,
-  loading = false,
-}: InfluencerIntelligenceUIProps) => {
+}: // loading = false,
+InfluencerIntelligenceUIProps) => {
   const {
     influencerMetrics,
     influencerInfo,
