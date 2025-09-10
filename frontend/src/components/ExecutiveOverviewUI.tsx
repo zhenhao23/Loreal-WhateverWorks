@@ -1,24 +1,12 @@
 import { Row, Col, Card, Progress } from "antd";
-import { Pie } from "@ant-design/plots";
+import { Pie, Bar as BarChart } from "@ant-design/plots";
 import ReactSpeedometer from "react-d3-speedometer";
-import {
-  ComposedChart,
-  Bar,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
 import {
   VideoCameraOutlined,
   SafetyOutlined,
   MessageOutlined,
   PieChartOutlined,
   BarChartOutlined,
-  LineChartOutlined,
 } from "@ant-design/icons";
 
 import type { ExecutiveOverviewData } from "./ExecutiveOverviewMockData";
@@ -31,9 +19,10 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
   const {
     sentimentData,
     overallSentimentScore,
-    timelineData,
     metricsData,
     categoryData,
+    sentimentByTopics,
+    topChannels,
   } = data;
 
   const pieConfig = {
@@ -92,10 +81,10 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
 
   return (
     <div style={{ padding: "0 4px" }}>
-      {/* 📌 Row 1 – Key Metric Cards (4 cards) */}
-      <Row gutter={[24, 24]} style={{ marginBottom: "24px" }}>
+      {/* 📌 Row 1 – Key Metric Cards (5 cards in one row) */}
+      <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
         {/* Avg KPI Score per Comment - Featured */}
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={5}>
           <Card
             style={{
               borderRadius: "12px",
@@ -161,7 +150,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
         </Col>
 
         {/* Spam Detected */}
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={5}>
           <Card
             style={{
               borderRadius: "12px",
@@ -228,7 +217,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
         </Col>
 
         {/* Total Comments Analyzed */}
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={5}>
           <Card
             style={{
               borderRadius: "12px",
@@ -295,7 +284,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
         </Col>
 
         {/* Total Videos Analyzed */}
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={5}>
           <Card
             style={{
               borderRadius: "12px",
@@ -360,12 +349,9 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
             </div>
           </Card>
         </Col>
-      </Row>
 
-      {/* 📌 Row 2 – Additional Metric Cards (3 cards) */}
-      <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
         {/* English vs Non-English */}
-        <Col xs={24} sm={12} lg={8}>
+        <Col xs={24} sm={12} lg={4}>
           <Card
             style={{
               borderRadius: "12px",
@@ -427,140 +413,156 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
             </div>
           </Card>
         </Col>
+      </Row>
 
-        {/* Avg Likes per Comment */}
-        <Col xs={24} sm={12} lg={8}>
+      {/* 📊 Row 2 – KPI by Category & Comments by Category */}
+      <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
+        {/* Left: KPI by Category (2/3 width) */}
+        <Col xs={24} lg={16}>
           <Card
+            title={
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                <BarChartOutlined style={{ color: "#5A6ACF" }} />
+                <span
+                  style={{
+                    color: "#5A6ACF",
+                    fontSize: "18px",
+                    fontWeight: 600,
+                  }}
+                >
+                  KPI by Category
+                </span>
+              </div>
+            }
             style={{
               borderRadius: "12px",
               boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              border: "1px solid #f0f2f7",
-              height: "140px",
+              height: "400px",
+            }}
+            headStyle={{
+              background: "#fafbfc",
+              borderBottom: "1px solid #f0f2f7",
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  textAlign: "center",
+            <div style={{ height: "320px", padding: 0 }}>
+              <BarChart
+                legend={false}
+                data={sentimentByTopics}
+                xField="topic"
+                yField="score"
+                colorField="topic"
+                scale={{
+                  color: {
+                    range: sentimentByTopics.map((item) => item.color),
+                  },
                 }}
-              >
-                <div
-                  style={{
-                    color: "#44c5e1",
-                    fontSize: "32px",
-                    fontWeight: 700,
-                    lineHeight: 1,
-                    marginBottom: "4px",
-                  }}
-                >
-                  {metricsData.avgLikesPerComment}
-                </div>
-                <div
-                  style={{
-                    color: "#666",
-                    fontSize: "14px",
-                    marginBottom: "8px",
-                  }}
-                >
-                  Avg Likes per Comment
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    justifyContent: "center",
-                  }}
-                >
-                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
-                    Like Engagement
-                  </span>
-                </div>
-              </div>
+                barWidthRatio={0.8}
+                intervalPadding={0.1}
+                dodgePadding={0}
+                barStyle={{
+                  height: 30,
+                }}
+                meta={{
+                  score: {
+                    alias: "Sentiment Score",
+                    formatter: (v: number) => `${(v * 100).toFixed(1)}%`,
+                  },
+                }}
+                xAxis={{
+                  min: 0,
+                  max: 1,
+                  tickCount: 6,
+                  label: {
+                    formatter: (v: number) => `${(v * 100).toFixed(0)}%`,
+                  },
+                }}
+                yAxis={{
+                  label: {
+                    autoRotate: false,
+                    offset: 10,
+                  },
+                }}
+                label={{
+                  position: "right",
+                  style: {
+                    fill: "#444",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    dx: 32,
+                  },
+                }}
+                width={875}
+                height={320}
+              />
             </div>
           </Card>
         </Col>
 
-        {/* Avg Replies per Comment */}
-        <Col xs={24} sm={12} lg={8}>
+        {/* Right: Videos Count by Category (1/3 width) */}
+        <Col xs={24} lg={8}>
           <Card
+            title={
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                <BarChartOutlined style={{ color: "#5A6ACF" }} />
+                <span
+                  style={{
+                    color: "#5A6ACF",
+                    fontSize: "18px",
+                    fontWeight: 600,
+                  }}
+                >
+                  Videos Count by Category
+                </span>
+              </div>
+            }
             style={{
               borderRadius: "12px",
               boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              border: "1px solid #f0f2f7",
-              height: "140px",
+              height: "400px",
+            }}
+            headStyle={{
+              background: "#fafbfc",
+              borderBottom: "1px solid #f0f2f7",
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  textAlign: "center",
-                }}
-              >
-                <div
-                  style={{
-                    color: "#60ccefff",
-                    fontSize: "32px",
-                    fontWeight: 700,
-                    lineHeight: 1,
-                    marginBottom: "4px",
-                  }}
-                >
-                  {metricsData.avgRepliesPerComment}
+            <div style={{ padding: "0" }}>
+              {categoryData.map((item, index) => (
+                <div key={index} style={{ marginBottom: "16px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    <span style={{ color: "#333", fontWeight: 600 }}>
+                      {item.category}
+                    </span>
+                    <span style={{ color: item.color, fontWeight: 700 }}>
+                      {item.value}%
+                    </span>
+                  </div>
+                  <Progress
+                    percent={item.value}
+                    strokeColor={item.color}
+                    showInfo={false}
+                    size="small"
+                  />
                 </div>
-                <div
-                  style={{
-                    color: "#666",
-                    fontSize: "14px",
-                    marginBottom: "8px",
-                  }}
-                >
-                  Avg Replies per Comment
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    justifyContent: "center",
-                  }}
-                >
-                  <span style={{ color: "#8B92B8", fontSize: "12px" }}>
-                    Reply Engagement
-                  </span>
-                </div>
-              </div>
+              ))}
             </div>
           </Card>
         </Col>
       </Row>
 
-      {/* 📊 Row 2 – Sentiment Overview (Macro View) */}
+      {/* 📊 Row 3 – Sentiment Distribution */}
       <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
-        {/* Left: Sentiment Distribution (Semi-Donut Chart) */}
-        <Col xs={24} lg={16}>
+        <Col xs={24}>
           <Card
             title={
               <div
@@ -726,76 +728,17 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
             </div>
           </Card>
         </Col>
-
-        {/* Right: Comments by Category */}
-        <Col xs={24} lg={8}>
-          <Card
-            title={
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
-              >
-                <BarChartOutlined style={{ color: "#5A6ACF" }} />
-                <span
-                  style={{
-                    color: "#5A6ACF",
-                    fontSize: "18px",
-                    fontWeight: 600,
-                  }}
-                >
-                  By Category
-                </span>
-              </div>
-            }
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              height: "400px",
-            }}
-            headStyle={{
-              background: "#fafbfc",
-              borderBottom: "1px solid #f0f2f7",
-            }}
-          >
-            <div style={{ padding: "0" }}>
-              {categoryData.map((item, index) => (
-                <div key={index} style={{ marginBottom: "16px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "4px",
-                    }}
-                  >
-                    <span style={{ color: "#333", fontWeight: 600 }}>
-                      {item.category}
-                    </span>
-                    <span style={{ color: item.color, fontWeight: 700 }}>
-                      {item.value}%
-                    </span>
-                  </div>
-                  <Progress
-                    percent={item.value}
-                    strokeColor={item.color}
-                    showInfo={false}
-                    size="small"
-                  />
-                </div>
-              ))}
-            </div>
-          </Card>
-        </Col>
       </Row>
 
-      {/* 📈 Row 3 – Sentiment Timeline (Trend Analysis) */}
-      <Row gutter={[24, 24]}>
+      {/* 🏆 Row 5 – Top 3 Channels */}
+      <Row gutter={[24, 24]} style={{ marginTop: "32px" }}>
         <Col xs={24}>
           <Card
             title={
               <div
                 style={{ display: "flex", alignItems: "center", gap: "8px" }}
               >
-                <LineChartOutlined style={{ color: "#5A6ACF" }} />
+                <VideoCameraOutlined style={{ color: "#5A6ACF" }} />
                 <span
                   style={{
                     color: "#5A6ACF",
@@ -803,13 +746,8 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     fontWeight: 600,
                   }}
                 >
-                  Sentiment Timeline - Comments Volume & Average Score
+                  Top 3 Channels by Engagement
                 </span>
-              </div>
-            }
-            extra={
-              <div style={{ fontSize: "12px", color: "#8B92B8" }}>
-                Click bars to drill-down: Year → Month → Day
               </div>
             }
             style={{
@@ -821,105 +759,168 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
               borderBottom: "1px solid #f0f2f7",
             }}
           >
-            <div style={{ height: "300px", padding: "16px" }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={timelineData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis
-                    dataKey="month"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: "#666" }}
-                  />
-                  <YAxis
-                    yAxisId="comments"
-                    orientation="left"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: "#666" }}
-                    label={{
-                      value: "Number of Comments",
-                      angle: -90,
-                      position: "insideLeft",
-                      style: {
-                        textAnchor: "middle",
-                        fill: "#666",
-                        fontSize: "12px",
-                      },
-                    }}
-                  />
-                  <YAxis
-                    yAxisId="sentiment"
-                    orientation="right"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: "#666" }}
-                    domain={[0, 10]}
-                    label={{
-                      value: "Average Sentiment Score",
-                      angle: 90,
-                      position: "insideRight",
-                      style: {
-                        textAnchor: "middle",
-                        fill: "#666",
-                        fontSize: "12px",
-                      },
-                    }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "white",
-                      border: "1px solid #f0f0f0",
+            <Row gutter={[24, 16]}>
+              {topChannels?.map((channel, index) => (
+                <Col xs={24} md={8} key={channel.channelId}>
+                  <Card
+                    style={{
                       borderRadius: "8px",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                      border:
+                        index === 0 ? "2px solid #FFD700" : "1px solid #f0f2f7",
+                      boxShadow:
+                        index === 0
+                          ? "0 4px 12px rgba(255, 215, 0, 0.2)"
+                          : "0 2px 6px rgba(0,0,0,0.04)",
+                      position: "relative",
+                      overflow: "hidden",
                     }}
-                    formatter={(value, name) => [
-                      typeof name === "string" && name.includes("Sentiment")
-                        ? `${value}/10`
-                        : `${value} comments`,
-                      name,
-                    ]}
-                  />
-                  <Legend
-                    wrapperStyle={{ paddingTop: "0px", paddingBottom: "20px" }}
-                    verticalAlign="top"
-                  />
-                  <Bar
-                    yAxisId="comments"
-                    dataKey="positive"
-                    stackId="sentiment"
-                    fill="#8CD47E"
-                    radius={[0, 0, 0, 0]}
-                    name="Positive"
-                  />
-                  <Bar
-                    yAxisId="comments"
-                    dataKey="neutral"
-                    stackId="sentiment"
-                    fill="#FFB54C"
-                    radius={[0, 0, 0, 0]}
-                    name="Neutral"
-                  />
-                  <Bar
-                    yAxisId="comments"
-                    dataKey="negative"
-                    stackId="sentiment"
-                    fill="#FF6961"
-                    radius={[4, 4, 0, 0]}
-                    name="Negative"
-                  />
-                  <Line
-                    yAxisId="sentiment"
-                    type="monotone"
-                    dataKey="avgSentiment"
-                    stroke="#5A6ACF"
-                    strokeWidth={3}
-                    dot={{ fill: "#5A6ACF", strokeWidth: 2, r: 5 }}
-                    name="Sentiment Score"
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
-            </div>
+                  >
+                    {/* Ranking Badge */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "12px",
+                        right: "12px",
+                        backgroundColor:
+                          index === 0
+                            ? "#FFD700"
+                            : index === 1
+                            ? "#C0C0C0"
+                            : "#CD7F32",
+                        color: "white",
+                        borderRadius: "50%",
+                        width: "24px",
+                        height: "24px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        zIndex: 1,
+                      }}
+                    >
+                      {index + 1}
+                    </div>
+
+                    {/* Channel Info */}
+                    <div style={{ padding: "8px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "12px",
+                          marginBottom: "16px",
+                        }}
+                      >
+                        <img
+                          src={channel.avatar}
+                          alt={channel.name}
+                          style={{
+                            width: "48px",
+                            height: "48px",
+                            borderRadius: "50%",
+                            border: "2px solid #f0f2f7",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <div style={{ flex: 1 }}>
+                          <div
+                            style={{
+                              fontSize: "16px",
+                              fontWeight: 600,
+                              color: "#333",
+                              marginBottom: "2px",
+                              lineHeight: 1.2,
+                            }}
+                          >
+                            {channel.name}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: "12px",
+                              color: "#8B92B8",
+                            }}
+                          >
+                            {channel.subscribers} subscribers
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Metrics */}
+                      <div style={{ marginBottom: "12px" }}>
+                        <Row gutter={[8, 8]}>
+                          <Col span={12}>
+                            <div style={{ textAlign: "center" }}>
+                              <div
+                                style={{
+                                  fontSize: "18px",
+                                  fontWeight: 700,
+                                  color: "#5A6ACF",
+                                }}
+                              >
+                                {channel.totalComments.toLocaleString()}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: "11px",
+                                  color: "#8B92B8",
+                                }}
+                              >
+                                Comments
+                              </div>
+                            </div>
+                          </Col>
+                          <Col span={12}>
+                            <div style={{ textAlign: "center" }}>
+                              <div
+                                style={{
+                                  fontSize: "18px",
+                                  fontWeight: 700,
+                                  color: "#707FDD",
+                                }}
+                              >
+                                {channel.avgSentiment.toFixed(1)}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: "11px",
+                                  color: "#8B92B8",
+                                }}
+                              >
+                                Avg Sentiment
+                              </div>
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+
+                      {/* Engagement Badge */}
+                      <div
+                        style={{
+                          textAlign: "center",
+                          backgroundColor: index === 0 ? "#FFF9E6" : "#F8F9FF",
+                          padding: "6px 12px",
+                          borderRadius: "16px",
+                          border: `1px solid ${
+                            index === 0 ? "#FFE58F" : "#E8EAFF"
+                          }`,
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: "12px",
+                            fontWeight: 600,
+                            color: index === 0 ? "#D48806" : "#5A6ACF",
+                          }}
+                        >
+                          {channel.engagementRate}% Engagement
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
           </Card>
         </Col>
       </Row>

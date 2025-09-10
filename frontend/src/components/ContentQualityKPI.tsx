@@ -8,6 +8,7 @@ import {
   mockWordCloudData,
   mockTopComments,
   mockBubbleData,
+  mockTimelineData,
   type ContentQualityKPIData,
 } from "./ContentQualityKPIMockData";
 
@@ -57,6 +58,7 @@ const ContentQualityKPI = ({
           wordCloudData: apiData.wordCloudData || mockWordCloudData,
           topComments: apiData.topComments || mockTopComments,
           bubbleData: apiData.bubbleData || mockBubbleData,
+          timelineData: apiData.timelineData || mockTimelineData,
         };
       } catch (error) {
         console.error("Failed to fetch content quality KPI data:", error);
@@ -73,6 +75,7 @@ const ContentQualityKPI = ({
       wordCloudData: mockWordCloudData,
       topComments: mockTopComments,
       bubbleData: mockBubbleData,
+      timelineData: mockTimelineData,
     };
   };
 

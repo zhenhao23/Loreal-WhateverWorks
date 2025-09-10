@@ -1,4 +1,8 @@
 // Mock data for Executive Overview component
+import lorealAvatar from "../assets/loreal.jpg";
+import maybellineAvatar from "../assets/Maybelline.jpg";
+import urbanDecayAvatar from "../assets/UrbanDecay.jpg";
+
 export const mockSentimentData = [
   { type: "Negative", value: 42, percentage_numeric: 42, percentage: "42%" },
   { type: "Neutral", value: 15, percentage_numeric: 15, percentage: "15%" },
@@ -113,10 +117,56 @@ export const mockCategoryData = [
   { category: "Men's", value: 7, color: "#ff7875" },
 ];
 
+export const mockSentimentByTopics = [
+  { topic: "Scent & Fragrance", score: 0.85, value: 0.85, color: "#5A6ACF" },
+  { topic: "Product Packaging", score: 0.78, value: 0.78, color: "#707FDD" },
+  {
+    topic: "Delivery Experience",
+    score: 0.72,
+    value: 0.72,
+    color: "#8B92E8",
+  },
+  { topic: "Product Quality", score: 0.68, value: 0.68, color: "#A6A5F2" },
+  { topic: "Customer Service", score: 0.64, value: 0.64, color: "#C1B8FC" },
+  { topic: "Value for Money", score: 0.58, value: 0.58, color: "#DCCBFF" },
+].sort((a, b) => b.score - a.score);
+
+export const mockTopChannels = [
+  {
+    channelId: "1",
+    name: "L'Oréal Paris",
+    avatar: lorealAvatar,
+    subscribers: "2.1M",
+    totalComments: 15420,
+    avgSentiment: 8.7,
+    engagementRate: 12.4,
+  },
+  {
+    channelId: "2",
+    name: "Maybelline New York",
+    avatar: maybellineAvatar,
+    subscribers: "1.8M",
+    totalComments: 12850,
+    avgSentiment: 8.2,
+    engagementRate: 10.9,
+  },
+  {
+    channelId: "3",
+    name: "Urban Decay Cosmetics",
+    avatar: urbanDecayAvatar,
+    subscribers: "1.2M",
+    totalComments: 8940,
+    avgSentiment: 7.8,
+    engagementRate: 9.7,
+  },
+];
+
 export interface ExecutiveOverviewData {
   sentimentData: typeof mockSentimentData;
   overallSentimentScore: number;
   timelineData: typeof mockTimelineData;
   metricsData: typeof mockMetricsData;
   categoryData: typeof mockCategoryData;
+  sentimentByTopics: typeof mockSentimentByTopics;
+  topChannels: typeof mockTopChannels;
 }

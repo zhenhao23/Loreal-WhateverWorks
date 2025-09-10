@@ -7,6 +7,8 @@ import {
   mockTimelineData,
   mockMetricsData,
   mockCategoryData,
+  mockSentimentByTopics,
+  mockTopChannels,
   type ExecutiveOverviewData,
 } from "./ExecutiveOverviewMockData";
 
@@ -76,6 +78,8 @@ const ExecutiveOverview = ({
           timelineData: apiData.timelineData || mockTimelineData,
           metricsData: apiData.metricsData || mockMetricsData,
           categoryData: apiData.categoryData || mockCategoryData,
+          sentimentByTopics: apiData.sentimentByTopics || mockSentimentByTopics,
+          topChannels: apiData.topChannels || mockTopChannels,
         };
       } catch (error) {
         console.error("Failed to fetch executive overview data:", error);
@@ -91,6 +95,8 @@ const ExecutiveOverview = ({
       timelineData: mockTimelineData,
       metricsData: mockMetricsData,
       categoryData: mockCategoryData,
+      sentimentByTopics: mockSentimentByTopics,
+      topChannels: mockTopChannels,
     };
   };
 

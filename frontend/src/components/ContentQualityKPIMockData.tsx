@@ -128,6 +128,93 @@ export const mockBubbleData = [
   { x: 53, y: 6.7, z: 33, word: "satisfying", sentiment: "positive" },
 ];
 
+export const mockTimelineData = [
+  {
+    month: "Jan",
+    positive: 1200,
+    neutral: 720,
+    negative: 480,
+    avgSentiment: 7.2,
+  },
+  {
+    month: "Feb",
+    positive: 1400,
+    neutral: 840,
+    negative: 560,
+    avgSentiment: 7.8,
+  },
+  {
+    month: "Mar",
+    positive: 1600,
+    neutral: 960,
+    negative: 640,
+    avgSentiment: 6.9,
+  },
+  {
+    month: "Apr",
+    positive: 1450,
+    neutral: 870,
+    negative: 580,
+    avgSentiment: 8.1,
+  },
+  {
+    month: "May",
+    positive: 1750,
+    neutral: 1050,
+    negative: 700,
+    avgSentiment: 8.4,
+  },
+  {
+    month: "Jun",
+    positive: 2050,
+    neutral: 1230,
+    negative: 820,
+    avgSentiment: 7.9,
+  },
+  {
+    month: "Jul",
+    positive: 1900,
+    neutral: 1140,
+    negative: 760,
+    avgSentiment: 8.2,
+  },
+  {
+    month: "Aug",
+    positive: 2100,
+    neutral: 1260,
+    negative: 840,
+    avgSentiment: 8.7,
+  },
+  {
+    month: "Sep",
+    positive: 1800,
+    neutral: 1080,
+    negative: 720,
+    avgSentiment: 7.6,
+  },
+  {
+    month: "Oct",
+    positive: 1950,
+    neutral: 1170,
+    negative: 780,
+    avgSentiment: 8.0,
+  },
+  {
+    month: "Nov",
+    positive: 2200,
+    neutral: 1320,
+    negative: 880,
+    avgSentiment: 8.3,
+  },
+  {
+    month: "Dec",
+    positive: 2400,
+    neutral: 1440,
+    negative: 960,
+    avgSentiment: 8.5,
+  },
+];
+
 export interface ContentQualityKPIData {
   kpiMetrics: typeof mockKPIMetrics;
   topKeywords: typeof mockTopKeywords;
@@ -135,4 +222,5 @@ export interface ContentQualityKPIData {
   wordCloudData: typeof mockWordCloudData;
   topComments: typeof mockTopComments;
   bubbleData: typeof mockBubbleData;
+  timelineData: typeof mockTimelineData;
 }

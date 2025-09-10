@@ -593,7 +593,7 @@ const VideoBreakdownUI = ({
                   >
                     Video Categories
                   </div>
-                  <div
+                  {/* <div
                     style={{
                       color: "#8B92B8",
                       fontSize: "12px",
@@ -604,7 +604,7 @@ const VideoBreakdownUI = ({
                     }}
                   >
                     Wikipedia Tags
-                  </div>
+                  </div> */}
                 </div>
               </Card>
             </Col>
