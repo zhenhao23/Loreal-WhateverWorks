@@ -1,6 +1,6 @@
 # 📊 Data Analysis Pipeline: Video & Comment Analysis
 
-## Overvie
+## Overview
 
 This project builds a full pipeline for analyzing **YouTube videos and comments**. The flow is:
 
