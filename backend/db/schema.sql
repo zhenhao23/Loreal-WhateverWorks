@@ -10,23 +10,22 @@ SET client_encoding = 'UTF8';
 -- Drop the existing table
 DROP TABLE IF EXISTS comments;
 
--- Create the main comments table (based on the actual CSV dataset)
+-- Create the main comments table (based on final_dataset_with_kpi.csv)
 CREATE TABLE IF NOT EXISTS comments (
     id SERIAL PRIMARY KEY,
-    unnamed_0_1 INTEGER, -- First unnamed column from CSV
-    unnamed_0 INTEGER, -- Second unnamed column from CSV
     comment_id BIGINT,
     channel_id BIGINT,
     video_id BIGINT,
     author_id BIGINT,
     text_original TEXT,
-    parent_comment_id DECIMAL, -- Changed to DECIMAL to handle values like "1888757.0"
+    parent_comment_id DECIMAL,
     like_count INTEGER DEFAULT 0,
     published_at TIMESTAMP WITH TIME ZONE,
     updated_at TIMESTAMP WITH TIME ZONE,
     duplicated_flag INTEGER DEFAULT 0,
     cleaned_text TEXT,
     cleaned_text_sentiment TEXT,
+    regex_spam DECIMAL(3,2) DEFAULT 0.0,
     predicted_spam DECIMAL(3,2) DEFAULT 0.0,
     is_spam INTEGER DEFAULT 0,
     is_english INTEGER DEFAULT 1,
@@ -34,25 +33,21 @@ CREATE TABLE IF NOT EXISTS comments (
     negative DECIMAL(10,9),
     neutral DECIMAL(10,9),
     positive DECIMAL(10,9),
-    corrected_text TEXT,
     aspect TEXT, -- JSON array stored as text
     sentiment TEXT, -- JSON array stored as text
+    kpi DECIMAL(10,9),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Unnamed: 0.1,Unnamed: 0,commentId,channelId,videoId,authorId,textOriginal,parentCommentId,likeCount,publishedAt,updatedAt,duplicatedFlag,cleanedText,cleanedTextSentiment,predictedSpam,isSpam,is_english,relevance_score,negative,neutral,positive,correctedText,aspect,sentiment
--- 0,0,3166243,41024,6217,26499,Good Information... Will  definitely try it... Thanks 😊,,0,2020-01-01 16:00:58+00:00,2020-01-01 16:00:58+00:00,0,good information definitely try thanks,good information definitely try thanks : smiling_face_with_smiling_eyes :,0.0,0,1,0.120976724,0.019711794,0.11281153,0.8674767,Good information definitely try thanks thanks.,['information'],['Positive']
--- 1,2,0,10004,86296,164837,Yes but I am charged $8 to cover your free shipping. If you don’t have a rep. I would love you be yours,1888757.0,0,2020-01-04 07:53:24+00:00,2020-01-04 07:53:24+00:00,0,yes charged $ 8 cover free shipping not rep would love,yes charged $ 8 cover free shipping not rep would love,0.0,0,1,0.07398073,0.8556126,0.094974376,0.049413033,Yes charged $ 8 cover free shipping not rep would love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love love,['shipping'],['Positive']
-
 COPY comments (
-    unnamed_0_1, unnamed_0, comment_id, channel_id, video_id, author_id, 
+    comment_id, channel_id, video_id, author_id, 
     text_original, parent_comment_id, like_count, published_at, updated_at, 
-    duplicated_flag, cleaned_text, cleaned_text_sentiment, predicted_spam, 
+    duplicated_flag, cleaned_text, cleaned_text_sentiment, regex_spam, predicted_spam, 
     is_spam, is_english, relevance_score, negative, neutral, positive, 
-    corrected_text, aspect, sentiment
+    aspect, sentiment, kpi
 )
-FROM 'C:\Users\weezh\OneDrive\Desktop\Loreal WhateverWorks\full_sample_final_output.csv'
+FROM 'C:\Users\weezh\OneDrive\Desktop\Loreal WhateverWorks\final_dataset_with_kpi.csv'
 WITH (FORMAT CSV, HEADER true, ENCODING 'UTF8');
 
 
@@ -61,10 +56,9 @@ WITH (FORMAT CSV, HEADER true, ENCODING 'UTF8');
 -- Drop the existing videos table if it exists
 DROP TABLE IF EXISTS videos;
 
--- Create the videos table with the correct structure based on your CSV
+-- Create the videos table with the correct structure based on video_with_engagement_score.csv
 CREATE TABLE IF NOT EXISTS videos (
     id SERIAL PRIMARY KEY,
-    kind VARCHAR(50),
     video_id BIGINT,
     published_at TIMESTAMP WITH TIME ZONE,
     channel_id BIGINT,
@@ -76,32 +70,102 @@ CREATE TABLE IF NOT EXISTS videos (
     content_duration VARCHAR(20), -- Keeping as VARCHAR since it's in PT format (PT9S, PT45S)
     view_count DECIMAL(10,1),
     like_count DECIMAL(10,1),
-    favourite_count DECIMAL(10,1),
     comment_count DECIMAL(10,1),
     topic_categories TEXT, -- JSON array as text
-    extracted_topics TEXT, -- JSON array as text
+    cleaned_text TEXT,
+    is_english INTEGER DEFAULT 1,
+    translated TEXT,
+    extracted_topic_categories TEXT, -- JSON array as text
+    extracted_topic_categories_str TEXT,
+    dominant_topic TEXT,
+    topic_confidence DECIMAL(5,4),
+    topic_label TEXT,
+    average_kpi DECIMAL(10,9),
+    comment_count_processed DECIMAL(10,1),
+    video_engagement_score DECIMAL(10,9),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Import the CSV with the correct column mapping
 COPY videos (
-    kind, video_id, published_at, channel_id, title, description, tags,
+    video_id, published_at, channel_id, title, description, tags,
     default_language, default_audio_language, content_duration, view_count,
-    like_count, favourite_count, comment_count, topic_categories, extracted_topics
+    like_count, comment_count, topic_categories, cleaned_text, is_english,
+    translated, extracted_topic_categories, extracted_topic_categories_str,
+    dominant_topic, topic_confidence, topic_label, average_kpi, comment_count_processed, video_engagement_score
 )
-FROM 'C:/Users/weezh/OneDrive/Desktop/Loreal WhateverWorks/videos_with_extracted_topics.csv'
+FROM 'C:\Users\weezh\OneDrive\Desktop\Loreal WhateverWorks\video_with_engagement_score.csv'
 WITH (FORMAT CSV, HEADER true, ENCODING 'UTF8');
 
--- Verify the import
-SELECT COUNT(*) FROM videos;
-SELECT kind, video_id, title, view_count, extracted_topics FROM videos LIMIT 5;
+-- Drop existing tables if they exist
+DROP TABLE IF EXISTS comments_after_spam;
+DROP TABLE IF EXISTS comments_after_spam_eng;
 
--- Check some statistics
-SELECT 
-    COUNT(*) as total_videos,
-    MIN(published_at) as earliest_video,
-    MAX(published_at) as latest_video,
-    AVG(view_count) as avg_views,
-    SUM(view_count) as total_views
-FROM videos;
+-- Create comments_after_spam table (based on final_after_spam.csv)
+CREATE TABLE IF NOT EXISTS comments_after_spam (
+    id SERIAL PRIMARY KEY,
+    comment_id BIGINT,
+    channel_id BIGINT,
+    video_id BIGINT,
+    author_id BIGINT,
+    text_original TEXT,
+    parent_comment_id DECIMAL,
+    like_count INTEGER DEFAULT 0,
+    published_at TIMESTAMP WITH TIME ZONE,
+    updated_at TIMESTAMP WITH TIME ZONE,
+    duplicated_flag INTEGER DEFAULT 0,
+    cleaned_text TEXT,
+    cleaned_text_sentiment TEXT,
+    regex_spam DECIMAL(3,2) DEFAULT 0.0,
+    predicted_spam DECIMAL(3,2) DEFAULT 0.0,
+    is_spam INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COPY comments_after_spam (
+    comment_id, channel_id, video_id, author_id, 
+    text_original, parent_comment_id, like_count, published_at, updated_at, 
+    duplicated_flag, cleaned_text, cleaned_text_sentiment, regex_spam, predicted_spam, 
+    is_spam
+)
+FROM 'C:\Users\weezh\OneDrive\Desktop\Loreal WhateverWorks\final_after_spam.csv'
+WITH (FORMAT CSV, HEADER true, ENCODING 'UTF8');
+
+-- Create comments_after_spam_eng table (based on final_after_spam_eng.csv)
+CREATE TABLE IF NOT EXISTS comments_after_spam_eng (
+    id SERIAL PRIMARY KEY,
+    comment_id BIGINT,
+    channel_id BIGINT,
+    video_id BIGINT,
+    author_id BIGINT,
+    text_original TEXT,
+    parent_comment_id DECIMAL,
+    like_count INTEGER DEFAULT 0,
+    published_at TIMESTAMP WITH TIME ZONE,
+    updated_at TIMESTAMP WITH TIME ZONE,
+    duplicated_flag INTEGER DEFAULT 0,
+    cleaned_text TEXT,
+    cleaned_text_sentiment TEXT,
+    regex_spam DECIMAL(3,2) DEFAULT 0.0,
+    predicted_spam DECIMAL(3,2) DEFAULT 0.0,
+    is_spam INTEGER DEFAULT 0,
+    is_english INTEGER DEFAULT 1,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COPY comments_after_spam_eng (
+    comment_id, channel_id, video_id, author_id, 
+    text_original, parent_comment_id, like_count, published_at, updated_at, 
+    duplicated_flag, cleaned_text, cleaned_text_sentiment, regex_spam, predicted_spam, 
+    is_spam, is_english
+)
+FROM 'C:\Users\weezh\OneDrive\Desktop\Loreal WhateverWorks\final_after_spam_eng.csv'
+WITH (FORMAT CSV, HEADER true, ENCODING 'UTF8');
+
+-- Verify the imports
+SELECT COUNT(*) as total_comments FROM comments;
+SELECT COUNT(*) as total_videos FROM videos;
+SELECT COUNT(*) as total_comments_after_spam FROM comments_after_spam;
+SELECT COUNT(*) as total_comments_after_spam_eng FROM comments_after_spam_eng;

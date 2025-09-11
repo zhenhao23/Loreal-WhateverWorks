@@ -5,6 +5,7 @@ const {
 const { getTimelineData } = require("../db/queries/timeline.queries");
 const { getMetricsData } = require("../db/queries/metrics.queries");
 const { getCategoryData } = require("../db/queries/category.queries");
+const { getSentimentByTopics } = require("../db/queries/topics.queries");
 
 /**
  * Executive Overview Service
@@ -24,12 +25,14 @@ async function getExecutiveOverview(filters = {}) {
       timelineData,
       metricsData,
       categoryData,
+      sentimentByTopics,
     ] = await Promise.all([
       getSentimentData(parsedFilters),
       getOverallSentimentScore(parsedFilters),
       getTimelineData(parsedFilters),
       getMetricsData(parsedFilters),
       getCategoryData(parsedFilters),
+      getSentimentByTopics(parsedFilters),
     ]);
 
     // Combine into one JSON object matching frontend expectations
@@ -39,6 +42,37 @@ async function getExecutiveOverview(filters = {}) {
       timelineData,
       metricsData,
       categoryData,
+      sentimentByTopics,
+      // TODO: Implement topChannels query - for now use mock data structure
+      topChannels: [
+        {
+          channelId: "1",
+          name: "L'Oréal Paris",
+          avatar: "/assets/loreal.jpg",
+          subscribers: "2.1M",
+          totalComments: 15420,
+          avgSentiment: 8.7,
+          engagementRate: 12.4,
+        },
+        {
+          channelId: "2",
+          name: "Maybelline New York",
+          avatar: "/assets/Maybelline.jpg",
+          subscribers: "1.8M",
+          totalComments: 12850,
+          avgSentiment: 8.2,
+          engagementRate: 10.9,
+        },
+        {
+          channelId: "3",
+          name: "Urban Decay Cosmetics",
+          avatar: "/assets/UrbanDecay.jpg",
+          subscribers: "1.2M",
+          totalComments: 8940,
+          avgSentiment: 7.8,
+          engagementRate: 9.7,
+        },
+      ],
     };
 
     console.log("Successfully combined executive overview data");

@@ -3,8 +3,9 @@ export const mockKPIMetrics = {
   avgKPIScore: 8.7,
   minKPIScore: 6.2,
   maxKPIScore: 9.8,
-  avgCommentLength: 142,
   highQualityPercentage: 78,
+  totalCommentsAnalyzed: 15847,
+  spamDetected: 324,
 };
 
 export const mockTopKeywords = {

@@ -99,36 +99,30 @@ export const mockTimelineData = [
 ];
 
 export const mockMetricsData = {
-  totalComments: 24567,
-  totalVideos: 1247,
-  englishPercentage: 78,
-  spamPercentage: 2.3,
-  avgLikesPerComment: 14.2,
-  avgRepliesPerComment: 3.7,
-  avgKpiScore: 8.7,
-  kpiScoreChange: 12,
+  totalComments: 0,
+  totalVideos: 0,
+  englishPercentage: 0,
+  spamPercentage: 0,
+  avgLikesPerComment: 0,
+  avgRepliesPerComment: 0,
+  avgKpiScore: 0,
+  kpiScoreChange: 0,
 };
 
 export const mockCategoryData = [
-  { category: "Skincare", value: 35, color: "#5A6ACF" },
-  { category: "Makeup", value: 28, color: "#707FDD" },
-  { category: "Fragrance", value: 18, color: "#44c5e1" },
-  { category: "Hair Care", value: 12, color: "#8B5CF6" },
-  { category: "Men's", value: 7, color: "#ff7875" },
+  { category: "Makeup", value: 32, color: "#5A6ACF" },
+  { category: "Skin", value: 25, color: "#707FDD" },
+  { category: "Hair", value: 18, color: "#8B5CF6" },
+  { category: "Perfume", value: 15, color: "#44c5e1" },
+  { category: "Body", value: 10, color: "#FFB54C" },
 ];
 
 export const mockSentimentByTopics = [
-  { topic: "Scent & Fragrance", score: 0.85, value: 0.85, color: "#5A6ACF" },
-  { topic: "Product Packaging", score: 0.78, value: 0.78, color: "#707FDD" },
-  {
-    topic: "Delivery Experience",
-    score: 0.72,
-    value: 0.72,
-    color: "#8B92E8",
-  },
-  { topic: "Product Quality", score: 0.68, value: 0.68, color: "#A6A5F2" },
-  { topic: "Customer Service", score: 0.64, value: 0.64, color: "#C1B8FC" },
-  { topic: "Value for Money", score: 0.58, value: 0.58, color: "#DCCBFF" },
+  { topic: "Makeup", score: 8.7, value: 8.7, color: "#5A6ACF" },
+  { topic: "Skin", score: 8.2, value: 8.2, color: "#707FDD" },
+  { topic: "Hair", score: 7.8, value: 7.8, color: "#8B92E8" },
+  { topic: "Perfume", score: 7.5, value: 7.5, color: "#A6A5F2" },
+  { topic: "Body", score: 6.9, value: 6.9, color: "#C1B8FC" },
 ].sort((a, b) => b.score - a.score);
 
 export const mockTopChannels = [

@@ -2,12 +2,13 @@ import pandas as pd
 import os
 
 # Path to the CSV file
-csv_path = "../sample_final_output.csv"
+csv_path = "final_after_spam_eng.csv"
+output_path = "final_after_spam_eng_1000.csv"
 
 def trim_csv_to_1000_rows():
     """
     Reads the CSV file and keeps only the first 1000 rows (including header),
-    then saves it back to the same file.
+    then saves it to a new file.
     """
     try:
         # Read the CSV file
@@ -21,10 +22,11 @@ def trim_csv_to_1000_rows():
         
         print(f"Trimmed file will have {len(df_trimmed)} rows")
         
-        # Save back to the same file
-        df_trimmed.to_csv(csv_path, index=False)
+        # Save to a new file
+        df_trimmed.to_csv(output_path, index=False)
         
-        print(f"Successfully saved trimmed CSV with {len(df_trimmed)} rows to {csv_path}")
+        print(f"Successfully saved trimmed CSV with {len(df_trimmed)} rows to {output_path}")
+        print(f"Original file {csv_path} remains unchanged")
         
     except FileNotFoundError:
         print(f"Error: Could not find the file {csv_path}")

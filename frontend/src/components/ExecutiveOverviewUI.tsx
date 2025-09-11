@@ -120,7 +120,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     lineHeight: 1,
                   }}
                 >
-                  {metricsData.avgKpiScore}
+                  {metricsData?.avgKpiScore || 0}
                 </div>
                 <div
                   style={{
@@ -142,7 +142,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     display: "inline-block",
                   }}
                 >
-                  ↗ +{metricsData.kpiScoreChange}% vs last year
+                  ↗ +{metricsData?.kpiScoreChange || 0}% vs last year
                 </div>
               </div>
             </div>
@@ -185,7 +185,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     marginBottom: "4px",
                   }}
                 >
-                  {metricsData.spamPercentage}%
+                  {metricsData?.spamPercentage || 0}%
                 </div>
                 <div
                   style={{
@@ -252,7 +252,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     marginBottom: "4px",
                   }}
                 >
-                  {metricsData.totalComments.toLocaleString()}
+                  {(metricsData?.totalComments || 0).toLocaleString()}
                 </div>
                 <div
                   style={{
@@ -319,7 +319,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     marginBottom: "4px",
                   }}
                 >
-                  {metricsData.totalVideos.toLocaleString()}
+                  {(metricsData?.totalVideos || 0).toLocaleString()}
                 </div>
                 <div
                   style={{
@@ -386,7 +386,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     marginBottom: "4px",
                   }}
                 >
-                  {metricsData.englishPercentage}%
+                  {metricsData?.englishPercentage || 0}%
                 </div>
                 <div
                   style={{
@@ -493,7 +493,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     dx: 32,
                   },
                 }}
-                width={875}
+                // width={875}
                 height={320}
               />
             </div>

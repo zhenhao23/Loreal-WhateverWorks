@@ -32,14 +32,8 @@ interface ContentQualityKPIUIProps {
 }
 
 const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
-  const {
-    kpiMetrics,
-    topKeywords,
-    wordCloudData,
-    topComments,
-    bubbleData,
-    timelineData,
-  } = data;
+  const { kpiMetrics, wordCloudData, topComments, bubbleData, timelineData } =
+    data;
 
   // Custom bubble component for scatter chart
   const CustomBubble = (props: any) => {
@@ -202,47 +196,6 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
           </Card>
         </Col>
 
-        {/* Avg Comment Length */}
-        <Col xs={24} sm={12} lg={6}>
-          <Card
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              border: "1px solid #f0f2f7",
-              height: "140px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  color: "#707FDD",
-                  fontSize: "32px",
-                  fontWeight: 700,
-                  lineHeight: 1,
-                  marginBottom: "4px",
-                }}
-              >
-                {kpiMetrics.avgCommentLength}
-              </div>
-              <div
-                style={{ color: "#666", fontSize: "14px", marginBottom: "6px" }}
-              >
-                Avg Comment Length
-              </div>
-              <div style={{ fontSize: "12px", color: "#8B92B8" }}>
-                characters
-              </div>
-            </div>
-          </Card>
-        </Col>
-
         {/* % High-Quality Comments */}
         <Col xs={24} sm={12} lg={6}>
           <Card
@@ -263,7 +216,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
             >
               <div
                 style={{
-                  color: "#44c5e1",
+                  color: "#52c41a",
                   fontSize: "32px",
                   fontWeight: 700,
                   lineHeight: 1,
@@ -284,7 +237,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
           </Card>
         </Col>
 
-        {/* Top Keywords */}
+        {/* Total Comments Analyzed */}
         <Col xs={24} sm={12} lg={6}>
           <Card
             style={{
@@ -299,59 +252,72 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                 display: "flex",
                 flexDirection: "column",
                 height: "100%",
+                justifyContent: "center",
               }}
             >
               <div
                 style={{
-                  color: "#666",
-                  fontSize: "14px",
-                  marginBottom: "8px",
-                  fontWeight: 400,
+                  color: "#1890ff",
+                  fontSize: "32px",
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  marginBottom: "4px",
                 }}
               >
-                Top Keywords by Category
+                {kpiMetrics.totalCommentsAnalyzed.toLocaleString()}
               </div>
               <div
+                style={{ color: "#666", fontSize: "14px", marginBottom: "6px" }}
+              >
+                Total Comments Analyzed
+              </div>
+              <div style={{ fontSize: "12px", color: "#8B92B8" }}>
+                across all videos
+              </div>
+            </div>
+          </Card>
+        </Col>
+
+        {/* Spam Detected */}
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              border: "1px solid #f0f2f7",
+              height: "140px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                justifyContent: "center",
+              }}
+            >
+              <div
                 style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "6px",
-                  fontSize: "12px",
+                  color: "#ff4d4f",
+                  fontSize: "32px",
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  marginBottom: "4px",
                 }}
               >
-                {Object.entries(topKeywords).map(([category, keywords]) => (
-                  <div
-                    key={category}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                    }}
-                  >
-                    <span
-                      style={{
-                        color: "#5A6ACF",
-                        fontWeight: 600,
-                        minWidth: "60px",
-                      }}
-                    >
-                      {category}:
-                    </span>
-                    <span style={{ color: "#8B92B8" }}>
-                      {keywords.join(", ")}
-                    </span>
-                  </div>
-                ))}
-                <div style={{ textAlign: "right", marginTop: "2px" }}>
-                  <span
-                    style={{
-                      color: "#5A6ACF",
-                      fontSize: "10px",
-                      cursor: "pointer",
-                    }}
-                  ></span>
-                </div>
+                {kpiMetrics.spamDetected.toLocaleString()}
+              </div>
+              <div
+                style={{ color: "#666", fontSize: "14px", marginBottom: "6px" }}
+              >
+                Spam Detected
+              </div>
+              <div style={{ fontSize: "12px", color: "#8B92B8" }}>
+                {(
+                  (kpiMetrics.spamDetected / kpiMetrics.totalCommentsAnalyzed) *
+                  100
+                ).toFixed(1)}
+                % of total
               </div>
             </div>
           </Card>

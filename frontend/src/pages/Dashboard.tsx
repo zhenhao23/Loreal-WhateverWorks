@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Row, Col, Select, DatePicker, Tabs, Card } from "antd";
+import { Row, Col, Select, DatePicker, Tabs, Card, Button } from "antd";
 import {
   CalendarOutlined,
   BarChartOutlined,
@@ -29,6 +29,15 @@ function Dashboard() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedLanguage, setSelectedLanguage] = useState("english");
   const [selectedSentiment, setSelectedSentiment] = useState("negative");
+
+  const categories = [
+    { key: "all", label: "All" },
+    { key: "skin", label: "Skin" },
+    { key: "body", label: "Body" },
+    { key: "hair", label: "Hair" },
+    { key: "perfume", label: "Perfume" },
+    { key: "makeup", label: "Makeup" },
+  ];
 
   const tabItems: TabsProps["items"] = [
     {
@@ -110,8 +119,13 @@ function Dashboard() {
       >
         <Row gutter={[16, 16]} align="middle">
           <Col flex={1}>
-            <Row gutter={[16, 8]} align="middle">
-              <Col xs={24} sm={8} md={6}>
+            {/* First Row: Year Range and Language */}
+            <Row
+              gutter={[16, 8]}
+              align="middle"
+              style={{ marginBottom: "16px" }}
+            >
+              <Col xs={24} sm={12} md={8}>
                 <div
                   style={{
                     marginBottom: "4px",
@@ -135,32 +149,7 @@ function Dashboard() {
                   }}
                 />
               </Col>
-              <Col xs={24} sm={8} md={6}>
-                <div
-                  style={{
-                    marginBottom: "4px",
-                    color: "#666",
-                    fontSize: "12px",
-                    fontWeight: 500,
-                  }}
-                >
-                  CATEGORY
-                </div>
-                <Select
-                  value={selectedCategory}
-                  onChange={setSelectedCategory}
-                  style={{ width: "100%" }}
-                  placeholder="Select category"
-                >
-                  <Option value="all">All Categories</Option>
-                  <Option value="skincare">Skincare</Option>
-                  <Option value="makeup">Makeup</Option>
-                  <Option value="haircare">Hair Care</Option>
-                  <Option value="fragrance">Fragrance</Option>
-                  <Option value="men">Men's</Option>
-                </Select>
-              </Col>
-              <Col xs={24} sm={8} md={6}>
+              <Col xs={24} sm={12} md={8}>
                 <div
                   style={{
                     marginBottom: "4px",
@@ -178,11 +167,13 @@ function Dashboard() {
                   placeholder="Select language"
                 >
                   <Option value="english">English</Option>
-                  <Option value="non-english">Non-English</Option>
+                  <Option value="non-english" disabled>
+                    Non-English
+                  </Option>
                 </Select>
               </Col>
               {activeTab === "2" && (
-                <Col xs={24} sm={8} md={6}>
+                <Col xs={24} sm={12} md={8}>
                   <div
                     style={{
                       marginBottom: "4px",
@@ -206,6 +197,55 @@ function Dashboard() {
                   </Select>
                 </Col>
               )}
+            </Row>
+
+            {/* Second Row: Category Buttons */}
+            <Row gutter={[8, 8]} align="middle">
+              <Col span={24}>
+                <div
+                  style={{
+                    marginBottom: "8px",
+                    color: "#666",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                  }}
+                >
+                  CATEGORY
+                </div>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  {categories.map((category) => (
+                    <Button
+                      key={category.key}
+                      type={
+                        selectedCategory === category.key
+                          ? "primary"
+                          : "default"
+                      }
+                      onClick={() => setSelectedCategory(category.key)}
+                      style={{
+                        borderRadius: "6px",
+                        fontWeight: 500,
+                        fontSize: "13px",
+                        height: "32px",
+                        paddingLeft: "16px",
+                        paddingRight: "16px",
+                        border:
+                          selectedCategory === category.key
+                            ? "none"
+                            : "1px solid #d9d9d9",
+                        backgroundColor:
+                          selectedCategory === category.key
+                            ? "#5A6ACF"
+                            : "#fff",
+                        color:
+                          selectedCategory === category.key ? "#fff" : "#666",
+                      }}
+                    >
+                      {category.label}
+                    </Button>
+                  ))}
+                </div>
+              </Col>
             </Row>
           </Col>
         </Row>
