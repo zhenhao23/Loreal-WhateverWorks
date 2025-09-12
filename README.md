@@ -54,6 +54,7 @@ Steps:
   - Use regex to grab anything after 'wiki/' from 'topicCategories' column.
 
   - Two new columns:
+  
     - 'extracted_topicCategories': List of topics for each video
     - 'extracted_topicCategories_str': Comma-seperated string of topics for each video
 
@@ -106,6 +107,7 @@ Steps:
 ##### Train
 
 ###### Filter Spammers
+
 - Calculate duplication ratio per author and video
 
   - Duplicated comment / total comment
@@ -114,6 +116,7 @@ Steps:
   - Filter out spammers from main dataset
 
 ###### Filter by Regex Rule
+
 - Filter out spam comment based on:
 
   - missing values
@@ -125,6 +128,7 @@ Steps:
 ###### Semi-Supervised Training
 
 - Preparation for Manual labeled data
+
   - Split labeled data into training and validation sets
   - Define Evaluation metrics function including:
  
@@ -135,13 +139,16 @@ Steps:
    
   - Dataset Setup:
     - HuggingFace tokenizer
+  
       - 'Dataset.from_dict'
       - tokenizes training and validation texts
      
     - Custom PyTourch
+
       - CommentDataset class used to wrap tokenized encodings and labels
      
   - Initialize Model, Set Training Arguments and Train
+  
     - Loads a ready-made language model
     - 2 labels → spam vs not spam
     - Train for 2 full passes over the data
@@ -151,13 +158,15 @@ Steps:
     - Save Trained Model and Tokenizer
 
     - Semi-Supervised Training (Cycle 1)
+    
       - Select subset of non-duplicate comments
       - Select first 10000 comments for batch prediction
       - load trained model and tokenizer for inference
       - Define batch scoring function (returning the predited probabilities (spam or not spam) for each class)
       - Score first prediction batch and add probability columns
    
-     - Manual Labelling (Cycle 1) 
+     - Manual Labelling (Cycle 1)
+    
       - Calculate uncertainty margin and select uncertain samples
       - Load trained model and tokenizer for inference
       - Load Manually labeled data, clean labels and split data
@@ -170,6 +179,7 @@ Steps:
         - Save Trained Model and Tokenizer
        
       - Semi-Supervised Training (Cycle 2)
+    
         - Select unlabeled comments for batch prediction
         - load trained model and tokenizer for inference
         - Define batch scoring function for unlabeled data
@@ -177,10 +187,12 @@ Steps:
         - Calculate Uncertainty Margin and Select Top Confident Samples for next stage of processing
        
       - Manual labelling (Cycle 2)
+    
         - Calculate uncertainty margin and select uncertain samples
         - Export uncertain samples for manual labeling
        
       - Semi-Supervised Training (Cycle 3)
+    
         - Load Trained model and tokenizer for inference
         - load trained model and tokenizer for inference
         - clean labels and split data for training and validation
@@ -189,6 +201,7 @@ Steps:
         - Save model from round 3
 
 ##### Predict
+
 - Semi-Supervised Spam Detection Appplication Pipeline
   - Load Pretrained Model and Tokenizer
   - Flag Duplicates and Spam
@@ -243,6 +256,7 @@ Skipped steps (future improvement):
 ### 8. Comment-Level KPI and Engagement Analysis
 
 #### Preparation:
+
 - Merge video metadata with main dataset
 - Drop Unnecessary Columns (Unnamed: 0)
 - anayze comment frequency (descriptive statistics)
@@ -273,10 +287,12 @@ v) Relevance Score
 #### Combine Key Features as KPI score
 
 - Scale Key Features
+
   - used MinMaxScaler
   - Scale 'polarized_aspect_count', 'comment_repetitiveness', 'engagementScore' and 'word_length' to [0,1] range
 
 - Calculate KPI
+
   - Define weights for each scaled feature
   - Compute composite KPI score for each comment using weighted sum
   - Final Output Comment DataFrame
@@ -293,10 +309,12 @@ v) Relevance Score
 
 #### Calculate Engagement Score and Weighted Engagement Score
 - Engagment Score (video)
+
   - Formula: sum of likes and comments divided by views
   - Clip Engagement Score to [0,1]
 
 - Weighted Engagement Score
+
   - sum of engagemenr score and the log of likes and comments
   - Scale Weighted Engagement Score (MinMaxScaler)
  
