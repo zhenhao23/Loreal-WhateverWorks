@@ -330,9 +330,8 @@ v) Relevance Score
 | Spam Detection         | `prajjwal1/bert-tiny` (semi-supervised)                             |
 | Translation            | Google Translator (skipped in pipeline)                             |
 | Sentence Transformer   | `all-MiniLM-L6-v2`                                                  |
-| Sentiment Analysis     | `nlptown/bert-base-multilingual-uncased-sentiment`, VADER, TextBlob |
+| Sentiment Analysis     | `nlptown/bert-base-multilingual-uncased-sentiment`                  |
 | Aspect-Based Sentiment | `pyabsa`                                                            |
-| Video Categorization   | CountVectorizer + NMF                                               |
 
 ---
 
