@@ -92,21 +92,167 @@ async function getSentimentByTopics(filters = {}) {
 }
 
 /**
+ * Get word cloud data (key adjectives with frequency)
+ */
+async function getWordCloudData(filters = {}) {
+  try {
+    // Use the same bubble dataset as getBubbleData
+    const bubbleDataset = [
+      { x: 120336, y: 4.0, z: 23, word: "makeup", sentiment: "positive" },
+      { x: 95081, y: 4.0, z: 26, word: "hair", sentiment: "negative" },
+      { x: 47232, y: 4.2, z: 10, word: "look", sentiment: "positive" },
+      { x: 15259, y: 4.5, z: 35, word: "skin", sentiment: "positive" },
+      { x: 14707, y: 4.1, z: 13, word: "wig", sentiment: "positive" },
+      { x: 14436, y: 3.9, z: 10, word: "video", sentiment: "positive" },
+      { x: 14020, y: 4.2, z: 41, word: "beauty", sentiment: "positive" },
+      { x: 11955, y: 4.3, z: 28, word: "color", sentiment: "positive" },
+      { x: 10899, y: 3.4, z: 33, word: "guy", sentiment: "negative" },
+      { x: 9964, y: 3.1, z: 15, word: "girl", sentiment: "positive" },
+      { x: 9656, y: 4.1, z: 24, word: "foundation", sentiment: "negative" },
+      { x: 8928, y: 3.9, z: 23, word: "lip", sentiment: "negative" },
+      { x: 7797, y: 4.2, z: 6, word: "looking", sentiment: "positive" },
+      { x: 7469, y: 4.1, z: 23, word: "eye", sentiment: "positive" },
+      { x: 7219, y: 3.9, z: 25, word: "face", sentiment: "negative" },
+      { x: 6892, y: 4.4, z: 21, word: "style", sentiment: "positive" },
+      { x: 6599, y: 2.6, z: 7, word: "song", sentiment: "positive" },
+      { x: 6555, y: 4.3, z: 21, word: "hairstyle", sentiment: "positive" },
+      { x: 6117, y: 4.7, z: 1, word: "night", sentiment: "positive" },
+      { x: 6075, y: 3.7, z: 14, word: "lipstick", sentiment: "negative" },
+      { x: 5905, y: 4.1, z: 25, word: "colour", sentiment: "positive" },
+      { x: 5435, y: 3.8, z: 13, word: "eyebrow", sentiment: "negative" },
+      { x: 5360, y: 3.8, z: 1, word: "india", sentiment: "positive" },
+      { x: 4685, y: 3.3, z: 62, word: "filter", sentiment: "negative" },
+      { x: 4594, y: 3.7, z: 6, word: "god", sentiment: "positive" },
+      { x: 4436, y: 3.1, z: 9, word: "baby", sentiment: "positive" },
+      { x: 4175, y: 3.1, z: 7, word: "boy", sentiment: "positive" },
+      { x: 4157, y: 4.3, z: 19, word: "tip", sentiment: "positive" },
+      { x: 4153, y: 4.9, z: 3, word: "ginger", sentiment: "positive" },
+      { x: 3949, y: 3.9, z: 54, word: "dress", sentiment: "positive" },
+      { x: 3932, y: 3.8, z: 25, word: "voice", sentiment: "positive" },
+      { x: 3727, y: 2.9, z: 16, word: "comment", sentiment: "negative" },
+      { x: 3701, y: 3.6, z: 98, word: "shade", sentiment: "positive" },
+      { x: 3611, y: 3.1, z: 26, word: "music", sentiment: "positive" },
+      { x: 3609, y: 3.4, z: 25, word: "man", sentiment: "positive" },
+      { x: 3577, y: 4.1, z: 26, word: "haircut", sentiment: "negative" },
+      { x: 3571, y: 3.6, z: 30, word: "woman", sentiment: "negative" },
+      { x: 3471, y: 4.0, z: 17, word: "nose", sentiment: "negative" },
+      { x: 3351, y: 4.2, z: 74, word: "eyeliner", sentiment: "negative" },
+      { x: 3327, y: 2.6, z: 2, word: "name", sentiment: "negative" },
+      { x: 3304, y: 3.2, z: 11, word: "product", sentiment: "positive" },
+      { x: 3268, y: 3.8, z: 23, word: "lady", sentiment: "positive" },
+      { x: 3140, y: 3.0, z: 12, word: "mom", sentiment: "positive" },
+      { x: 2988, y: 3.6, z: 11, word: "indian", sentiment: "positive" },
+      { x: 2934, y: 3.5, z: 16, word: "sound", sentiment: "negative" },
+      { x: 2903, y: 3.7, z: 59, word: "vibe", sentiment: "positive" },
+      { x: 2673, y: 3.7, z: 20, word: "tutorial", sentiment: "positive" },
+      { x: 2639, y: 4.3, z: 48, word: "smile", sentiment: "positive" },
+      { x: 2604, y: 3.7, z: 34, word: "trend", sentiment: "negative" },
+      { x: 2595, y: 4.5, z: 20, word: "fit", sentiment: "positive" },
+    ];
+
+    // Apply sentiment filter if provided
+    let filteredData = bubbleDataset;
+    if (filters.sentiment && filters.sentiment !== "all") {
+      filteredData = bubbleDataset.filter(
+        (item) => item.sentiment === filters.sentiment
+      );
+    }
+
+    // Transform to word cloud format: { text: word, value: frequency(x) }
+    // Sort by frequency (x) descending and take top words for word cloud
+    const wordCloudData = filteredData
+      .sort((a, b) => b.x - a.x) // Sort by frequency descending
+      .slice(0, 15) // Take top 15 words for word cloud
+      .map((item) => ({
+        text: item.word,
+        value: Math.round(item.x / 1000), // Scale down frequency for better word cloud display
+      }));
+
+    console.log(
+      `Word cloud data filtered by sentiment: ${
+        filters.sentiment || "all"
+      }. Returning ${wordCloudData.length} words.`
+    );
+    return wordCloudData;
+  } catch (error) {
+    console.error("Error fetching word cloud data:", error);
+    throw error;
+  }
+}
+
+/**
  * Get bubble chart data (word sentiment vs frequency)
  */
 async function getBubbleData(filters = {}) {
   try {
-    // TODO: Implement SQL query for bubble chart data
-    // Should return: x (frequency), y (sentiment score), z (size), word, sentiment
-    // Should support filters: dateFrom, dateTo, category, language
+    // CSV data manually copied from bubble_data.csv
+    const bubbleDataset = [
+      { x: 120336, y: 4.0, z: 23, word: "makeup", sentiment: "positive" },
+      { x: 95081, y: 4.0, z: 26, word: "hair", sentiment: "negative" },
+      { x: 47232, y: 4.2, z: 10, word: "look", sentiment: "positive" },
+      { x: 15259, y: 4.5, z: 35, word: "skin", sentiment: "positive" },
+      { x: 14707, y: 4.1, z: 13, word: "wig", sentiment: "positive" },
+      { x: 14436, y: 3.9, z: 10, word: "video", sentiment: "positive" },
+      { x: 14020, y: 4.2, z: 41, word: "beauty", sentiment: "positive" },
+      { x: 11955, y: 4.3, z: 28, word: "color", sentiment: "positive" },
+      { x: 10899, y: 3.4, z: 33, word: "guy", sentiment: "negative" },
+      { x: 9964, y: 3.1, z: 15, word: "girl", sentiment: "positive" },
+      { x: 9656, y: 4.1, z: 24, word: "foundation", sentiment: "negative" },
+      { x: 8928, y: 3.9, z: 23, word: "lip", sentiment: "negative" },
+      { x: 7797, y: 4.2, z: 6, word: "looking", sentiment: "positive" },
+      { x: 7469, y: 4.1, z: 23, word: "eye", sentiment: "positive" },
+      { x: 7219, y: 3.9, z: 25, word: "face", sentiment: "negative" },
+      { x: 6892, y: 4.4, z: 21, word: "style", sentiment: "positive" },
+      { x: 6599, y: 2.6, z: 7, word: "song", sentiment: "positive" },
+      { x: 6555, y: 4.3, z: 21, word: "hairstyle", sentiment: "positive" },
+      { x: 6117, y: 4.7, z: 1, word: "night", sentiment: "positive" },
+      { x: 6075, y: 3.7, z: 14, word: "lipstick", sentiment: "negative" },
+      { x: 5905, y: 4.1, z: 25, word: "colour", sentiment: "positive" },
+      { x: 5435, y: 3.8, z: 13, word: "eyebrow", sentiment: "negative" },
+      { x: 5360, y: 3.8, z: 1, word: "india", sentiment: "positive" },
+      { x: 4685, y: 3.3, z: 62, word: "filter", sentiment: "negative" },
+      { x: 4594, y: 3.7, z: 6, word: "god", sentiment: "positive" },
+      { x: 4436, y: 3.1, z: 9, word: "baby", sentiment: "positive" },
+      { x: 4175, y: 3.1, z: 7, word: "boy", sentiment: "positive" },
+      { x: 4157, y: 4.3, z: 19, word: "tip", sentiment: "positive" },
+      { x: 4153, y: 4.9, z: 3, word: "ginger", sentiment: "positive" },
+      { x: 3949, y: 3.9, z: 54, word: "dress", sentiment: "positive" },
+      { x: 3932, y: 3.8, z: 25, word: "voice", sentiment: "positive" },
+      { x: 3727, y: 2.9, z: 16, word: "comment", sentiment: "negative" },
+      { x: 3701, y: 3.6, z: 98, word: "shade", sentiment: "positive" },
+      { x: 3611, y: 3.1, z: 26, word: "music", sentiment: "positive" },
+      { x: 3609, y: 3.4, z: 25, word: "man", sentiment: "positive" },
+      { x: 3577, y: 4.1, z: 26, word: "haircut", sentiment: "negative" },
+      { x: 3571, y: 3.6, z: 30, word: "woman", sentiment: "negative" },
+      { x: 3471, y: 4.0, z: 17, word: "nose", sentiment: "negative" },
+      { x: 3351, y: 4.2, z: 74, word: "eyeliner", sentiment: "negative" },
+      { x: 3327, y: 2.6, z: 2, word: "name", sentiment: "negative" },
+      { x: 3304, y: 3.2, z: 11, word: "product", sentiment: "positive" },
+      { x: 3268, y: 3.8, z: 23, word: "lady", sentiment: "positive" },
+      { x: 3140, y: 3.0, z: 12, word: "mom", sentiment: "positive" },
+      { x: 2988, y: 3.6, z: 11, word: "indian", sentiment: "positive" },
+      { x: 2934, y: 3.5, z: 16, word: "sound", sentiment: "negative" },
+      { x: 2903, y: 3.7, z: 59, word: "vibe", sentiment: "positive" },
+      { x: 2673, y: 3.7, z: 20, word: "tutorial", sentiment: "positive" },
+      { x: 2639, y: 4.3, z: 48, word: "smile", sentiment: "positive" },
+      { x: 2604, y: 3.7, z: 34, word: "trend", sentiment: "negative" },
+      { x: 2595, y: 4.5, z: 20, word: "fit", sentiment: "positive" },
+    ];
 
-    const query = `
-      -- TODO: Add SQL query here
-      SELECT 1 as placeholder
-    `;
+    // Apply sentiment filter if provided
+    let filteredData = bubbleDataset;
+    if (filters.sentiment && filters.sentiment !== "all") {
+      filteredData = bubbleDataset.filter(
+        (item) => item.sentiment === filters.sentiment
+      );
+    }
 
-    const result = await pool.query(query, []);
-    return result.rows;
+    console.log(
+      `Bubble data filtered by sentiment: ${
+        filters.sentiment || "all"
+      }. Returning ${filteredData.length} items.`
+    );
+    return filteredData;
   } catch (error) {
     console.error("Error fetching bubble data:", error);
     throw error;
@@ -231,6 +377,7 @@ function buildWhereClause(filters) {
 module.exports = {
   getSentimentByTopics,
   getBubbleData,
+  getWordCloudData,
   getTopicTrends,
   getTopicCorrelations,
 };

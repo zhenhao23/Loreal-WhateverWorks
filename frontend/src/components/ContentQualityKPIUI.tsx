@@ -29,9 +29,13 @@ import type { ContentQualityKPIData } from "./ContentQualityKPIMockData";
 
 interface ContentQualityKPIUIProps {
   data: ContentQualityKPIData;
+  sentimentFilter: string;
 }
 
-const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
+const ContentQualityKPIUI = ({
+  data,
+  sentimentFilter,
+}: ContentQualityKPIUIProps) => {
   const { kpiMetrics, wordCloudData, topComments, bubbleData, timelineData } =
     data;
 
@@ -54,7 +58,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
     };
 
     // Use z value for radius, with some scaling
-    const radius = Math.max(4, payload.z * 0.4); // Minimum radius of 4, scale z value
+    const radius = Math.max(4, payload.z * 0.2); // Minimum radius of 4, scale z value
 
     return (
       <circle
@@ -76,21 +80,65 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
       dataIndex: "comment",
       key: "comment",
       width: "45%",
-      render: (text: string) => (
-        <div
-          style={{
-            fontSize: "14px",
-            lineHeight: "1.5",
-            maxWidth: "400px",
-          }}
-          dangerouslySetInnerHTML={{
-            __html: (text || "").replace(
-              /\*\*(.*?)\*\*/g,
-              '<strong style="color: #5A6ACF;">$1</strong>'
-            ),
-          }}
-        />
-      ),
+      render: (text: string, record: any) => {
+        let processedText = text || "";
+
+        // First, handle aspect-based bolding
+        if (record.aspect) {
+          try {
+            // Parse the aspect array (it's stored as a string like "['makeup tutorial', 'lip']")
+            let aspects: string[] = [];
+            if (typeof record.aspect === "string") {
+              // Remove brackets and quotes, then split by comma
+              const cleanAspect = record.aspect.replace(/[\[\]']/g, "").trim();
+              if (cleanAspect) {
+                aspects = cleanAspect
+                  .split(",")
+                  .map((a: string) => a.trim())
+                  .filter((a: string) => a.length > 0);
+              }
+            } else if (Array.isArray(record.aspect)) {
+              aspects = record.aspect;
+            }
+
+            // Bold each aspect in the text (case-insensitive)
+            aspects.forEach((aspect) => {
+              if (aspect) {
+                // Escape special regex characters
+                const escapedAspect = aspect.replace(
+                  /[.*+?^${}()|[\]\\]/g,
+                  "\\$&"
+                );
+
+                // Create regex to match both singular and plural forms
+                const regex = new RegExp(`\\b(${escapedAspect}s?)\\b`, "gi");
+                processedText = processedText.replace(regex, "**$1**");
+              }
+            });
+          } catch (error) {
+            console.warn("Error parsing aspect:", record.aspect, error);
+          }
+        }
+
+        // Then handle existing **bold** syntax
+        processedText = processedText.replace(
+          /\*\*(.*?)\*\*/g,
+          '<strong style="color: #5A6ACF;">$1</strong>'
+        );
+
+        return (
+          <div
+            style={{
+              fontSize: "14px",
+              lineHeight: "1.5",
+              maxWidth: "400px",
+            }}
+            dangerouslySetInnerHTML={{
+              __html: processedText,
+            }}
+          />
+        );
+      },
     },
     {
       title: "Sentiment",
@@ -117,7 +165,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
       },
     },
     {
-      title: "KPI Score",
+      title: "Quality Score",
       dataIndex: "kpiScore",
       key: "kpiScore",
       width: "15%",
@@ -152,7 +200,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
     <div style={{ padding: "0 4px" }}>
       {/* 🔝 Row 1 – KPI Cards (anchor metrics) */}
       <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
-        {/* Avg KPI Score */}
+        {/* Avg Comment Quality Score */}
         <Col xs={24} sm={12} lg={8}>
           <Card
             style={{
@@ -184,7 +232,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
               <div
                 style={{ color: "#666", fontSize: "14px", marginBottom: "6px" }}
               >
-                Avg KPI Score
+                Avg Comment Quality Score
               </div>
               <div
                 style={{
@@ -300,7 +348,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                     fontWeight: 600,
                   }}
                 >
-                  Sentiment Timeline - Comments Volume & Average Score
+                  Sentiment Timeline - Comments Volume & Average Quality Score
                 </span>
               </div>
             }
@@ -345,24 +393,26 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                       },
                     }}
                   />
-                  <YAxis
-                    yAxisId="sentiment"
-                    orientation="right"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: "#666" }}
-                    domain={[0, 10]}
-                    label={{
-                      value: "Average Sentiment Score",
-                      angle: 90,
-                      position: "insideRight",
-                      style: {
-                        textAnchor: "middle",
-                        fill: "#666",
-                        fontSize: "12px",
-                      },
-                    }}
-                  />
+                  {sentimentFilter === "all" && (
+                    <YAxis
+                      yAxisId="sentiment"
+                      orientation="right"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: "#666" }}
+                      domain={[0, 10]}
+                      label={{
+                        value: "Average Sentiment Score",
+                        angle: 90,
+                        position: "insideRight",
+                        style: {
+                          textAnchor: "middle",
+                          fill: "#666",
+                          fontSize: "12px",
+                        },
+                      }}
+                    />
+                  )}
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "white",
@@ -405,15 +455,17 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                     radius={[4, 4, 0, 0]}
                     name="Negative"
                   />
-                  <Line
-                    yAxisId="sentiment"
-                    type="monotone"
-                    dataKey="avgSentiment"
-                    stroke="#5A6ACF"
-                    strokeWidth={3}
-                    dot={{ fill: "#5A6ACF", strokeWidth: 2, r: 5 }}
-                    name="Sentiment Score"
-                  />
+                  {sentimentFilter === "all" && (
+                    <Line
+                      yAxisId="sentiment"
+                      type="monotone"
+                      dataKey="avgSentiment"
+                      stroke="#5A6ACF"
+                      strokeWidth={3}
+                      dot={{ fill: "#5A6ACF", strokeWidth: 2, r: 5 }}
+                      name="Sentiment Score"
+                    />
+                  )}
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
@@ -465,7 +517,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
         </Col>
       </Row>
 
-      {/* 🔍 Row 4 – Deep Linguistic Analysis & Key Adjectives */}
+      {/* 🔍 Row 4 – Deep Linguistic Analysis & Key Words - by Frequency */}
       <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
         {/* Left: Word Impact Analysis (2/3 width) */}
         <Col xs={24} lg={16}>
@@ -535,7 +587,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                     axisLine={false}
                     tickLine={false}
                     label={{
-                      value: "Avg KPI Score",
+                      value: "Avg Comment Quality Score",
                       angle: -90,
                       position: "insideLeft",
                       style: {
@@ -556,7 +608,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                       name === "frequency"
                         ? "Frequency"
                         : name === "sentiment"
-                        ? "KPI Score"
+                        ? "Quality Score"
                         : "Engagement",
                     ]}
                     labelFormatter={(_label, payload) =>
@@ -594,7 +646,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                               }}
                             >
                               <div>Frequency: {data.x} mentions</div>
-                              <div>KPI Score: {data.y}/10</div>
+                              <div>Quality Score: {data.y}/10</div>
                               <div>Engagement: {data.z} interactions</div>
                               <div
                                 style={{
@@ -645,7 +697,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                     fontWeight: 600,
                   }}
                 >
-                  Key Adjectives
+                  Key Words - Frequency
                 </span>
               </div>
             }

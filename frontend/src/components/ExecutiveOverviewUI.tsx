@@ -83,7 +83,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
     <div style={{ padding: "0 4px" }}>
       {/* 📌 Row 1 – Key Metric Cards (5 cards in one row) */}
       <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
-        {/* Avg KPI Score per Comment - Featured */}
+        {/* Avg Quality Score per Comment - Featured */}
         <Col xs={24} sm={12} lg={5}>
           <Card
             style={{
@@ -129,7 +129,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     marginTop: "4px",
                   }}
                 >
-                  Avg KPI Score per Comment
+                  Avg Quality Score per Comment
                 </div>
                 <div
                   style={{
@@ -415,9 +415,9 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
         </Col>
       </Row>
 
-      {/* 📊 Row 2 – KPI by Category & Comments by Category */}
+      {/* 📊 Row 2 – Comment Quality Score by Category & Comments by Category */}
       <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
-        {/* Left: KPI by Category (2/3 width) */}
+        {/* Left: Comment Quality Score by Category (2/3 width) */}
         <Col xs={24} lg={16}>
           <Card
             title={
@@ -432,7 +432,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     fontWeight: 600,
                   }}
                 >
-                  KPI by Category
+                  Avg Comment Quality Score by Category
                 </span>
               </div>
             }
@@ -500,7 +500,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
           </Card>
         </Col>
 
-        {/* Right: Videos Count by Category (1/3 width) */}
+        {/* Right: Video Count by Category (1/3 width) */}
         <Col xs={24} lg={8}>
           <Card
             title={
@@ -515,7 +515,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                     fontWeight: 600,
                   }}
                 >
-                  Videos Count by Category
+                  Video Count by Category
                 </span>
               </div>
             }
@@ -612,7 +612,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                         textAlign: "center",
                       }}
                     >
-                      Overall Sentiment Level
+                      Overall Comment Sentiment Level
                     </div>
                     <div
                       style={{

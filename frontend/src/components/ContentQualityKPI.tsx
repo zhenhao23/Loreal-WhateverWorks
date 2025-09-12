@@ -184,7 +184,7 @@ const ContentQualityKPI = ({
           closable
         />
       )}
-      <ContentQualityKPIUI data={data} />
+      <ContentQualityKPIUI data={data} sentimentFilter={sentimentFilter} />
     </div>
   );
 };

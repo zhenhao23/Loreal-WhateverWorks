@@ -7,7 +7,7 @@ const {
 
 const {
   getTopKeywords,
-  getWordCloudData,
+  // getWordCloudData,
   getKeywordSentimentData,
   getTrendingKeywords,
 } = require("../db/queries/keywords.queries");
@@ -22,6 +22,7 @@ const {
 const {
   getSentimentByTopics,
   getBubbleData,
+  getWordCloudData,
   getTopicTrends,
   getTopicCorrelations,
 } = require("../db/queries/topics.queries");

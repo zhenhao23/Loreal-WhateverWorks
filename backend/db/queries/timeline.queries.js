@@ -32,18 +32,19 @@ async function getTimelineData(filters = {}) {
       ),
       monthly_sentiment AS (
         SELECT 
-          date_trunc('month', published_at) as month_date,
+          date_trunc('month', v.published_at) as month_date,
           CASE 
-            WHEN positive > negative AND positive > neutral THEN 'positive'
-            WHEN negative > positive AND negative > neutral THEN 'negative'
+            WHEN c.positive > c.negative AND c.positive > c.neutral THEN 'positive'
+            WHEN c.negative > c.positive AND c.negative > c.neutral THEN 'negative'
             ELSE 'neutral'
           END as sentiment_type,
           CASE 
-            WHEN positive > negative AND positive > neutral THEN 5.0
-            WHEN negative > positive AND negative > neutral THEN 0.0
+            WHEN c.positive > c.negative AND c.positive > c.neutral THEN 5.0
+            WHEN c.negative > c.positive AND c.negative > c.neutral THEN 0.0
             ELSE 2.5
           END as sentiment_score
-        FROM comments
+        FROM comments c
+        LEFT JOIN videos v ON c.video_id = v.video_id
         ${whereCondition}
       ),
       monthly_counts AS (
@@ -123,6 +124,7 @@ function buildWhereClause(filters) {
   const params = [];
   let paramCount = 1;
 
+  // Date filter (year-based)
   if (filters.dateFrom && filters.dateTo) {
     const fromYear = extractYear(filters.dateFrom);
     const toYear = extractYear(filters.dateTo);
@@ -130,7 +132,7 @@ function buildWhereClause(filters) {
     console.log("Timeline - Extracted years - From:", fromYear, "To:", toYear);
 
     whereConditions.push(
-      `EXTRACT(YEAR FROM published_at) BETWEEN $${paramCount} AND $${
+      `EXTRACT(YEAR FROM v.published_at) BETWEEN $${paramCount} AND $${
         paramCount + 1
       }`
     );
@@ -138,20 +140,37 @@ function buildWhereClause(filters) {
     paramCount += 2;
   }
 
-  // if (filters.category) {
-  //   // Note: Category filtering would need a category column or lookup table
-  //   // whereConditions.push(`category = $${paramCount}`);
-  //   // params.push(filters.category);
-  //   // paramCount++;
-  // }
+  // Category filter using topic_label from videos table
+  if (filters.category && filters.category !== "all") {
+    console.log("Timeline - Applying category filter:", filters.category);
+    whereConditions.push(`LOWER(v.topic_label) = $${paramCount}`);
+    params.push(filters.category.toLowerCase());
+    paramCount++;
+  }
 
-  // if (filters.language) {
-  //   if (filters.language.toLowerCase() === "english") {
-  //     whereConditions.push(`is_english = 1`);
-  //   } else if (filters.language.toLowerCase() === "non-english") {
-  //     whereConditions.push(`is_english = 0`);
-  //   }
-  // }
+  // Sentiment filter based on highest value among negative, neutral, positive columns
+  if (filters.sentiment && filters.sentiment !== "all") {
+    console.log("Timeline - Applying sentiment filter:", filters.sentiment);
+
+    let sentimentCondition;
+    switch (filters.sentiment.toLowerCase()) {
+      case "negative":
+        sentimentCondition = `(c.negative > c.neutral AND c.negative > c.positive)`;
+        break;
+      case "neutral":
+        sentimentCondition = `(c.neutral > c.negative AND c.neutral > c.positive)`;
+        break;
+      case "positive":
+        sentimentCondition = `(c.positive > c.negative AND c.positive > c.neutral)`;
+        break;
+      default:
+        sentimentCondition = null;
+    }
+
+    if (sentimentCondition) {
+      whereConditions.push(sentimentCondition);
+    }
+  }
 
   return {
     whereClause:
