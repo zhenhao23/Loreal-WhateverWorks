@@ -10,6 +10,7 @@ import {
   LeftOutlined,
   RightOutlined,
   UserOutlined,
+  VideoCameraOutlined,
 } from "@ant-design/icons";
 import { Radar, Bar } from "@ant-design/plots";
 import type { InfluencerIntelligenceData } from "./InfluencerIntelligenceMockData";
@@ -29,6 +30,7 @@ InfluencerIntelligenceUIProps) => {
     radarData,
     categoryRadarData,
     influencerBarData,
+    topChannels,
   } = data;
 
   // State for influencer selection
@@ -230,6 +232,237 @@ InfluencerIntelligenceUIProps) => {
 
   return (
     <div style={{ padding: "0 4px" }}>
+      {/* 🏆 Row 0 – Top 9 Channels */}
+      <Row
+        gutter={[24, 24]}
+        style={{ marginTop: "32px", marginBottom: "32px" }}
+      >
+        <Col xs={24}>
+          <Card
+            title={
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                <VideoCameraOutlined style={{ color: "#5A6ACF" }} />
+                <span
+                  style={{
+                    color: "#5A6ACF",
+                    fontSize: "18px",
+                    fontWeight: 600,
+                  }}
+                >
+                  Top 9 Channels by Engagement
+                </span>
+              </div>
+            }
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            }}
+            headStyle={{
+              background: "#fafbfc",
+              borderBottom: "1px solid #f0f2f7",
+            }}
+          >
+            <Row gutter={[24, 16]}>
+              {topChannels?.map((channel, index) => (
+                <Col xs={24} md={12} lg={8} key={channel.channelId}>
+                  <Card
+                    style={{
+                      borderRadius: "8px",
+                      border:
+                        index === 0
+                          ? "2px solid #FFD700"
+                          : index === 1
+                          ? "2px solid #C0C0C0"
+                          : index === 2
+                          ? "2px solid #CD7F32"
+                          : "1px solid #f0f2f7",
+                      boxShadow:
+                        index <= 2
+                          ? `0 4px 12px rgba(${
+                              index === 0
+                                ? "255, 215, 0"
+                                : index === 1
+                                ? "192, 192, 192"
+                                : "205, 127, 50"
+                            }, 0.2)`
+                          : "0 2px 6px rgba(0,0,0,0.04)",
+                      position: "relative",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {/* Ranking Badge */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "12px",
+                        right: "12px",
+                        backgroundColor:
+                          index === 0
+                            ? "#FFD700"
+                            : index === 1
+                            ? "#C0C0C0"
+                            : index === 2
+                            ? "#CD7F32"
+                            : "#8B92B8",
+                        color: "white",
+                        borderRadius: "50%",
+                        width: "24px",
+                        height: "24px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        zIndex: 1,
+                      }}
+                    >
+                      {index + 1}
+                    </div>
+
+                    {/* Channel Info */}
+                    <div style={{ padding: "8px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "12px",
+                          marginBottom: "16px",
+                        }}
+                      >
+                        <img
+                          src={channel.avatar}
+                          alt={channel.name}
+                          style={{
+                            width: "48px",
+                            height: "48px",
+                            borderRadius: "50%",
+                            border: "2px solid #f0f2f7",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <div style={{ flex: 1 }}>
+                          <div
+                            style={{
+                              fontSize: "16px",
+                              fontWeight: 600,
+                              color: "#333",
+                              marginBottom: "2px",
+                              lineHeight: 1.2,
+                            }}
+                          >
+                            {channel.name}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: "12px",
+                              color: "#8B92B8",
+                            }}
+                          >
+                            {channel.subscribers} subscribers
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Metrics */}
+                      <div style={{ marginBottom: "12px" }}>
+                        <Row gutter={[8, 8]}>
+                          <Col span={12}>
+                            <div style={{ textAlign: "center" }}>
+                              <div
+                                style={{
+                                  fontSize: "18px",
+                                  fontWeight: 700,
+                                  color: "#5A6ACF",
+                                }}
+                              >
+                                {channel.totalComments.toLocaleString()}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: "11px",
+                                  color: "#8B92B8",
+                                }}
+                              >
+                                Comments
+                              </div>
+                            </div>
+                          </Col>
+                          <Col span={12}>
+                            <div style={{ textAlign: "center" }}>
+                              <div
+                                style={{
+                                  fontSize: "18px",
+                                  fontWeight: 700,
+                                  color: "#707FDD",
+                                }}
+                              >
+                                {channel.avgSentiment.toFixed(1)}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: "11px",
+                                  color: "#8B92B8",
+                                }}
+                              >
+                                Avg Sentiment
+                              </div>
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+
+                      {/* Engagement Badge */}
+                      <div
+                        style={{
+                          textAlign: "center",
+                          backgroundColor:
+                            index === 0
+                              ? "#FFF9E6"
+                              : index === 1
+                              ? "#F0F0F0"
+                              : index === 2
+                              ? "#FFF4E6"
+                              : "#F8F9FF",
+                          padding: "6px 12px",
+                          borderRadius: "16px",
+                          border: `1px solid ${
+                            index === 0
+                              ? "#FFE58F"
+                              : index === 1
+                              ? "#D9D9D9"
+                              : index === 2
+                              ? "#FFD591"
+                              : "#E8EAFF"
+                          }`,
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: "12px",
+                            fontWeight: 600,
+                            color:
+                              index === 0
+                                ? "#D48806"
+                                : index === 1
+                                ? "#595959"
+                                : index === 2
+                                ? "#D46B08"
+                                : "#5A6ACF",
+                          }}
+                        >
+                          {channel.engagementRate} Avg Engagement Score
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </Card>
+        </Col>
+      </Row>
       {/* 📊 Row 1 – Influencer Overview and Bar Chart */}
       <Row gutter={[24, 24]} style={{ marginBottom: "32px" }} align="middle">
         {/* Left: Top Creator and Category Cards (1/4 width) */}

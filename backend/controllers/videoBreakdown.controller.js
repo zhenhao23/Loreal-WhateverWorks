@@ -30,10 +30,8 @@ async function videoBreakdownHandler(req, res) {
 
     // Extract pagination parameters
     const pagination = {
-      limit: parseInt(req.body.pageSize || req.query.pageSize || 10),
-      offset:
-        (parseInt(req.body.current || req.query.current || 1) - 1) *
-        parseInt(req.body.pageSize || req.query.pageSize || 10),
+      current: parseInt(req.body.current || req.query.current || 1),
+      pageSize: parseInt(req.body.pageSize || req.query.pageSize || 10),
     };
 
     console.log("Processed filters:", filters);

@@ -42,6 +42,26 @@ const InfluencerIntelligence = ({
           ];
         }
 
+        // Fetch channels data from the real API
+        let topChannelsData = mockInfluencerIntelligenceData.topChannels;
+        try {
+          const channelsResponse = await fetch(
+            "http://localhost:5000/api/channels/top?limit=9"
+          );
+
+          if (channelsResponse.ok) {
+            const channelsResult = await channelsResponse.json();
+            if (channelsResult.success && channelsResult.data) {
+              topChannelsData = channelsResult.data;
+              console.log(
+                "Using real channels data from API for Influencer Intelligence"
+              );
+            }
+          }
+        } catch (channelsError) {
+          console.warn("Channels API failed, using mock data:", channelsError);
+        }
+
         // Replace this with your actual API endpoint
         const response = await fetch(
           "http://localhost:5000/api/influencer-intelligence",
@@ -80,6 +100,7 @@ const InfluencerIntelligence = ({
           influencerBarData:
             apiData.influencerBarData ||
             mockInfluencerIntelligenceData.influencerBarData,
+          topChannels: topChannelsData, // Use real channels data
         };
       } catch (error) {
         console.error("Failed to fetch influencer intelligence data:", error);

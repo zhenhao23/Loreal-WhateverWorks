@@ -102,7 +102,7 @@ const VideoBreakdownUI = ({
         fill: "#444",
         fontSize: 12,
         fontWeight: 600,
-        dx: 40,
+        dx: 20,
       },
     },
     width: 875,
@@ -123,7 +123,7 @@ const VideoBreakdownUI = ({
       shape: "circle",
     },
     axis: {
-      y: { title: "Engagement Rate (%)" },
+      y: { title: "Avg Engagement Score" },
       x: { title: "Time Period" },
     },
     height: 300,
@@ -141,7 +141,7 @@ const VideoBreakdownUI = ({
       ),
     },
     {
-      title: "Engagement Rate",
+      title: "Avg Engagement Score",
       dataIndex: "engagementRate",
       key: "engagementRate",
       width: "12%",
@@ -155,7 +155,7 @@ const VideoBreakdownUI = ({
             textAlign: "center",
           }}
         >
-          {value?.toFixed(1) || "0.0"}%
+          {value?.toFixed(0) || "0.0"}/100
         </div>
       ),
     },
@@ -226,25 +226,25 @@ const VideoBreakdownUI = ({
         </div>
       ),
     },
-    {
-      title: "Spam %",
-      dataIndex: "spamPercentage",
-      key: "spamPercentage",
-      width: "8%",
-      sorter: (a, b) => a.spamPercentage - b.spamPercentage,
-      render: (value: number) => (
-        <div
-          style={{
-            fontWeight: 600,
-            color:
-              value <= 2.5 ? "#52c41a" : value <= 4.0 ? "#faad14" : "#ff4d4f",
-            textAlign: "center",
-          }}
-        >
-          {Math.round(value)}%
-        </div>
-      ),
-    },
+    // {
+    //   title: "Spam %",
+    //   dataIndex: "spamPercentage",
+    //   key: "spamPercentage",
+    //   width: "8%",
+    //   sorter: (a, b) => a.spamPercentage - b.spamPercentage,
+    //   render: (value: number) => (
+    //     <div
+    //       style={{
+    //         fontWeight: 600,
+    //         color:
+    //           value <= 2.5 ? "#52c41a" : value <= 4.0 ? "#faad14" : "#ff4d4f",
+    //         textAlign: "center",
+    //       }}
+    //     >
+    //       {Math.round(value)}%
+    //     </div>
+    //   ),
+    // },
     {
       title: "Avg Sentiment",
       dataIndex: "avgSentimentScore",
@@ -307,7 +307,7 @@ const VideoBreakdownUI = ({
                   marginBottom: "4px",
                 }}
               >
-                {videoMetrics?.average_engagement_rate?.toFixed(1) || "0.0"}%
+                {videoMetrics?.average_engagement_rate?.toFixed(0) || "0.0"}/100
               </div>
               <div
                 style={{
@@ -316,7 +316,7 @@ const VideoBreakdownUI = ({
                   fontWeight: 500,
                 }}
               >
-                Avg Engagement Rate
+                Avg Engagement Score
               </div>
             </div>
           </Card>
@@ -360,7 +360,7 @@ const VideoBreakdownUI = ({
                 }}
               >
                 {videoMetrics?.total_views
-                  ? (videoMetrics.total_views / 1000000).toFixed(1) + "M"
+                  ? (videoMetrics.total_views / 1000000).toFixed(0) + "M"
                   : "0"}
               </div>
               <div
@@ -414,7 +414,7 @@ const VideoBreakdownUI = ({
                 }}
               >
                 {videoMetrics?.total_likes
-                  ? (videoMetrics.total_likes / 1000000).toFixed(1) + "M"
+                  ? (videoMetrics.total_likes / 1000000).toFixed(0) + "M"
                   : "0"}
               </div>
               <div
@@ -593,18 +593,6 @@ const VideoBreakdownUI = ({
                   >
                     Video Categories
                   </div>
-                  {/* <div
-                    style={{
-                      color: "#8B92B8",
-                      fontSize: "12px",
-                      background: "#f5f6fa",
-                      padding: "4px 12px",
-                      borderRadius: "12px",
-                      display: "inline-block",
-                    }}
-                  >
-                    Wikipedia Tags
-                  </div> */}
                 </div>
               </Card>
             </Col>
@@ -626,7 +614,7 @@ const VideoBreakdownUI = ({
                     fontWeight: 600,
                   }}
                 >
-                  Video Engagement by Category
+                  Avg Video Engagement Score by Category
                 </span>
               </div>
             }

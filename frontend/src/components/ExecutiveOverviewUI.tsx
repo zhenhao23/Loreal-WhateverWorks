@@ -730,7 +730,7 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
         </Col>
       </Row>
 
-      {/* 🏆 Row 5 – Top 3 Channels */}
+      {/* 🏆 Row 5 – Top 9 Channels */}
       <Row gutter={[24, 24]} style={{ marginTop: "32px" }}>
         <Col xs={24}>
           <Card
@@ -761,15 +761,27 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
           >
             <Row gutter={[24, 16]}>
               {topChannels?.map((channel, index) => (
-                <Col xs={24} md={8} key={channel.channelId}>
+                <Col xs={24} md={12} lg={8} key={channel.channelId}>
                   <Card
                     style={{
                       borderRadius: "8px",
                       border:
-                        index === 0 ? "2px solid #FFD700" : "1px solid #f0f2f7",
-                      boxShadow:
                         index === 0
-                          ? "0 4px 12px rgba(255, 215, 0, 0.2)"
+                          ? "2px solid #FFD700"
+                          : index === 1
+                          ? "2px solid #C0C0C0"
+                          : index === 2
+                          ? "2px solid #CD7F32"
+                          : "1px solid #f0f2f7",
+                      boxShadow:
+                        index <= 2
+                          ? `0 4px 12px rgba(${
+                              index === 0
+                                ? "255, 215, 0"
+                                : index === 1
+                                ? "192, 192, 192"
+                                : "205, 127, 50"
+                            }, 0.2)`
                           : "0 2px 6px rgba(0,0,0,0.04)",
                       position: "relative",
                       overflow: "hidden",
@@ -786,7 +798,9 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                             ? "#FFD700"
                             : index === 1
                             ? "#C0C0C0"
-                            : "#CD7F32",
+                            : index === 2
+                            ? "#CD7F32"
+                            : "#8B92B8",
                         color: "white",
                         borderRadius: "50%",
                         width: "24px",
@@ -898,11 +912,24 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                       <div
                         style={{
                           textAlign: "center",
-                          backgroundColor: index === 0 ? "#FFF9E6" : "#F8F9FF",
+                          backgroundColor:
+                            index === 0
+                              ? "#FFF9E6"
+                              : index === 1
+                              ? "#F0F0F0"
+                              : index === 2
+                              ? "#FFF4E6"
+                              : "#F8F9FF",
                           padding: "6px 12px",
                           borderRadius: "16px",
                           border: `1px solid ${
-                            index === 0 ? "#FFE58F" : "#E8EAFF"
+                            index === 0
+                              ? "#FFE58F"
+                              : index === 1
+                              ? "#D9D9D9"
+                              : index === 2
+                              ? "#FFD591"
+                              : "#E8EAFF"
                           }`,
                         }}
                       >
@@ -910,10 +937,17 @@ const ExecutiveOverviewUI = ({ data }: ExecutiveOverviewUIProps) => {
                           style={{
                             fontSize: "12px",
                             fontWeight: 600,
-                            color: index === 0 ? "#D48806" : "#5A6ACF",
+                            color:
+                              index === 0
+                                ? "#D48806"
+                                : index === 1
+                                ? "#595959"
+                                : index === 2
+                                ? "#D46B08"
+                                : "#5A6ACF",
                           }}
                         >
-                          {channel.engagementRate}% Engagement
+                          {channel.engagementRate} Avg Engagement Score
                         </span>
                       </div>
                     </div>

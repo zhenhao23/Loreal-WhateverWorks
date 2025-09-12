@@ -1,26 +1,10 @@
-// Import from split query files for better organization
+// Import from videoBreakdown queries
 const {
-  getVideoCategoryData,
-  getVideoPlatformDistribution,
-  getVideoUploadTrends,
-  getVideoDurationAnalysis,
   getVideoMetrics,
+  getVideoCategoryData,
   getCategoryLeaderboardData,
-} = require("../db/queries/videos.queries");
-
-const {
-  getCreatorLeaderboard,
-  getTopContentByEngagement,
-  getTrendingCreators,
-  getContentQualityRankings,
-} = require("../db/queries/leaderboard.queries");
-
-const {
-  getVideoPerformanceMetrics,
-  getTopVideosByCategory,
-  getVideoEngagementAnalysis,
-  getPerformanceBenchmarks,
-} = require("../db/queries/performance.queries");
+  getEngagementTimelineData,
+} = require("../db/queries/videoBreakdown.queries");
 
 /**
  * Video Breakdown Service
@@ -28,7 +12,7 @@ const {
  */
 async function getVideoBreakdown(
   filters = {},
-  pagination = { limit: 10, offset: 0 }
+  pagination = { current: 1, pageSize: 10 }
 ) {
   try {
     console.log("Fetching video breakdown data with filters:", filters);
@@ -37,22 +21,28 @@ async function getVideoBreakdown(
     const parsedFilters = parseFilters(filters);
 
     // Fetch all data in parallel for better performance
-    const [videoCategoryData, categoryLeaderboardData, videoMetrics] =
-      await Promise.all([
-        getVideoCategoryData(parsedFilters),
-        getCategoryLeaderboardData(
-          parsedFilters,
-          pagination.limit,
-          pagination.offset
-        ),
-        getVideoMetrics(parsedFilters),
-      ]);
+    const [
+      videoCategoryData,
+      categoryLeaderboardData,
+      videoMetrics,
+      engagementTimelineData,
+    ] = await Promise.all([
+      getVideoCategoryData(parsedFilters),
+      getCategoryLeaderboardData(
+        parsedFilters,
+        pagination.current || 1,
+        pagination.pageSize || 10
+      ),
+      getVideoMetrics(parsedFilters),
+      getEngagementTimelineData(parsedFilters),
+    ]);
 
     // Combine into one JSON object matching frontend expectations
     const result = {
       videoCategoryData,
       categoryLeaderboardData,
       videoMetrics,
+      engagementTimelineData,
     };
 
     console.log("Successfully combined video breakdown data");

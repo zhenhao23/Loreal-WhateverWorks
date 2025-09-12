@@ -1,7 +1,50 @@
 // Mock data for Executive Overview component
-import lorealAvatar from "../assets/loreal.jpg";
-import maybellineAvatar from "../assets/Maybelline.jpg";
-import urbanDecayAvatar from "../assets/UrbanDecay.jpg";
+import { getTopChannelsBySubscribers } from "./ChannelDataMockData";
+
+// Get top 9 channels from our channel data (fallback)
+const top9Channels = getTopChannelsBySubscribers(9);
+
+/**
+ * Fetch real channel data from backend API
+ */
+export async function fetchTopChannelsData(limit = 9) {
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/channels/top?limit=${limit}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (result.success && result.data) {
+      return result.data;
+    } else {
+      throw new Error("Invalid response format");
+    }
+  } catch (error) {
+    console.error("Error fetching top channels data:", error);
+    // Return fallback mock data
+    return top9Channels.map((channel, index) => ({
+      channelId: channel.channel_id.toString(),
+      name: channel.name,
+      avatar: channel.profilePicture,
+      subscribers:
+        channel.subscribers >= 1000000
+          ? `${(channel.subscribers / 1000000).toFixed(1)}M`
+          : channel.subscribers >= 1000
+          ? `${(channel.subscribers / 1000).toFixed(0)}K`
+          : channel.subscribers.toString(),
+      totalComments:
+        [15420, 12850, 8940, 7320, 6810, 5920, 4750, 3680, 2940][index] || 2000,
+      avgSentiment: [8.7, 8.2, 7.8, 7.5, 7.2, 6.9, 6.6, 6.3, 6.0][index] || 6.0,
+      engagementRate:
+        [12.4, 10.9, 9.7, 8.8, 8.2, 7.6, 7.1, 6.5, 5.9][index] || 5.0,
+    }));
+  }
+}
 
 export const mockSentimentData = [
   { type: "Negative", value: 42, percentage_numeric: 42, percentage: "42%" },
@@ -125,35 +168,22 @@ export const mockSentimentByTopics = [
   { topic: "Body", score: 6.9, value: 6.9, color: "#C1B8FC" },
 ].sort((a, b) => b.score - a.score);
 
-export const mockTopChannels = [
-  {
-    channelId: "1",
-    name: "L'Oréal Paris",
-    avatar: lorealAvatar,
-    subscribers: "2.1M",
-    totalComments: 15420,
-    avgSentiment: 8.7,
-    engagementRate: 12.4,
-  },
-  {
-    channelId: "2",
-    name: "Maybelline New York",
-    avatar: maybellineAvatar,
-    subscribers: "1.8M",
-    totalComments: 12850,
-    avgSentiment: 8.2,
-    engagementRate: 10.9,
-  },
-  {
-    channelId: "3",
-    name: "Urban Decay Cosmetics",
-    avatar: urbanDecayAvatar,
-    subscribers: "1.2M",
-    totalComments: 8940,
-    avgSentiment: 7.8,
-    engagementRate: 9.7,
-  },
-];
+// Fallback mock data for top channels (used when API fails)
+export const mockTopChannels = top9Channels.map((channel, index) => ({
+  channelId: channel.channel_id.toString(),
+  name: channel.name,
+  avatar: channel.profilePicture,
+  subscribers:
+    channel.subscribers >= 1000000
+      ? `${(channel.subscribers / 1000000).toFixed(1)}M`
+      : channel.subscribers >= 1000
+      ? `${(channel.subscribers / 1000).toFixed(0)}K`
+      : channel.subscribers.toString(),
+  totalComments:
+    [15420, 12850, 8940, 7320, 6810, 5920, 4750, 3680, 2940][index] || 2000, // Mock engagement data
+  avgSentiment: [8.7, 8.2, 7.8, 7.5, 7.2, 6.9, 6.6, 6.3, 6.0][index] || 6.0, // Mock sentiment scores
+  engagementRate: [12.4, 10.9, 9.7, 8.8, 8.2, 7.6, 7.1, 6.5, 5.9][index] || 5.0, // Mock engagement rates
+}));
 
 export interface ExecutiveOverviewData {
   sentimentData: typeof mockSentimentData;

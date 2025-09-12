@@ -48,6 +48,24 @@ const ExecutiveOverview = ({
           ];
         }
 
+        // Fetch channels data from the real API
+        let topChannelsData = mockTopChannels;
+        try {
+          const channelsResponse = await fetch(
+            "http://localhost:5000/api/channels/top?limit=3"
+          );
+
+          if (channelsResponse.ok) {
+            const channelsResult = await channelsResponse.json();
+            if (channelsResult.success && channelsResult.data) {
+              topChannelsData = channelsResult.data;
+              console.log("Using real channels data from API");
+            }
+          }
+        } catch (channelsError) {
+          console.warn("Channels API failed, using mock data:", channelsError);
+        }
+
         // Updated API endpoint to match new backend structure
         const response = await fetch(
           "http://localhost:5000/api/executive-overview",
@@ -79,7 +97,7 @@ const ExecutiveOverview = ({
           metricsData: apiData.metricsData || mockMetricsData,
           categoryData: apiData.categoryData || mockCategoryData,
           sentimentByTopics: apiData.sentimentByTopics || mockSentimentByTopics,
-          topChannels: apiData.topChannels || mockTopChannels,
+          topChannels: topChannelsData, // Use real channels data
         };
       } catch (error) {
         console.error("Failed to fetch executive overview data:", error);
