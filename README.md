@@ -101,7 +101,94 @@ Steps:
 
 ### 3. Spam Detection
 
-#### Rules:
+#### Semi-Supervised Spam Detection:
+
+#### Train
+
+- Calculate duplication ratio per author and video
+
+  - Duplicated comment / total comment
+  - Find the maximum duplication ratio across all videos for each author.
+  - Idenfity authors as spammers based on duplication ratio (>=0.7)
+ 
+- Filter out spammers from main dataset
+- Filter out spam comment based on:
+
+  - missing values
+  - presence of links
+  - very short comments (<3 words)
+  - emoji-only comments
+  - comments with emojis more than words
+
+- Supervised Training 
+  - Manually labeled data
+  - Split labeled data into training and validation sets
+  - Define Evaluation metrics function including:
+ 
+    - accuracy
+    - precision
+    - recall
+    - F1
+   
+  - Dataset Setup:
+    - HuggingFace tokenizer
+      - 'Dataset.from_dict'
+      - tokenizes training and validation texts
+     
+    - Custom PyTourch
+      - CommentDataset class used to wrap tokenized encodings and labels
+     
+    - Initialize Model, Set Training Arguments and Train
+      - Loads a ready-made language model
+      - 2 labels → spam vs not spam
+      - Train for 2 full passes over the data
+      - Use 200 comments per batch
+      - Save results at the end of each pass
+      - Evaluate Trained Model on Validation Set
+      - Save Trained Model and Tokenizer
+
+    - Semi-Supervised Training (1)
+    - Prediction
+      - Select subset of non-duplicate comments
+      - Select first 10000 comments for batch prediction
+      - load trained model and tokenizer for inference
+      - Define batch scoring function (returning the predited probabilities (spam or not spam) for each class)
+      - Score first prediction batch and add probability columns
+     
+    - Supervised Training (1)
+      - Calculate uncertainty margin and select uncertain samples
+      - Load trained model and tokenizer for inference
+      - Load Manually labeled data, clean labels and split data
+      - Tokenzize, Prepare Datasets and Train Model
+
+        - Define custom PyTorch dataset class
+        - Sets up HuggingFace
+        - Initialized Trainer
+        - Evaluate Trained Model on Validation Set
+        - Save Trained Model andTokenizer
+       
+      - Semi-Supervised Training (2)
+      - Prediction
+        - Select unlabeled comments for batch prediction
+        - load trained model and tokenizer for inference
+        - Define batch scoring function for unlabeled data
+        - Score second prediction batch and add probability columns
+        - Calculate Uncertainty Margin and Select Top Confident Samples for next stage of processing
+       
+      - Supervised Training (2)
+        - Calculate uncertainty margin and select uncertain samples
+        - Export uncertain samples for manual labeling
+       
+      - Semi-Supervised Training (3)
+        - Load Trained model and tokenizer for inference
+        - load trained model and tokenizer for inference
+        - clean labels and split data for training and validation
+        - Train or evaluate model
+        - Evaluate Traine model on validation set
+        - Save model from round 3
+
+
+
 
 - Duplicated text → spam
 - Regex rules for spam:
