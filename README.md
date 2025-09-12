@@ -20,14 +20,15 @@ The workflow integrates classical preprocessing with modern transformer models f
 
 Datasets:
 
-- **Videos Table**
-- **Comments Table** (5 datasets combined into one)
+- **Videos Table (videos.csv)**
+- **Comments Table (comments.csv)** :5 datasets combined into one
 
 Steps:
 
 - Combined 5 comment datasets
 - Checked columns, nulls, unique values
 - Visualized numeric features
+- Removed row duplicates by commentId & videoId
 - Removed non-informative columns
 
   - Videos: `kind`, `favouriteCount` (always 0)
@@ -49,23 +50,52 @@ Steps:
 
 #### **Videos**
 
-- Cleaned titles (`cleanedText`):
+- Extract Topic Categories from URLs
+  - Use regex to grab anything after 'wiki/' from 'topicCategories' column.
 
-  - Lowercased, expanded contractions
-  - Removed mentions, hashtags, links, emojis, punctuation
-  - Normalized elongated words, whitespace
-  - Lemmatized tokens
+  - Two new columns:
+    - 'extracted_topicCategories': List of topics for each video
+    - 'extracted_topicCategories_str': Comma-seperated string of topics for each video
 
+  - Flatten and Count frequency of each Topic Category 
+  - Define and Remove videos with Target Categories (Irrelevant Categories)
+  - 'video_filtered': dataframe that contains only videos outside targe categories
+  - Remove Videos with like count greater than view count
+
+- Clean_text function performs preprocessing steps including:
+
+  - Lowercasing
+  - Expanding Contractions
+  - Removing Mentions, Hashtags, Links, Emojis, Punctuation
+  - Normalizing elongated words
+  - Collapsing whitespace
+  - Tokenizing
+  - Removing Stopwords
+  - Lemmatizing
+ 
+- 'cleanedText': column created after applying Clean_text function to clean video titles
 - Detected English titles (`langid`) → `is_english` column
 - Translated non-English titles using Google Translator
-- Categorized videos using `topicCategories` (removed irrelevant ones)
 
 #### **Comments**
 
-- Added `duplicatedFlag`: same author + same video + same text
-- Cleaned text (`cleanedText`) with same pipeline as video titles
+- Filter out irrelevant videos
+- Convert 'publishedAt' -> Datetime
+- Sort 'publishedAt' in ascending order
+- Added `duplicatedFlag`: same authorId + same videoId + same textOriginal
+
+- Clean_text function performs preprocessing steps including
+
+  - Lowercasing
+  - Expanding Contractions
+  - Removing Mentions, Hashtags, Links, Emojis, Punctuation
+  - Normalizing elongated words
+  - Collapsing whitespace
+  - Tokenizing
+  - Removing Stopwords
+  - Lemmatizing
+ 
 - Tagged duplicated text (checked after cleaning)
-- Removed irrelevant comments from irrelevant videos (via `videoId` join)
 
 ---
 
