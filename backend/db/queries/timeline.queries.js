@@ -138,20 +138,20 @@ function buildWhereClause(filters) {
     paramCount += 2;
   }
 
-  if (filters.category) {
-    // Note: Category filtering would need a category column or lookup table
-    // whereConditions.push(`category = $${paramCount}`);
-    // params.push(filters.category);
-    // paramCount++;
-  }
+  // if (filters.category) {
+  //   // Note: Category filtering would need a category column or lookup table
+  //   // whereConditions.push(`category = $${paramCount}`);
+  //   // params.push(filters.category);
+  //   // paramCount++;
+  // }
 
-  if (filters.language) {
-    if (filters.language.toLowerCase() === "english") {
-      whereConditions.push(`is_english = 1`);
-    } else if (filters.language.toLowerCase() === "non-english") {
-      whereConditions.push(`is_english = 0`);
-    }
-  }
+  // if (filters.language) {
+  //   if (filters.language.toLowerCase() === "english") {
+  //     whereConditions.push(`is_english = 1`);
+  //   } else if (filters.language.toLowerCase() === "non-english") {
+  //     whereConditions.push(`is_english = 0`);
+  //   }
+  // }
 
   return {
     whereClause:

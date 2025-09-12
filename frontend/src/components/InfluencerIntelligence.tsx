@@ -25,6 +25,23 @@ const InfluencerIntelligence = ({
   const fetchInfluencerIntelligenceData =
     async (): Promise<InfluencerIntelligenceData> => {
       try {
+        // Convert dateFilter to year-only format to avoid timezone issues
+        let processedDateFilter = null;
+        if (
+          dateFilter &&
+          Array.isArray(dateFilter) &&
+          dateFilter.length === 2
+        ) {
+          processedDateFilter = [
+            dateFilter[0]?.year?.() ||
+              dateFilter[0]?.format?.("YYYY") ||
+              String(dateFilter[0]),
+            dateFilter[1]?.year?.() ||
+              dateFilter[1]?.format?.("YYYY") ||
+              String(dateFilter[1]),
+          ];
+        }
+
         // Replace this with your actual API endpoint
         const response = await fetch(
           "http://localhost:5000/api/influencer-intelligence",
@@ -34,7 +51,7 @@ const InfluencerIntelligence = ({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              dateFilter,
+              dateFilter: processedDateFilter,
               categoryFilter,
               languageFilter,
             }),

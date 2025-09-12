@@ -25,6 +25,8 @@ async function contentQualityKPIHandler(req, res) {
         req.body.categoryFilter || req.query.categoryFilter || "all",
       languageFilter:
         req.body.languageFilter || req.query.languageFilter || "all",
+      sentimentFilter:
+        req.body.sentimentFilter || req.query.sentimentFilter || "all",
     };
 
     console.log("Processed filters:", filters);
@@ -68,6 +70,8 @@ async function detailedContentAnalysisHandler(req, res) {
         req.body.categoryFilter || req.query.categoryFilter || "all",
       languageFilter:
         req.body.languageFilter || req.query.languageFilter || "all",
+      sentimentFilter:
+        req.body.sentimentFilter || req.query.sentimentFilter || "all",
     };
 
     const data = await getDetailedContentAnalysis(filters);

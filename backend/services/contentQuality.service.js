@@ -1,9 +1,9 @@
 // Import from split query files for better organization
 const {
-  getKPIMetrics,
-  getQualityDistribution,
-  getKPITrendData,
-} = require("../db/queries/kpi.queries");
+  getContentQualityKPIMetrics,
+  getKPIDistribution,
+  getKPITrend,
+} = require("../db/queries/contentQualityKpi.queries");
 
 const {
   getTopKeywords,
@@ -26,6 +26,8 @@ const {
   getTopicCorrelations,
 } = require("../db/queries/topics.queries");
 
+const { getTimelineData } = require("../db/queries/timeline.queries");
+
 /**
  * Content Quality KPI Service
  * Combines data from content quality queries and builds the response expected by the frontend
@@ -45,13 +47,15 @@ async function getContentQualityKPI(filters = {}) {
       wordCloudData,
       topComments,
       bubbleData,
+      timelineData,
     ] = await Promise.all([
-      getKPIMetrics(parsedFilters),
+      getContentQualityKPIMetrics(parsedFilters),
       getTopKeywords(parsedFilters),
       getSentimentByTopics(parsedFilters),
       getWordCloudData(parsedFilters),
       getTopComments(parsedFilters),
       getBubbleData(parsedFilters),
+      getTimelineData(parsedFilters),
     ]);
 
     // Combine into one JSON object matching frontend expectations
@@ -62,6 +66,7 @@ async function getContentQualityKPI(filters = {}) {
       wordCloudData,
       topComments,
       bubbleData,
+      timelineData,
     };
 
     console.log("Successfully combined content quality KPI data");
@@ -81,7 +86,7 @@ async function getDetailedContentAnalysis(filters = {}) {
 
     // This could include more detailed breakdowns
     const [kpiMetrics, sentimentByTopics, wordCloudData] = await Promise.all([
-      getKPIMetrics(parsedFilters),
+      getContentQualityKPIMetrics(parsedFilters),
       getSentimentByTopics(parsedFilters),
       getWordCloudData(parsedFilters),
     ]);
@@ -124,6 +129,11 @@ function parseFilters(filters) {
   // Language filter
   if (filters.languageFilter && filters.languageFilter !== "all") {
     parsed.language = filters.languageFilter.toLowerCase();
+  }
+
+  // Sentiment filter
+  if (filters.sentimentFilter && filters.sentimentFilter !== "all") {
+    parsed.sentiment = filters.sentimentFilter.toLowerCase();
   }
 
   return parsed;

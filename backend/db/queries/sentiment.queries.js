@@ -13,11 +13,12 @@ async function getSentimentData(filters = {}) {
       WITH sentiment_classification AS (
         SELECT 
           CASE 
-            WHEN positive > negative AND positive > neutral THEN 'Positive'
-            WHEN negative > positive AND negative > neutral THEN 'Negative'
+            WHEN c.positive > c.negative AND c.positive > c.neutral THEN 'Positive'
+            WHEN c.negative > c.positive AND c.negative > c.neutral THEN 'Negative'
             ELSE 'Neutral'
           END as sentiment_type
-        FROM comments
+        FROM comments c
+        LEFT JOIN videos v ON c.video_id = v.video_id
         ${whereCondition}
       ),
       sentiment_counts AS (
@@ -28,7 +29,10 @@ async function getSentimentData(filters = {}) {
         GROUP BY sentiment_type
       ),
       total_count AS (
-        SELECT COUNT(*) as total FROM comments ${whereCondition}
+        SELECT COUNT(*) as total 
+        FROM comments c
+        LEFT JOIN videos v ON c.video_id = v.video_id
+        ${whereCondition}
       ),
       all_sentiments AS (
         SELECT unnest(ARRAY['Negative', 'Neutral', 'Positive']) as sentiment_type
@@ -81,11 +85,12 @@ async function getOverallSentimentScore(filters = {}) {
       WITH sentiment_scores AS (
         SELECT 
           CASE 
-            WHEN positive > negative AND positive > neutral THEN 10.0  -- Positive = 10
-            WHEN negative > positive AND negative > neutral THEN 0.0   -- Negative = 0
+            WHEN c.positive > c.negative AND c.positive > c.neutral THEN 10.0  -- Positive = 10
+            WHEN c.negative > c.positive AND c.negative > c.neutral THEN 0.0   -- Negative = 0
             ELSE 5.0  -- Neutral = 5
           END as score
-        FROM comments
+        FROM comments c
+        LEFT JOIN videos v ON c.video_id = v.video_id
         ${whereCondition}
       )
       SELECT 
@@ -168,10 +173,10 @@ function buildWhereClause(filters) {
       toYear = parseInt(String(filters.dateTo).substring(0, 4));
     }
 
-    console.log("Extracted years - From:", fromYear, "To:", toYear);
+    console.log("Sentiment - Extracted years - From:", fromYear, "To:", toYear);
 
     whereConditions.push(
-      `EXTRACT(YEAR FROM published_at) BETWEEN $${paramCount} AND $${
+      `EXTRACT(YEAR FROM v.published_at) BETWEEN $${paramCount} AND $${
         paramCount + 1
       }`
     );
@@ -179,21 +184,12 @@ function buildWhereClause(filters) {
     paramCount += 2;
   }
 
-  if (filters.category) {
-    // Note: Category filtering would need a category column or lookup table
-    // For now, this is commented out as the schema doesn't include a direct category column
-    // whereConditions.push(`category = $${paramCount}`);
-    // params.push(filters.category);
-    // paramCount++;
-  }
-
-  if (filters.language) {
-    // Filter by English vs non-English based on is_english column
-    if (filters.language.toLowerCase() === "english") {
-      whereConditions.push(`is_english = 1`);
-    } else if (filters.language.toLowerCase() === "non-english") {
-      whereConditions.push(`is_english = 0`);
-    }
+  // Category filter using topic_label from videos table
+  if (filters.category && filters.category !== "all") {
+    console.log("Sentiment - Applying category filter:", filters.category);
+    whereConditions.push(`LOWER(v.topic_label) = $${paramCount}`);
+    params.push(filters.category.toLowerCase());
+    paramCount++;
   }
 
   return {

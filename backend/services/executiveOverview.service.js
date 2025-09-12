@@ -2,7 +2,6 @@ const {
   getSentimentData,
   getOverallSentimentScore,
 } = require("../db/queries/sentiment.queries");
-const { getTimelineData } = require("../db/queries/timeline.queries");
 const { getMetricsData } = require("../db/queries/metrics.queries");
 const { getCategoryData } = require("../db/queries/category.queries");
 const { getSentimentByTopics } = require("../db/queries/topics.queries");
@@ -22,14 +21,12 @@ async function getExecutiveOverview(filters = {}) {
     const [
       sentimentData,
       overallSentimentScore,
-      timelineData,
       metricsData,
       categoryData,
       sentimentByTopics,
     ] = await Promise.all([
       getSentimentData(parsedFilters),
       getOverallSentimentScore(parsedFilters),
-      getTimelineData(parsedFilters),
       getMetricsData(parsedFilters),
       getCategoryData(parsedFilters),
       getSentimentByTopics(parsedFilters),
@@ -39,7 +36,6 @@ async function getExecutiveOverview(filters = {}) {
     const result = {
       sentimentData,
       overallSentimentScore: Math.round(overallSentimentScore * 10) / 10, // Round to 1 decimal
-      timelineData,
       metricsData,
       categoryData,
       sentimentByTopics,
@@ -91,15 +87,13 @@ async function getDetailedAnalytics(filters = {}) {
     const parsedFilters = parseFilters(filters);
 
     // This could include more detailed breakdowns
-    const [sentimentData, timelineData, categoryData] = await Promise.all([
+    const [sentimentData, categoryData] = await Promise.all([
       getSentimentData(parsedFilters),
-      getTimelineData(parsedFilters),
       getCategoryData(parsedFilters),
     ]);
 
     return {
       sentimentBreakdown: sentimentData,
-      timeline: timelineData,
       categoryBreakdown: categoryData,
       generatedAt: new Date().toISOString(),
       filters: parsedFilters,

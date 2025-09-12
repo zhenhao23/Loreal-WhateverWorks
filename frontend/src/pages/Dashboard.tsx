@@ -28,7 +28,7 @@ function Dashboard() {
   ]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedLanguage, setSelectedLanguage] = useState("english");
-  const [selectedSentiment, setSelectedSentiment] = useState("negative");
+  const [selectedSentiment, setSelectedSentiment] = useState("all");
 
   const categories = [
     { key: "all", label: "All" },
@@ -69,6 +69,7 @@ function Dashboard() {
           dateFilter={selectedYearRange}
           categoryFilter={selectedCategory}
           languageFilter={selectedLanguage}
+          sentimentFilter={selectedSentiment}
         />
       ),
     },

@@ -84,7 +84,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
             maxWidth: "400px",
           }}
           dangerouslySetInnerHTML={{
-            __html: text.replace(
+            __html: (text || "").replace(
               /\*\*(.*?)\*\*/g,
               '<strong style="color: #5A6ACF;">$1</strong>'
             ),
@@ -103,10 +103,15 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
           neutral: { color: "#faad14", icon: <ExclamationCircleOutlined /> },
           negative: { color: "#ff4d4f", icon: <CloseCircleOutlined /> },
         };
-        const sentimentConfig = config[sentiment as keyof typeof config];
+        const sentimentConfig = config[sentiment as keyof typeof config] || {
+          color: "#666",
+          icon: <ExclamationCircleOutlined />,
+        };
         return (
           <Tag color={sentimentConfig.color} icon={sentimentConfig.icon}>
-            {sentiment.charAt(0).toUpperCase() + sentiment.slice(1)}
+            {sentiment
+              ? sentiment.charAt(0).toUpperCase() + sentiment.slice(1)
+              : "Unknown"}
           </Tag>
         );
       },
@@ -148,7 +153,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
       {/* 🔝 Row 1 – KPI Cards (anchor metrics) */}
       <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
         {/* Avg KPI Score */}
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <Card
             style={{
               borderRadius: "12px",
@@ -174,7 +179,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                   marginBottom: "4px",
                 }}
               >
-                {kpiMetrics.avgKPIScore}
+                {kpiMetrics?.avgKPIScore || 0}
               </div>
               <div
                 style={{ color: "#666", fontSize: "14px", marginBottom: "6px" }}
@@ -189,15 +194,15 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                   color: "#8B92B8",
                 }}
               >
-                <span>Min: {kpiMetrics.minKPIScore}</span>
-                <span>Max: {kpiMetrics.maxKPIScore}</span>
+                <span>Min: {kpiMetrics?.minKPIScore || 0}</span>
+                <span>Max: {kpiMetrics?.maxKPIScore || 0}</span>
               </div>
             </div>
           </Card>
         </Col>
 
         {/* % High-Quality Comments */}
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <Card
             style={{
               borderRadius: "12px",
@@ -223,7 +228,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                   marginBottom: "4px",
                 }}
               >
-                {kpiMetrics.highQualityPercentage}%
+                {kpiMetrics?.highQualityPercentage || 0}%
               </div>
               <div
                 style={{ color: "#666", fontSize: "14px", marginBottom: "6px" }}
@@ -231,14 +236,14 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                 High-Quality Comments
               </div>
               <div style={{ fontSize: "12px", color: "#8B92B8" }}>
-                score ≥ 8.0
+                score ≥ 6.0
               </div>
             </div>
           </Card>
         </Col>
 
         {/* Total Comments Analyzed */}
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <Card
             style={{
               borderRadius: "12px",
@@ -264,7 +269,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                   marginBottom: "4px",
                 }}
               >
-                {kpiMetrics.totalCommentsAnalyzed.toLocaleString()}
+                {(kpiMetrics?.totalCommentsAnalyzed || 0).toLocaleString()}
               </div>
               <div
                 style={{ color: "#666", fontSize: "14px", marginBottom: "6px" }}
@@ -272,52 +277,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                 Total Comments Analyzed
               </div>
               <div style={{ fontSize: "12px", color: "#8B92B8" }}>
-                across all videos
-              </div>
-            </div>
-          </Card>
-        </Col>
-
-        {/* Spam Detected */}
-        <Col xs={24} sm={12} lg={6}>
-          <Card
-            style={{
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-              border: "1px solid #f0f2f7",
-              height: "140px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  color: "#ff4d4f",
-                  fontSize: "32px",
-                  fontWeight: 700,
-                  lineHeight: 1,
-                  marginBottom: "4px",
-                }}
-              >
-                {kpiMetrics.spamDetected.toLocaleString()}
-              </div>
-              <div
-                style={{ color: "#666", fontSize: "14px", marginBottom: "6px" }}
-              >
-                Spam Detected
-              </div>
-              <div style={{ fontSize: "12px", color: "#8B92B8" }}>
-                {(
-                  (kpiMetrics.spamDetected / kpiMetrics.totalCommentsAnalyzed) *
-                  100
-                ).toFixed(1)}
-                % of total
+                after removing spam
               </div>
             </div>
           </Card>
@@ -360,7 +320,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
           >
             <div style={{ height: "300px", padding: "16px" }}>
               <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={timelineData}>
+                <ComposedChart data={timelineData || []}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis
                     dataKey="month"
@@ -491,7 +451,12 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
             }}
           >
             <Table
-              dataSource={topComments}
+              dataSource={
+                topComments?.map((comment, index) => ({
+                  ...comment,
+                  key: comment.key || `comment-${index}`,
+                })) || []
+              }
               columns={commentColumns}
               pagination={false}
               size="middle"
@@ -540,7 +505,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
               <ResponsiveContainer width="100%" height="100%">
                 <ScatterChart
                   margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-                  data={bubbleData}
+                  data={bubbleData || []}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis
@@ -656,7 +621,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                   />
                   <Scatter
                     name="Words"
-                    data={bubbleData}
+                    data={bubbleData || []}
                     shape={<CustomBubble />}
                   />
                 </ScatterChart>
@@ -706,7 +671,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
                 position: "relative",
               }}
             >
-              {wordCloudData.map((item, index) => {
+              {(wordCloudData || []).map((item, index) => {
                 // Calculate font size based on value (min: 14px, max: 36px)
                 const fontSize = Math.max(
                   14,
@@ -724,7 +689,7 @@ const ContentQualityKPIUI = ({ data }: ContentQualityKPIUIProps) => {
 
                 return (
                   <span
-                    key={index}
+                    key={`word-${item.text}-${index}`}
                     style={{
                       fontSize: `${fontSize}px`,
                       color: color,

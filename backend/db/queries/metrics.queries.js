@@ -17,59 +17,63 @@ async function getMetricsData(filters = {}) {
       totalVideosResult,
       languageResult,
     ] = await Promise.all([
-      // Avg KPI Score per Comment from comments table
+      // Avg KPI Score per Comment from comments table (with category filter via videos join)
       pool.query(
         `
-        SELECT COALESCE(ROUND(AVG(kpi), 2), 0) * 10 as avg_kpi_score
-        FROM comments
+        SELECT COALESCE(ROUND(AVG(c.kpi), 2), 0) * 10 as avg_kpi_score
+        FROM comments c
+        LEFT JOIN videos v ON c.video_id = v.video_id
         ${whereCondition}
       `,
         params
       ),
 
-      // Spam Detected from comments_after_spam table
+      // Spam Detected from comments_after_spam table (with category filter via videos join)
       pool.query(
         `
         SELECT 
           CASE 
-            WHEN COUNT(*) > 0 THEN ROUND((COUNT(CASE WHEN is_spam = 1 THEN 1 END) * 100.0 / COUNT(*)), 2)
+            WHEN COUNT(*) > 0 THEN ROUND((COUNT(CASE WHEN cas.is_spam = 1 THEN 1 END) * 100.0 / COUNT(*)), 2)
             ELSE 0
           END as spam_percentage
-        FROM comments_after_spam
+        FROM comments_after_spam cas
+        LEFT JOIN videos v ON cas.video_id = v.video_id
         ${whereCondition}
       `,
         params
       ),
 
-      // Total Comments Analyzed from comments table
+      // Total Comments Analyzed from comments_after_spam table (with category filter via videos join)
       pool.query(
         `
         SELECT COUNT(*) as total_comments
-        FROM comments
+        FROM comments_after_spam cas
+        LEFT JOIN videos v ON cas.video_id = v.video_id
         ${whereCondition}
       `,
         params
       ),
 
-      // Total Videos Analyzed from videos table
+      // Total Videos Analyzed from videos table (with category filter)
       pool.query(
         `
         SELECT COUNT(*) as total_videos
-        FROM videos
+        FROM videos v
         ${whereCondition}
       `,
         params
       ),
 
-      // English vs Non-English from comments_after_spam_eng table
+      // English vs Non-English from comments_after_spam_eng table (with category filter via videos join)
       pool.query(
         `
         SELECT
           CASE
-            WHEN COUNT(*) > 0 THEN ROUND((COUNT(CASE WHEN is_english = 1 THEN 1 END) * 100.0 / COUNT(*)), 2)
+            WHEN COUNT(*) > 0 THEN ROUND((COUNT(CASE WHEN cse.is_english = 1 THEN 1 END) * 100.0 / COUNT(*)), 2)
             ELSE 0
           END as english_percentage
-        FROM comments_after_spam_eng
+        FROM comments_after_spam_eng cse
+        LEFT JOIN videos v ON cse.video_id = v.video_id
         ${whereCondition}
       `,
         params
@@ -166,12 +170,20 @@ function buildWhereClause(filters) {
     console.log("Extracted years - From:", fromYear, "To:", toYear);
 
     whereConditions.push(
-      `EXTRACT(YEAR FROM published_at) BETWEEN $${paramCount} AND $${
+      `EXTRACT(YEAR FROM v.published_at) BETWEEN $${paramCount} AND $${
         paramCount + 1
       }`
     );
     params.push(parseInt(fromYear), parseInt(toYear));
     paramCount += 2;
+  }
+
+  // Category filter using topic_label from videos table
+  if (filters.category && filters.category !== "all") {
+    console.log("Applying category filter:", filters.category);
+    whereConditions.push(`LOWER(v.topic_label) = $${paramCount}`);
+    params.push(filters.category.toLowerCase());
+    paramCount++;
   }
 
   return {
