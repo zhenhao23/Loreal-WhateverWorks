@@ -148,7 +148,6 @@ Steps:
       - Save Trained Model and Tokenizer
 
     - Semi-Supervised Training (1)
-    - Prediction
       - Select subset of non-duplicate comments
       - Select first 10000 comments for batch prediction
       - load trained model and tokenizer for inference
@@ -187,45 +186,15 @@ Steps:
         - Evaluate Traine model on validation set
         - Save model from round 3
 
-
-
-
-- Duplicated text → spam
-- Regex rules for spam:
-
-  - NaN text
-  - Contains links
-  - Very short (1–2 words)
-  - Emoji-only
-  - Emoji > words
-
-#### Approaches:
-
-**Flow 1 (Initial):**
-
-- Used pretrained `prajjwal1/bert-tiny`
-- Trained on 500,000 comments
-- Evaluated with accuracy, precision, recall, F1
-- Predicted rest of dataset
-
-**Flow 2 (Final, Semi-Supervised):**
-
-- Manually labeled 6,000 comments (700 spam, 5,300 non-spam)
-- Trained `bert-tiny` → performance:
-
-  - Accuracy: **0.888**
-  - Precision: **0.908**
-  - Recall: **0.589**
-  - F1: **0.71**
-
-- Iterative improvement:
-
-  - Predicted 10,000 comments
-  - Margin sampling (uncertain predictions)
-  - Manually labeled 1,000 comments (3 rounds)
-  - Retrained after each round
-
-- Final model used to predict entire dataset
+#### Predict
+- Semi-Supervised Spam Detection Appplication Pipeline
+  - Load Pretrained Model and Tokenizer
+  - Flag Duplicates and Spam
+  - Select dataset that are not flagged as duplicates or regex-based spam for prediction
+  - Define batch scoring funtion for unlabeled data using trained classifier
+  - Use the batch scoring function to score comments and add prediction columns
+  - Merge Cleaned data with model predictions (regex-based and model-based spam detection)
+  - Create final spam label (if duplicate, regex-based spam or predicted as spam by model)
 
 ---
 
@@ -242,41 +211,89 @@ Skipped steps (future improvement):
 
 ---
 
-### 5. Similarity Scoring
+### 5. Relevance Scoring
 
-- Merged videos with comments
+- Filter English Comments and merge with Video Metadata
 - Used `sentence-transformers/all-MiniLM-L6-v2`
-- Computed similarity between video title and comment
+- Compute sentence embeddings for comments and titles
+- Compute relevance scores using consine similarity
+- Drop video columns to keep file small
 
 ---
 
 ### 6. Sentiment Analysis
 
-#### Models used:
-
-- **nlptown/bert-base-multilingual-uncased-sentiment**
-
-  - Classified comments into: Negative, Neutral, Positive
-
-- **VADER** (baseline)
-
-- **TextBlob**
-
-#### Aspect-Based Sentiment
-
-- Used `pyabsa`
-- Extracted subject-level sentiment from each comment
+- Load Sentiment model and define scoring functions
+- Model used: **nlptown/bert-base-multilingual-uncased-sentiment**
+- Batch processing and classify comments into: Negative, Neutral, Positive
+- Run sentiment analysis to computes sentiment scores
+- Load sentiment-scored comments
 
 ---
 
-### 7. Video Categorization
+### 7. Aspect-Based Sentiment
 
-- Vectorized video titles using `CountVectorizer`
-- Tuned hyperparameters
-- Applied **NMF (Non-Negative Matrix Factorization)**
-- Extracted keywords per group
-- Labeled group names
-- Assigned each video to most relevant group
+- Used `pyabsa`
+- Extracted Aspects and sentiment in batches from each comment
+
+---
+
+### 8. Comment-Level KPI and Engagement Analysis
+
+- Merge video metadata with main dataset
+- Drop Unnecessary Columns (Unnamed: 0)
+- anayze comment frequency (descriptive statistics)
+- Calculate comment frequency and repetitiveness
+
+i) Moving-Average Type-Token Ratio (MATTR) for lexical diversity
+  - Analyze word length in comments (descriptive statistics)
+  - Apply MATTR to measure lexical diversity and calculates Type-Token Ratio (TTR)
+  - Calculates the correlation between comment length and both metrics
+  - Log-Transfrom Word Length
+
+ii) Engagement Score 
+  - based on ratio of likes and views
+
+iii) Sentiment magnitude
+  - Assigns a sentiment label (negative, neutral, positive) based on the highest score
+
+iv) Constructiveness Matrics
+  - number of aspects per comment
+  - number of polarized aspect (positive or negative)
+  - ratio of polarized aspects to total aspects for each comment
+
+v) Relevance Score
+  - scale between 0 and 1
+
+- Scale Key Features
+  - used MinMaxScaler
+  - Scale 'polarized_aspect_count', 'comment_repetitiveness', 'engagementScore' and 'word_length' to [0,1] range
+
+- Calculate KPI
+  - Define weights for each scaled feature
+  - Compute composite KPI score for each comment using weighted sum
+  - Final Output DataFrame
+
+---
+
+### 9. Video Engagement Score Analysis
+
+- Preparation
+  - Select list of unique video IDs from the comments dataset
+  - Keep only videos with comments
+  - Merge Video Metadata with KPI Data
+  - Fill Missing Like counts with 0 and check for nulls
+ 
+- Calculate Engagment Score (video)
+  - Formula: sum of likes and comments divided by views
+  - Clip Engagement Score to [0,1]
+
+- Calculate Weighted Engagement Score
+  - sum of engagemenr score and the log of likes and comments
+  - Scale Weighted Engagement Score (MinMaxScaler)
+ 
+- Group high weighted engagement score videos (>0.8) by topic
+- Final Video Output
 
 ---
 
