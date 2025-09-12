@@ -103,15 +103,17 @@ Steps:
 
 #### Semi-Supervised Spam Detection:
 
-#### Train
+##### Train
 
+###### Filter Spammers
 - Calculate duplication ratio per author and video
 
   - Duplicated comment / total comment
   - Find the maximum duplication ratio across all videos for each author.
   - Idenfity authors as spammers based on duplication ratio (>=0.7)
- 
-- Filter out spammers from main dataset
+  - Filter out spammers from main dataset
+
+###### Filter by Regex Rule
 - Filter out spam comment based on:
 
   - missing values
@@ -120,8 +122,9 @@ Steps:
   - emoji-only comments
   - comments with emojis more than words
 
-- Supervised Training 
-  - Manually labeled data
+###### Semi-Supervised Training
+
+- Preparation for Manual labeled data
   - Split labeled data into training and validation sets
   - Define Evaluation metrics function including:
  
@@ -138,23 +141,23 @@ Steps:
     - Custom PyTourch
       - CommentDataset class used to wrap tokenized encodings and labels
      
-    - Initialize Model, Set Training Arguments and Train
-      - Loads a ready-made language model
-      - 2 labels → spam vs not spam
-      - Train for 2 full passes over the data
-      - Use 200 comments per batch
-      - Save results at the end of each pass
-      - Evaluate Trained Model on Validation Set
-      - Save Trained Model and Tokenizer
+  - Initialize Model, Set Training Arguments and Train
+    - Loads a ready-made language model
+    - 2 labels → spam vs not spam
+    - Train for 2 full passes over the data
+    - Use 200 comments per batch
+    - Save results at the end of each pass
+    - Evaluate Trained Model on Validation Set
+    - Save Trained Model and Tokenizer
 
-    - Semi-Supervised Training (1)
+    - Semi-Supervised Training (Cycle 1)
       - Select subset of non-duplicate comments
       - Select first 10000 comments for batch prediction
       - load trained model and tokenizer for inference
       - Define batch scoring function (returning the predited probabilities (spam or not spam) for each class)
       - Score first prediction batch and add probability columns
-     
-    - Supervised Training (1)
+   
+     - Manual Labelling (Cycle 1) 
       - Calculate uncertainty margin and select uncertain samples
       - Load trained model and tokenizer for inference
       - Load Manually labeled data, clean labels and split data
@@ -164,21 +167,20 @@ Steps:
         - Sets up HuggingFace
         - Initialized Trainer
         - Evaluate Trained Model on Validation Set
-        - Save Trained Model andTokenizer
+        - Save Trained Model and Tokenizer
        
-      - Semi-Supervised Training (2)
-      - Prediction
+      - Semi-Supervised Training (Cycle 2)
         - Select unlabeled comments for batch prediction
         - load trained model and tokenizer for inference
         - Define batch scoring function for unlabeled data
         - Score second prediction batch and add probability columns
         - Calculate Uncertainty Margin and Select Top Confident Samples for next stage of processing
        
-      - Supervised Training (2)
+      - Manual labelling (Cycle 2)
         - Calculate uncertainty margin and select uncertain samples
         - Export uncertain samples for manual labeling
        
-      - Semi-Supervised Training (3)
+      - Semi-Supervised Training (Cycle 3)
         - Load Trained model and tokenizer for inference
         - load trained model and tokenizer for inference
         - clean labels and split data for training and validation
@@ -186,7 +188,7 @@ Steps:
         - Evaluate Traine model on validation set
         - Save model from round 3
 
-#### Predict
+##### Predict
 - Semi-Supervised Spam Detection Appplication Pipeline
   - Load Pretrained Model and Tokenizer
   - Flag Duplicates and Spam
@@ -240,10 +242,13 @@ Skipped steps (future improvement):
 
 ### 8. Comment-Level KPI and Engagement Analysis
 
+#### Preparation:
 - Merge video metadata with main dataset
 - Drop Unnecessary Columns (Unnamed: 0)
 - anayze comment frequency (descriptive statistics)
 - Calculate comment frequency and repetitiveness
+
+#### Calculate Key Features
 
 i) Moving-Average Type-Token Ratio (MATTR) for lexical diversity
   - Analyze word length in comments (descriptive statistics)
@@ -263,7 +268,9 @@ iv) Constructiveness Matrics
   - ratio of polarized aspects to total aspects for each comment
 
 v) Relevance Score
-  - scale between 0 and 1
+  - Get from 5. and scale between 0 and 1
+
+#### Combine Key Features as KPI score
 
 - Scale Key Features
   - used MinMaxScaler
@@ -272,28 +279,29 @@ v) Relevance Score
 - Calculate KPI
   - Define weights for each scaled feature
   - Compute composite KPI score for each comment using weighted sum
-  - Final Output DataFrame
+  - Final Output Comment DataFrame
 
 ---
 
 ### 9. Video Engagement Score Analysis
 
-- Preparation
-  - Select list of unique video IDs from the comments dataset
-  - Keep only videos with comments
-  - Merge Video Metadata with KPI Data
-  - Fill Missing Like counts with 0 and check for nulls
- 
-- Calculate Engagment Score (video)
+#### Preparation
+- Select list of unique video IDs from the comments dataset
+- Keep only videos with comments
+- Merge Video Metadata with KPI Data
+- Fill Missing Like counts with 0 and check for nulls
+
+#### Calculate Engagement Score and Weighted Engagement Score
+- Engagment Score (video)
   - Formula: sum of likes and comments divided by views
   - Clip Engagement Score to [0,1]
 
-- Calculate Weighted Engagement Score
+- Weighted Engagement Score
   - sum of engagemenr score and the log of likes and comments
   - Scale Weighted Engagement Score (MinMaxScaler)
  
 - Group high weighted engagement score videos (>0.8) by topic
-- Final Video Output
+- Final Output Video Dataframe
 
 ---
 
