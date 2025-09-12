@@ -147,58 +147,15 @@ Steps:
 
       - CommentDataset class used to wrap tokenized encodings and labels
      
-  - Initialize Model, Set Training Arguments and Train
-  
-    - Loads a ready-made language model
-    - 2 labels → spam vs not spam
-    - Train for 2 full passes over the data
-    - Use 200 comments per batch
-    - Save results at the end of each pass
-    - Evaluate Trained Model on Validation Set
-    - Save Trained Model and Tokenizer
+- Initialize Model, Set Training Arguments and Train
 
-    - Semi-Supervised Training (Cycle 1)
-    
-      - Select subset of non-duplicate comments
-      - Select first 10000 comments for batch prediction
-      - load trained model and tokenizer for inference
-      - Define batch scoring function (returning the predited probabilities (spam or not spam) for each class)
-      - Score first prediction batch and add probability columns
-   
-     - Manual Labelling (Cycle 1)
-    
-      - Calculate uncertainty margin and select uncertain samples
-      - Load trained model and tokenizer for inference
-      - Load Manually labeled data, clean labels and split data
-      - Tokenzize, Prepare Datasets and Train Model
-
-        - Define custom PyTorch dataset class
-        - Sets up HuggingFace
-        - Initialized Trainer
-        - Evaluate Trained Model on Validation Set
-        - Save Trained Model and Tokenizer
-       
-      - Semi-Supervised Training (Cycle 2)
-    
-        - Select unlabeled comments for batch prediction
-        - load trained model and tokenizer for inference
-        - Define batch scoring function for unlabeled data
-        - Score second prediction batch and add probability columns
-        - Calculate Uncertainty Margin and Select Top Confident Samples for next stage of processing
-       
-      - Manual labelling (Cycle 2)
-    
-        - Calculate uncertainty margin and select uncertain samples
-        - Export uncertain samples for manual labeling
-       
-      - Semi-Supervised Training (Cycle 3)
-    
-        - Load Trained model and tokenizer for inference
-        - load trained model and tokenizer for inference
-        - clean labels and split data for training and validation
-        - Train or evaluate model
-        - Evaluate Traine model on validation set
-        - Save model from round 3
+  - Train with 6,000 manually labeled comments using pretrained HuggingFace transformer model (DistilBERT).
+  - Evaluate performance with Precision, Recall, and F1-score.
+  - Predict 10,000 unlabeled comments, returning predicted probabilities (spam vs. not spam).
+  - Extract 1,000 uncertain samples by calculating the uncertainty margin.
+  - Manually label the uncertain samples and merge with the initial labeled dataset.
+  - Retrain the model with the expanded dataset.
+  - Repeat the process (prediction → uncertainty sampling → manual labeling → retraining) two more times.
 
 ##### Predict
 
