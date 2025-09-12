@@ -7,8 +7,8 @@ This project builds a full pipeline for analyzing **YouTube videos and comments*
 1. Understand and clean raw data
 2. Detect and filter spam comments
 3. Preprocess videos and comments for NLP tasks
-4. Perform relevance scoring and sentiment analysis
-5. Categorize videos into meaningful groups
+4. Perform relevance scoring, sentiment analysis and Aspect Based Sentiment Analysis
+5. KPI and engagement analysis for comment and engagement score analysis for video
 
 The workflow integrates classical preprocessing with modern transformer models for text classification, sentiment, and similarity tasks.
 
