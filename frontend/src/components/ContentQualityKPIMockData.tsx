@@ -6,6 +6,25 @@ export const mockKPIMetrics = {
   highQualityPercentage: 78,
   totalCommentsAnalyzed: 15847,
   spamDetected: 324,
+  qualityScoreDistribution: (() => {
+    // Generate 50 bars with 0.2 intervals (0.0-0.2, 0.2-0.4, etc.)
+    const distribution = [];
+    for (let i = 0; i < 50; i++) {
+      const start = (i * 0.2).toFixed(1);
+      const end = ((i + 1) * 0.2).toFixed(1);
+
+      // Create realistic bell curve distribution with peak around 7-8 range
+      const midpoint = 37; // Around 7.4-7.6 range (37th bar)
+      const distance = Math.abs(i - midpoint);
+      const frequency = Math.max(5, Math.round(800 * Math.exp(-distance / 6)));
+
+      distribution.push({
+        scoreRange: `${start}-${end}`,
+        frequency: frequency,
+      });
+    }
+    return distribution;
+  })(),
 };
 
 export const mockTopKeywords = {

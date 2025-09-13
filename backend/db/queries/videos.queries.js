@@ -718,11 +718,11 @@ async function getInfluencerPerformanceAnalysis(channelIds) {
         performanceMetrics: [
           {
             attribute: "Audience Engagement Score",
-            score: Math.round(audienceEngagementScore) * 10,
+            score: Math.round(audienceEngagementScore * 100),
           },
           { attribute: "Audience Reach", score: Math.round(audienceReach) },
           { attribute: "Production Rate", score: Math.round(productionRate) },
-          { attribute: "Growth Rate", score: Math.round(growthRate) * 10 },
+          { attribute: "Growth Rate", score: Math.round(growthRate * 10) },
         ],
       };
     });

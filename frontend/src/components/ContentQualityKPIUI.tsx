@@ -26,6 +26,7 @@ import {
 
 import type { ColumnsType } from "antd/es/table";
 import type { ContentQualityKPIData } from "./ContentQualityKPIMockData";
+import { overallSentimentData } from "./SentimentAnalysisMockData";
 
 interface ContentQualityKPIUIProps {
   data: ContentQualityKPIData;
@@ -327,6 +328,100 @@ const ContentQualityKPIUI = ({
               <div style={{ fontSize: "12px", color: "#8B92B8" }}>
                 after removing spam
               </div>
+            </div>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* 📊 Row 5 – Quality Score Distribution */}
+      <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
+        <Col xs={24}>
+          <Card
+            title={
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                <LineChartOutlined style={{ color: "#5A6ACF" }} />
+                <span
+                  style={{
+                    color: "#5A6ACF",
+                    fontSize: "18px",
+                    fontWeight: 600,
+                  }}
+                >
+                  Quality Score Distribution - Comment Frequency by Score Range
+                </span>
+              </div>
+            }
+            extra={
+              <div style={{ fontSize: "12px", color: "#8B92B8" }}>
+                Distribution of comment quality scores
+              </div>
+            }
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            }}
+            headStyle={{
+              background: "#fafbfc",
+              borderBottom: "1px solid #f0f2f7",
+            }}
+          >
+            <div style={{ height: "300px", padding: "16px" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart
+                  data={kpiMetrics?.qualityScoreDistribution || []}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis
+                    dataKey="scoreRange"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12, fill: "#666" }}
+                    label={{
+                      value: "Quality Score Range",
+                      position: "insideBottom",
+                      offset: -5,
+                      style: {
+                        textAnchor: "middle",
+                        fill: "#666",
+                        fontSize: "12px",
+                      },
+                    }}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12, fill: "#666" }}
+                    label={{
+                      value: "Number of Comments",
+                      angle: -90,
+                      position: "insideLeft",
+                      style: {
+                        textAnchor: "middle",
+                        fill: "#666",
+                        fontSize: "12px",
+                      },
+                    }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "white",
+                      border: "1px solid #f0f0f0",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    }}
+                    formatter={(value) => [`${value} comments`, "Frequency"]}
+                    labelFormatter={(label) => `Score Range: ${label}`}
+                  />
+                  <BarRecharts
+                    dataKey="frequency"
+                    fill="#A6A5F2"
+                    radius={[4, 4, 0, 0]}
+                    name="Comment Frequency"
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
             </div>
           </Card>
         </Col>
@@ -788,6 +883,189 @@ const ContentQualityKPIUI = ({
                   </span>
                 );
               })}
+            </div>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* 📈 Row 6 – Sentiment Analysis by Topic */}
+      <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
+        {/* Left: Negative Topics */}
+        <Col xs={24} lg={12}>
+          <Card
+            title={
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                <LineChartOutlined style={{ color: "#ff4d4f" }} />
+                <span
+                  style={{
+                    color: "#ff4d4f",
+                    fontSize: "18px",
+                    fontWeight: 600,
+                  }}
+                >
+                  Negative Topics - Overall Analysis
+                </span>
+              </div>
+            }
+            extra={
+              <div style={{ fontSize: "12px", color: "#8B92B8" }}>
+                Top negative sentiment topics
+              </div>
+            }
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            }}
+            headStyle={{
+              background: "#fafbfc",
+              borderBottom: "1px solid #f0f2f7",
+            }}
+          >
+            <div style={{ height: "300px", padding: "16px" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={overallSentimentData.negativeTopics}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis
+                    dataKey="topic"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12, fill: "#666" }}
+                    label={{
+                      value: "Topics",
+                      position: "insideBottom",
+                      offset: -5,
+                      style: {
+                        textAnchor: "middle",
+                        fill: "#666",
+                        fontSize: "12px",
+                      },
+                    }}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12, fill: "#666" }}
+                    label={{
+                      value: "Mention Count",
+                      angle: -90,
+                      position: "insideLeft",
+                      style: {
+                        textAnchor: "middle",
+                        fill: "#666",
+                        fontSize: "12px",
+                      },
+                    }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "white",
+                      border: "1px solid #f0f0f0",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    }}
+                    formatter={(value) => [`${value} mentions`, "Count"]}
+                    labelFormatter={(label) => `Topic: ${label}`}
+                  />
+                  <BarRecharts
+                    dataKey="count"
+                    fill="#ff6961"
+                    radius={[4, 4, 0, 0]}
+                    name="Negative Mentions"
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+        </Col>
+
+        {/* Right: Positive Topics */}
+        <Col xs={24} lg={12}>
+          <Card
+            title={
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                <LineChartOutlined style={{ color: "#52c41a" }} />
+                <span
+                  style={{
+                    color: "#52c41a",
+                    fontSize: "18px",
+                    fontWeight: 600,
+                  }}
+                >
+                  Positive Topics - Overall Analysis
+                </span>
+              </div>
+            }
+            extra={
+              <div style={{ fontSize: "12px", color: "#8B92B8" }}>
+                Top positive sentiment topics
+              </div>
+            }
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            }}
+            headStyle={{
+              background: "#fafbfc",
+              borderBottom: "1px solid #f0f2f7",
+            }}
+          >
+            <div style={{ height: "300px", padding: "16px" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={overallSentimentData.positiveTopics}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis
+                    dataKey="topic"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12, fill: "#666" }}
+                    label={{
+                      value: "Topics",
+                      position: "insideBottom",
+                      offset: -5,
+                      style: {
+                        textAnchor: "middle",
+                        fill: "#666",
+                        fontSize: "12px",
+                      },
+                    }}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12, fill: "#666" }}
+                    label={{
+                      value: "Mention Count",
+                      angle: -90,
+                      position: "insideLeft",
+                      style: {
+                        textAnchor: "middle",
+                        fill: "#666",
+                        fontSize: "12px",
+                      },
+                    }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "white",
+                      border: "1px solid #f0f0f0",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    }}
+                    formatter={(value) => [`${value} mentions`, "Count"]}
+                    labelFormatter={(label) => `Topic: ${label}`}
+                  />
+                  <BarRecharts
+                    dataKey="count"
+                    fill="#8CD47E"
+                    radius={[4, 4, 0, 0]}
+                    name="Positive Mentions"
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
             </div>
           </Card>
         </Col>

@@ -3,6 +3,7 @@ const {
   getContentQualityKPIMetrics,
   getKPIDistribution,
   getKPITrend,
+  getQualityScoreDistribution,
 } = require("../db/queries/contentQualityKpi.queries");
 
 const {
@@ -49,6 +50,7 @@ async function getContentQualityKPI(filters = {}) {
       topComments,
       bubbleData,
       timelineData,
+      qualityScoreDistribution,
     ] = await Promise.all([
       getContentQualityKPIMetrics(parsedFilters),
       getTopKeywords(parsedFilters),
@@ -57,11 +59,18 @@ async function getContentQualityKPI(filters = {}) {
       getTopComments(parsedFilters),
       getBubbleData(parsedFilters),
       getTimelineData(parsedFilters),
+      getQualityScoreDistribution(parsedFilters),
     ]);
+
+    // Add qualityScoreDistribution to kpiMetrics
+    const enhancedKpiMetrics = {
+      ...kpiMetrics,
+      qualityScoreDistribution: qualityScoreDistribution,
+    };
 
     // Combine into one JSON object matching frontend expectations
     const result = {
-      kpiMetrics,
+      kpiMetrics: enhancedKpiMetrics,
       topKeywords,
       sentimentByTopics,
       wordCloudData,
