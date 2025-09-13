@@ -4,6 +4,8 @@
 
 This project builds a full pipeline for analyzing **YouTube videos and comments**. The flow is:
 
+![Data Analysis Flow](./assets/data_analysis_flow.png)
+
 1. Understand and clean raw data
 2. Detect and filter spam comments
 3. Preprocess videos and comments for NLP tasks
@@ -51,14 +53,15 @@ Steps:
 #### **Videos**
 
 - Extract Topic Categories from URLs
+
   - Use regex to grab anything after 'wiki/' from 'topicCategories' column.
 
   - Two new columns:
-  
+
     - 'extracted_topicCategories': List of topics for each video
     - 'extracted_topicCategories_str': Comma-seperated string of topics for each video
 
-  - Flatten and Count frequency of each Topic Category 
+  - Flatten and Count frequency of each Topic Category
   - Define and Remove videos with Target Categories (Irrelevant Categories)
   - 'video_filtered': dataframe that contains only videos outside targe categories
   - Remove Videos with like count greater than view count
@@ -73,7 +76,7 @@ Steps:
   - Tokenizing
   - Removing Stopwords
   - Lemmatizing
- 
+
 - 'cleanedText': column created after applying Clean_text function to clean video titles
 - Detected English titles (`langid`) → `is_english` column
 - Translated non-English titles using Google Translator
@@ -95,7 +98,7 @@ Steps:
   - Tokenizing
   - Removing Stopwords
   - Lemmatizing
- 
+
 - Tagged duplicated text (checked after cleaning)
 
 ---
@@ -131,22 +134,23 @@ Steps:
 
   - Split labeled data into training and validation sets
   - Define Evaluation metrics function including:
- 
+
     - accuracy
     - precision
     - recall
     - F1
-   
+
   - Dataset Setup:
+
     - HuggingFace tokenizer
-  
+
       - 'Dataset.from_dict'
       - tokenizes training and validation texts
-     
+
     - Custom PyTourch
 
       - CommentDataset class used to wrap tokenized encodings and labels
-     
+
 - Initialize Model, Set Training Arguments and Train
 
   - Train with 6,000 manually labeled comments using pretrained HuggingFace transformer model (DistilBERT).
@@ -222,24 +226,29 @@ Skipped steps (future improvement):
 #### Calculate Key Features
 
 i) Moving-Average Type-Token Ratio (MATTR) for lexical diversity
-  - Analyze word length in comments (descriptive statistics)
-  - Apply MATTR to measure lexical diversity and calculates Type-Token Ratio (TTR)
-  - Calculates the correlation between comment length and both metrics
-  - Log-Transfrom Word Length
 
-ii) Engagement Score 
-  - based on ratio of likes and views
+- Analyze word length in comments (descriptive statistics)
+- Apply MATTR to measure lexical diversity and calculates Type-Token Ratio (TTR)
+- Calculates the correlation between comment length and both metrics
+- Log-Transfrom Word Length
+
+ii) Engagement Score
+
+- based on ratio of likes and views
 
 iii) Sentiment magnitude
-  - Assigns a sentiment label (negative, neutral, positive) based on the highest score
+
+- Assigns a sentiment label (negative, neutral, positive) based on the highest score
 
 iv) Constructiveness Matrics
-  - number of aspects per comment
-  - number of polarized aspect (positive or negative)
-  - ratio of polarized aspects to total aspects for each comment
+
+- number of aspects per comment
+- number of polarized aspect (positive or negative)
+- ratio of polarized aspects to total aspects for each comment
 
 v) Relevance Score
-  - Get from 5. and scale between 0 and 1
+
+- Get from 5. and scale between 0 and 1
 
 #### Combine Key Features as KPI score
 
@@ -259,12 +268,14 @@ v) Relevance Score
 ### 9. Video Engagement Score Analysis
 
 #### Preparation
+
 - Select list of unique video IDs from the comments dataset
 - Keep only videos with comments
 - Merge Video Metadata with KPI Data
 - Fill Missing Like counts with 0 and check for nulls
 
 #### Calculate Engagement Score and Weighted Engagement Score
+
 - Engagment Score (video)
 
   - Formula: sum of likes and comments divided by views
@@ -274,7 +285,7 @@ v) Relevance Score
 
   - sum of engagemenr score and the log of likes and comments
   - Scale Weighted Engagement Score (MinMaxScaler)
- 
+
 - Group high weighted engagement score videos (>0.8) by topic
 - Final Output Video Dataframe
 
@@ -282,13 +293,13 @@ v) Relevance Score
 
 ## ⚙️ Models Used
 
-| Task                   | Model/Method                                                        |
-| ---------------------- | ------------------------------------------------------------------- |
-| Spam Detection         | `prajjwal1/bert-tiny` (semi-supervised)                             |
-| Translation            | Google Translator (skipped in pipeline)                             |
-| Sentence Transformer   | `all-MiniLM-L6-v2`                                                  |
-| Sentiment Analysis     | `nlptown/bert-base-multilingual-uncased-sentiment`                  |
-| Aspect-Based Sentiment | `pyabsa`                                                            |
+| Task                   | Model/Method                                       |
+| ---------------------- | -------------------------------------------------- |
+| Spam Detection         | `prajjwal1/bert-tiny` (semi-supervised)            |
+| Translation            | Google Translator (skipped in pipeline)            |
+| Sentence Transformer   | `all-MiniLM-L6-v2`                                 |
+| Sentiment Analysis     | `nlptown/bert-base-multilingual-uncased-sentiment` |
+| Aspect-Based Sentiment | `pyabsa`                                           |
 
 ---
 
