@@ -94,13 +94,12 @@ function Dashboard() {
       label: (
         <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <UserOutlined />
-          Influencer & Content Intelligence
+          Channel & Content Intelligence
         </span>
       ),
       children: (
         <InfluencerIntelligence
           dateFilter={selectedYearRange}
-          categoryFilter={selectedCategory}
           languageFilter={selectedLanguage}
         />
       ),
@@ -201,53 +200,57 @@ function Dashboard() {
             </Row>
 
             {/* Second Row: Category Buttons */}
-            <Row gutter={[8, 8]} align="middle">
-              <Col span={24}>
-                <div
-                  style={{
-                    marginBottom: "8px",
-                    color: "#666",
-                    fontSize: "12px",
-                    fontWeight: 500,
-                  }}
-                >
-                  CATEGORY
-                </div>
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                  {categories.map((category) => (
-                    <Button
-                      key={category.key}
-                      type={
-                        selectedCategory === category.key
-                          ? "primary"
-                          : "default"
-                      }
-                      onClick={() => setSelectedCategory(category.key)}
-                      style={{
-                        borderRadius: "6px",
-                        fontWeight: 500,
-                        fontSize: "13px",
-                        height: "32px",
-                        paddingLeft: "16px",
-                        paddingRight: "16px",
-                        border:
+            {activeTab !== "4" && (
+              <Row gutter={[8, 8]} align="middle">
+                <Col span={24}>
+                  <div
+                    style={{
+                      marginBottom: "8px",
+                      color: "#666",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                    }}
+                  >
+                    CATEGORY
+                  </div>
+                  <div
+                    style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}
+                  >
+                    {categories.map((category) => (
+                      <Button
+                        key={category.key}
+                        type={
                           selectedCategory === category.key
-                            ? "none"
-                            : "1px solid #d9d9d9",
-                        backgroundColor:
-                          selectedCategory === category.key
-                            ? "#5A6ACF"
-                            : "#fff",
-                        color:
-                          selectedCategory === category.key ? "#fff" : "#666",
-                      }}
-                    >
-                      {category.label}
-                    </Button>
-                  ))}
-                </div>
-              </Col>
-            </Row>
+                            ? "primary"
+                            : "default"
+                        }
+                        onClick={() => setSelectedCategory(category.key)}
+                        style={{
+                          borderRadius: "6px",
+                          fontWeight: 500,
+                          fontSize: "13px",
+                          height: "32px",
+                          paddingLeft: "16px",
+                          paddingRight: "16px",
+                          border:
+                            selectedCategory === category.key
+                              ? "none"
+                              : "1px solid #d9d9d9",
+                          backgroundColor:
+                            selectedCategory === category.key
+                              ? "#5A6ACF"
+                              : "#fff",
+                          color:
+                            selectedCategory === category.key ? "#fff" : "#666",
+                        }}
+                      >
+                        {category.label}
+                      </Button>
+                    ))}
+                  </div>
+                </Col>
+              </Row>
+            )}
           </Col>
         </Row>
       </Card>

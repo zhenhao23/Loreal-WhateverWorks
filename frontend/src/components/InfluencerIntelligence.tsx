@@ -8,13 +8,13 @@ import {
 
 interface InfluencerIntelligenceProps {
   dateFilter: any;
-  categoryFilter: string;
+  categoryFilter?: string;
   languageFilter: string;
 }
 
 const InfluencerIntelligence = ({
   dateFilter,
-  categoryFilter,
+  categoryFilter = "all",
   languageFilter,
 }: InfluencerIntelligenceProps) => {
   const [data, setData] = useState<InfluencerIntelligenceData | null>(null);
@@ -84,16 +84,52 @@ const InfluencerIntelligence = ({
 
         const apiData = await response.json();
 
+        // Create updated influencer info with API data
+        let updatedInfluencerInfo =
+          mockInfluencerIntelligenceData.influencerInfo;
+        let channelMetrics = mockInfluencerIntelligenceData.channelMetrics;
+        let categoryPerformance =
+          mockInfluencerIntelligenceData.categoryPerformance;
+        let performanceAnalysis = mockInfluencerIntelligenceData.radarData;
+
+        if (apiData.success && apiData.data) {
+          updatedInfluencerInfo = {
+            ...mockInfluencerIntelligenceData.influencerInfo,
+            highestPotentialCategory: apiData.data.highestPotentialCategory,
+            categoryStats: apiData.data.categoryStats,
+          };
+
+          // Use channel metrics from API if available
+          if (apiData.data.channelMetrics) {
+            channelMetrics = apiData.data.channelMetrics;
+            console.log("Using real channel metrics from API");
+          }
+
+          // Use category performance from API if available
+          if (apiData.data.categoryPerformance) {
+            categoryPerformance = apiData.data.categoryPerformance;
+            console.log("Using real category performance from API");
+          }
+
+          // Use performance analysis from API if available
+          if (
+            apiData.data.performanceAnalysis &&
+            apiData.data.performanceAnalysis.length > 0
+          ) {
+            // Use the first channel's performance metrics as default for the main radar chart
+            performanceAnalysis =
+              apiData.data.performanceAnalysis[0].performanceMetrics;
+            console.log("Using real performance analysis from API");
+          }
+        }
+
         // Transform API data to match expected format if needed
         return {
           influencerMetrics:
             apiData.influencerMetrics ||
             mockInfluencerIntelligenceData.influencerMetrics,
-          influencerInfo:
-            apiData.influencerInfo ||
-            mockInfluencerIntelligenceData.influencerInfo,
-          radarData:
-            apiData.radarData || mockInfluencerIntelligenceData.radarData,
+          influencerInfo: updatedInfluencerInfo,
+          radarData: performanceAnalysis, // Use real performance analysis data
           categoryRadarData:
             apiData.categoryRadarData ||
             mockInfluencerIntelligenceData.categoryRadarData,
@@ -101,6 +137,9 @@ const InfluencerIntelligence = ({
             apiData.influencerBarData ||
             mockInfluencerIntelligenceData.influencerBarData,
           topChannels: topChannelsData, // Use real channels data
+          channelMetrics: channelMetrics, // Use real or mock channel metrics
+          categoryPerformance: categoryPerformance, // Use real or mock category performance
+          performanceAnalysis: apiData.data?.performanceAnalysis || [], // Add performance analysis data
         };
       } catch (error) {
         console.error("Failed to fetch influencer intelligence data:", error);

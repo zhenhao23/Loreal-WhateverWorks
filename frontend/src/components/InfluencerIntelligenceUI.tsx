@@ -31,12 +31,49 @@ InfluencerIntelligenceUIProps) => {
     categoryRadarData,
     influencerBarData,
     topChannels,
+    channelMetrics,
+    categoryPerformance,
+    performanceAnalysis,
   } = data;
 
   // State for influencer selection
   const [selectedInfluencer, setSelectedInfluencer] = useState<string>(
     influencerBarData[0]?.influencer || "Jane Doe"
   );
+
+  // Get selected channel metrics
+  const selectedChannelInfo = topChannels?.find(
+    (channel) => channel.name === selectedInfluencer
+  );
+  const selectedChannelMetrics = channelMetrics?.find(
+    (metrics) => metrics.channelId === selectedChannelInfo?.channelId
+  );
+
+  // Get selected channel performance analysis
+  const selectedPerformanceAnalysis = performanceAnalysis?.find(
+    (analysis) => analysis.channelId === selectedChannelInfo?.channelId
+  );
+
+  // Use selected channel's performance data or default to first channel or mock data
+  const currentRadarData =
+    selectedPerformanceAnalysis?.performanceMetrics ||
+    performanceAnalysis?.[0]?.performanceMetrics ||
+    radarData;
+
+  // Get selected channel category performance
+  const selectedCategoryPerformance = categoryPerformance?.find(
+    (performance) => performance.channelId === selectedChannelInfo?.channelId
+  );
+
+  // Transform selected channel category performance to radar data format
+  const selectedCategoryRadarData = selectedCategoryPerformance
+    ? Object.entries(selectedCategoryPerformance.categories).map(
+        ([attribute, score]) => ({
+          attribute,
+          score,
+        })
+      )
+    : categoryRadarData;
 
   // Get list of influencer names for dropdown
   const influencerOptions = influencerBarData.map((influencer) => ({
@@ -65,7 +102,7 @@ InfluencerIntelligenceUIProps) => {
 
   // Radar chart configuration for performance metrics
   const radarConfig = {
-    data: radarData,
+    data: currentRadarData,
     xField: "attribute",
     yField: "score",
     coordinateType: "polar" as const,
@@ -122,7 +159,7 @@ InfluencerIntelligenceUIProps) => {
 
   // Radar chart configuration for category performance
   const categoryRadarConfig = {
-    data: categoryRadarData,
+    data: selectedCategoryRadarData,
     xField: "attribute",
     yField: "score",
     coordinateType: "polar" as const,
@@ -508,7 +545,7 @@ InfluencerIntelligenceUIProps) => {
                       marginBottom: "6px",
                     }}
                   >
-                    {influencerInfo?.topPerformingCreator || "N/A"}
+                    Beauty And Makeup Art
                   </div>
                   <div
                     style={{
@@ -581,7 +618,9 @@ InfluencerIntelligenceUIProps) => {
                       display: "inline-block",
                     }}
                   >
-                    Growth Opportunity
+                    {influencerInfo?.categoryStats?.percentage
+                      ? `${influencerInfo.categoryStats.percentage}% of videos`
+                      : "Growth Opportunity"}
                   </div>
                 </div>
               </Card>
@@ -599,7 +638,7 @@ InfluencerIntelligenceUIProps) => {
                 <span
                   style={{ fontSize: "18px", fontWeight: 600, color: "#333" }}
                 >
-                  Influencer Engagement Quality Ranking
+                  Channel Avg Engagement Score Ranking
                 </span>
               </div>
             }
@@ -636,7 +675,7 @@ InfluencerIntelligenceUIProps) => {
                 }}
               >
                 <UserOutlined style={{ marginRight: "8px" }} />
-                Select Influencer
+                Select Channel
               </Typography.Text>
             </div>
             <Space size="large" align="center">
@@ -731,7 +770,9 @@ InfluencerIntelligenceUIProps) => {
                   marginBottom: "4px",
                 }}
               >
-                {influencerMetrics?.avgEngagementRate?.toFixed(1) || "0.0"}%
+                {selectedChannelMetrics?.avgEngagementScore?.toFixed(2) ||
+                  influencerMetrics?.avgEngagementRate?.toFixed(2) ||
+                  "0.0"}
               </div>
               <div
                 style={{
@@ -740,7 +781,7 @@ InfluencerIntelligenceUIProps) => {
                   fontWeight: 500,
                 }}
               >
-                Avg Engagement Rate
+                Avg Engagement Score
               </div>
             </div>
           </Card>
@@ -783,7 +824,9 @@ InfluencerIntelligenceUIProps) => {
                   marginBottom: "4px",
                 }}
               >
-                {influencerMetrics?.avgViews
+                {selectedChannelMetrics?.avgViews
+                  ? (selectedChannelMetrics.avgViews / 1000).toFixed(0) + "K"
+                  : influencerMetrics?.avgViews
                   ? (influencerMetrics.avgViews / 1000000).toFixed(1) + "M"
                   : "0"}
               </div>
@@ -837,7 +880,9 @@ InfluencerIntelligenceUIProps) => {
                   marginBottom: "4px",
                 }}
               >
-                {influencerMetrics?.avgLikes
+                {selectedChannelMetrics?.avgLikes
+                  ? (selectedChannelMetrics.avgLikes / 1000).toFixed(0) + "K"
+                  : influencerMetrics?.avgLikes
                   ? (influencerMetrics.avgLikes / 1000).toFixed(0) + "K"
                   : "0"}
               </div>
@@ -891,7 +936,9 @@ InfluencerIntelligenceUIProps) => {
                   marginBottom: "4px",
                 }}
               >
-                {influencerMetrics?.avgComments
+                {selectedChannelMetrics?.avgComments
+                  ? selectedChannelMetrics.avgComments.toLocaleString()
+                  : influencerMetrics?.avgComments
                   ? (influencerMetrics.avgComments / 1000).toFixed(1) + "K"
                   : "0"}
               </div>
@@ -945,7 +992,7 @@ InfluencerIntelligenceUIProps) => {
           <Card
             title={
               <div style={{ fontSize: "18px", fontWeight: 600, color: "#333" }}>
-                Category Performance Analysis
+                Category Performance - {selectedInfluencer}
               </div>
             }
             style={{

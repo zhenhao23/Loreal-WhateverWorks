@@ -6,6 +6,7 @@ const executiveOverviewRoutes = require("./routes/executiveOverview.routes");
 const contentQualityRoutes = require("./routes/contentQuality.routes");
 const videoBreakdownRoutes = require("./routes/videoBreakdown.routes");
 const channelsRoutes = require("./routes/channels.routes");
+const influencerIntelligenceRoutes = require("./routes/influencerIntelligence.routes");
 
 const app = express();
 app.use(cors());
@@ -18,6 +19,7 @@ app.use("/api/executive-overview", executiveOverviewRoutes);
 app.use("/api/content-quality-kpi", contentQualityRoutes);
 app.use("/api/video-breakdown", videoBreakdownRoutes);
 app.use("/api/channels", channelsRoutes);
+app.use("/api/influencer-intelligence", influencerIntelligenceRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>

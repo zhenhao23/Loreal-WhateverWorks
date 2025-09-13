@@ -12,6 +12,35 @@ export interface InfluencerInfo {
   bestCategory: string;
   topPerformingCreator: string;
   highestPotentialCategory: string;
+  categoryStats?: {
+    frequency: number;
+    percentage: number;
+  };
+}
+
+export interface ChannelMetrics {
+  channelId: string;
+  totalVideos: number;
+  avgEngagementScore: number;
+  avgViews: number;
+  avgLikes: number;
+  avgComments: number;
+}
+
+export interface CategoryPerformance {
+  channelId: string;
+  categories: {
+    Skincare: number;
+    Makeup: number;
+    "Hair Care": number;
+    Fragrance: number;
+    "Body Care": number;
+  };
+}
+
+export interface PerformanceAnalysis {
+  channelId: string;
+  performanceMetrics: RadarDataPoint[];
 }
 
 export interface RadarDataPoint {
@@ -42,6 +71,9 @@ export interface InfluencerIntelligenceData {
   categoryRadarData: RadarDataPoint[];
   influencerBarData: InfluencerBarData[];
   topChannels: TopChannel[];
+  channelMetrics?: ChannelMetrics[];
+  categoryPerformance?: CategoryPerformance[];
+  performanceAnalysis?: PerformanceAnalysis[];
 }
 
 // Mock metrics data
@@ -79,14 +111,22 @@ export const mockCategoryRadarData: RadarDataPoint[] = [
 
 // Mock bar chart data for influencer engagement quality
 export const mockInfluencerBarData: InfluencerBarData[] = [
-  { influencer: "@beautyguru_sarah", engagementQuality: 92, color: "#5A6ACF" },
-  { influencer: "@skincare_expert", engagementQuality: 88, color: "#707FDD" },
-  { influencer: "@makeup_artist_pro", engagementQuality: 85, color: "#8B92E8" },
-  { influencer: "@wellness_coach", engagementQuality: 78, color: "#A6A5F2" },
-  { influencer: "@lifestyle_blogger", engagementQuality: 75, color: "#C1B8FC" },
-  { influencer: "@fashion_icon", engagementQuality: 72, color: "#DCCBFF" },
-  { influencer: "@beauty_reviews", engagementQuality: 68, color: "#44c5e1" },
-  { influencer: "@fragrance_lover", engagementQuality: 65, color: "#60ccef" },
+  {
+    influencer: "Beauty And Makeup Art",
+    engagementQuality: 96.07,
+    color: "#5A6ACF",
+  },
+  { influencer: "Love Makeup", engagementQuality: 96, color: "#707FDD" },
+  {
+    influencer: "Jenny's Beauty Lab",
+    engagementQuality: 95.4,
+    color: "#8B92E8",
+  },
+  { influencer: "Brooke Monk", engagementQuality: 94.8, color: "#A6A5F2" },
+  { influencer: "Natalie Violette", engagementQuality: 94.2, color: "#C1B8FC" },
+  { influencer: "Di1araa.s", engagementQuality: 93.6, color: "#DCCBFF" },
+  { influencer: "Averina Anggita", engagementQuality: 93.1, color: "#44c5e1" },
+  { influencer: "Sharon Spellman", engagementQuality: 92.5, color: "#60ccef" },
 ];
 
 // Mock top channels data
@@ -174,6 +214,176 @@ export const mockTopChannels: TopChannel[] = [
   },
 ];
 
+// Mock channel metrics data
+export const mockChannelMetrics: ChannelMetrics[] = [
+  {
+    channelId: "26428",
+    totalVideos: 15,
+    avgEngagementScore: 96.07,
+    avgViews: 125000,
+    avgLikes: 8500,
+    avgComments: 320,
+  },
+  {
+    channelId: "48780",
+    totalVideos: 18,
+    avgEngagementScore: 96.0,
+    avgViews: 98000,
+    avgLikes: 7200,
+    avgComments: 295,
+  },
+  {
+    channelId: "53183",
+    totalVideos: 22,
+    avgEngagementScore: 95.4,
+    avgViews: 180000,
+    avgLikes: 12000,
+    avgComments: 450,
+  },
+  {
+    channelId: "6926",
+    totalVideos: 25,
+    avgEngagementScore: 94.8,
+    avgViews: 250000,
+    avgLikes: 18000,
+    avgComments: 680,
+  },
+  {
+    channelId: "14429",
+    totalVideos: 12,
+    avgEngagementScore: 94.2,
+    avgViews: 85000,
+    avgLikes: 6800,
+    avgComments: 280,
+  },
+  {
+    channelId: "25356",
+    totalVideos: 20,
+    avgEngagementScore: 93.6,
+    avgViews: 165000,
+    avgLikes: 11500,
+    avgComments: 425,
+  },
+  {
+    channelId: "26891",
+    totalVideos: 16,
+    avgEngagementScore: 93.1,
+    avgViews: 110000,
+    avgLikes: 8200,
+    avgComments: 340,
+  },
+  {
+    channelId: "35581",
+    totalVideos: 14,
+    avgEngagementScore: 92.5,
+    avgViews: 95000,
+    avgLikes: 7500,
+    avgComments: 315,
+  },
+  {
+    channelId: "46179",
+    totalVideos: 19,
+    avgEngagementScore: 92.0,
+    avgViews: 140000,
+    avgLikes: 9800,
+    avgComments: 380,
+  },
+];
+
+// Mock category performance data
+export const mockCategoryPerformance: CategoryPerformance[] = [
+  {
+    channelId: "26428",
+    categories: {
+      Skincare: 15,
+      Makeup: 75,
+      "Hair Care": 5,
+      Fragrance: 3,
+      "Body Care": 2,
+    },
+  },
+  {
+    channelId: "48780",
+    categories: {
+      Skincare: 20,
+      Makeup: 80,
+      "Hair Care": 0,
+      Fragrance: 0,
+      "Body Care": 0,
+    },
+  },
+  {
+    channelId: "53183",
+    categories: {
+      Skincare: 45,
+      Makeup: 35,
+      "Hair Care": 15,
+      Fragrance: 3,
+      "Body Care": 2,
+    },
+  },
+  {
+    channelId: "6926",
+    categories: {
+      Skincare: 30,
+      Makeup: 40,
+      "Hair Care": 20,
+      Fragrance: 5,
+      "Body Care": 5,
+    },
+  },
+  {
+    channelId: "14429",
+    categories: {
+      Skincare: 25,
+      Makeup: 70,
+      "Hair Care": 3,
+      Fragrance: 1,
+      "Body Care": 1,
+    },
+  },
+  {
+    channelId: "25356",
+    categories: {
+      Skincare: 35,
+      Makeup: 50,
+      "Hair Care": 10,
+      Fragrance: 3,
+      "Body Care": 2,
+    },
+  },
+  {
+    channelId: "26891",
+    categories: {
+      Skincare: 40,
+      Makeup: 45,
+      "Hair Care": 10,
+      Fragrance: 3,
+      "Body Care": 2,
+    },
+  },
+  {
+    channelId: "35581",
+    categories: {
+      Skincare: 55,
+      Makeup: 30,
+      "Hair Care": 10,
+      Fragrance: 3,
+      "Body Care": 2,
+    },
+  },
+  {
+    channelId: "46179",
+    categories: {
+      Skincare: 28,
+      Makeup: 60,
+      "Hair Care": 8,
+      Fragrance: 2,
+      "Body Care": 2,
+    },
+  },
+];
+
 // Combined mock data
 export const mockInfluencerIntelligenceData: InfluencerIntelligenceData = {
   influencerMetrics: mockInfluencerMetrics,
@@ -182,4 +392,6 @@ export const mockInfluencerIntelligenceData: InfluencerIntelligenceData = {
   categoryRadarData: mockCategoryRadarData,
   influencerBarData: mockInfluencerBarData,
   topChannels: mockTopChannels,
+  channelMetrics: mockChannelMetrics,
+  categoryPerformance: mockCategoryPerformance,
 };

@@ -411,6 +411,329 @@ function buildWhereClause(filters) {
   };
 }
 
+/**
+ * Get highest potential category based on most frequent topic_label for specific channels
+ */
+async function getHighestPotentialCategory(channelIds = []) {
+  try {
+    if (!channelIds || channelIds.length === 0) {
+      throw new Error("Channel IDs are required");
+    }
+
+    const placeholders = channelIds
+      .map((_, index) => `$${index + 1}`)
+      .join(",");
+
+    const query = `
+      SELECT 
+        topic_label,
+        COUNT(*) as frequency,
+        ROUND(
+          (COUNT(*) * 100.0 / (
+            SELECT COUNT(*) 
+            FROM videos 
+            WHERE channel_id = ANY($1::bigint[]) 
+              AND topic_label IS NOT NULL 
+              AND topic_label != ''
+          )), 2
+        ) as percentage
+      FROM videos 
+      WHERE channel_id = ANY($1::bigint[])
+        AND topic_label IS NOT NULL 
+        AND topic_label != ''
+        AND LENGTH(TRIM(topic_label)) > 0
+      GROUP BY topic_label
+      ORDER BY frequency DESC
+      LIMIT 1;
+    `;
+
+    const result = await pool.query(query, [channelIds]);
+
+    if (result.rows.length === 0) {
+      return {
+        category: "Not Available",
+        frequency: 0,
+        percentage: 0,
+      };
+    }
+
+    return {
+      category: result.rows[0].topic_label,
+      frequency: parseInt(result.rows[0].frequency),
+      percentage: parseFloat(result.rows[0].percentage),
+    };
+  } catch (error) {
+    console.error("Error in getHighestPotentialCategory:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get channel metrics for specific channels from videos table
+ */
+async function getChannelMetrics(channelIds = []) {
+  try {
+    if (!channelIds || channelIds.length === 0) {
+      throw new Error("Channel IDs are required");
+    }
+
+    const query = `
+      SELECT 
+        channel_id,
+        COUNT(*) as total_videos,
+        ROUND(AVG(video_engagement_score * 100), 2) as avg_engagement_score,
+        ROUND(AVG(view_count), 0) as avg_views,
+        ROUND(AVG(like_count), 0) as avg_likes,
+        ROUND(AVG(comment_count), 0) as avg_comments
+      FROM videos 
+      WHERE channel_id = ANY($1::bigint[])
+        AND video_engagement_score IS NOT NULL
+        AND view_count IS NOT NULL
+        AND like_count IS NOT NULL
+        AND comment_count IS NOT NULL
+      GROUP BY channel_id
+      ORDER BY avg_engagement_score DESC;
+    `;
+
+    const result = await pool.query(query, [channelIds]);
+
+    return result.rows.map((row) => ({
+      channelId: row.channel_id.toString(),
+      totalVideos: parseInt(row.total_videos),
+      avgEngagementScore: parseFloat(row.avg_engagement_score) || 0,
+      avgViews: parseInt(row.avg_views) || 0,
+      avgLikes: parseInt(row.avg_likes) || 0,
+      avgComments: parseInt(row.avg_comments) || 0,
+    }));
+  } catch (error) {
+    console.error("Error in getChannelMetrics:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get category performance analysis for specific channels
+ */
+async function getCategoryPerformanceAnalysis(channelIds = []) {
+  try {
+    if (!channelIds || channelIds.length === 0) {
+      throw new Error("Channel IDs are required");
+    }
+
+    const query = `
+      WITH channel_topics AS (
+        SELECT 
+          channel_id,
+          LOWER(TRIM(topic_label)) as normalized_topic,
+          COUNT(*) as topic_count
+        FROM videos 
+        WHERE channel_id = ANY($1::bigint[])
+          AND topic_label IS NOT NULL 
+          AND topic_label != ''
+          AND LENGTH(TRIM(topic_label)) > 0
+        GROUP BY channel_id, LOWER(TRIM(topic_label))
+      ),
+      channel_totals AS (
+        SELECT 
+          channel_id,
+          SUM(topic_count) as total_videos
+        FROM channel_topics
+        GROUP BY channel_id
+      ),
+      category_mapping AS (
+        SELECT 
+          ct.channel_id,
+          ct.normalized_topic,
+          ct.topic_count,
+          ctt.total_videos,
+          CASE 
+            WHEN ct.normalized_topic LIKE '%skin%' OR ct.normalized_topic LIKE '%skincare%' THEN 'Skincare'
+            WHEN ct.normalized_topic LIKE '%body%' OR ct.normalized_topic LIKE '%bodycare%' THEN 'Body'
+            WHEN ct.normalized_topic LIKE '%hair%' OR ct.normalized_topic LIKE '%haircare%' THEN 'Hair'
+            WHEN ct.normalized_topic LIKE '%perfume%' OR ct.normalized_topic LIKE '%fragrance%' THEN 'Fragrance'
+            WHEN ct.normalized_topic LIKE '%makeup%' OR ct.normalized_topic LIKE '%cosmetic%' THEN 'Makeup'
+            ELSE 'Makeup'  -- Default to makeup for beauty content
+          END as beauty_category
+        FROM channel_topics ct
+        JOIN channel_totals ctt ON ct.channel_id = ctt.channel_id
+      ),
+      category_scores AS (
+        SELECT 
+          channel_id,
+          beauty_category,
+          SUM(topic_count) as category_count,
+          MAX(total_videos) as total_videos,
+          ROUND((SUM(topic_count) * 100.0 / MAX(total_videos)), 1) as percentage
+        FROM category_mapping
+        GROUP BY channel_id, beauty_category
+      )
+      SELECT 
+        cs.channel_id,
+        cs.beauty_category as category,
+        cs.percentage
+      FROM category_scores cs
+      ORDER BY cs.channel_id, cs.percentage DESC;
+    `;
+
+    const result = await pool.query(query, [channelIds]);
+
+    // Group results by channel_id
+    const channelCategoryData = {};
+
+    result.rows.forEach((row) => {
+      const channelId = row.channel_id.toString();
+      if (!channelCategoryData[channelId]) {
+        channelCategoryData[channelId] = {
+          channelId: channelId,
+          categories: {
+            Skincare: 0,
+            Makeup: 0,
+            "Hair Care": 0,
+            Fragrance: 0,
+            "Body Care": 0,
+          },
+        };
+      }
+
+      channelCategoryData[channelId].categories[row.category] =
+        parseFloat(row.percentage) || 0;
+    });
+
+    // Convert to array format
+    return Object.values(channelCategoryData);
+  } catch (error) {
+    console.error("Error in getCategoryPerformanceAnalysis:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get influencer performance analysis data for radar chart
+ * Calculates metrics on 0-100 scale for each channel
+ */
+async function getInfluencerPerformanceAnalysis(channelIds) {
+  try {
+    // Time series data for growth rate calculation (from frontend mock data)
+    const timeSeriesData = {
+      26428: { 2023: 0, 2024: 0, 2025: 0 },
+      48780: { 2023: 2.777777778, 2024: 4.504504505, 2025: 0 },
+      53183: { 2023: 48.10126582, 2024: 0.284900285, 2025: -1.704545455 },
+      6926: { 2023: 155, 2024: 84.09586057, 2025: 15.62130178 },
+      14429: { 2023: 2308.510638, 2024: 119.0812721, 2025: 4.032258065 },
+      25356: { 2023: 0, 2024: 3.448275862, 2025: 7 },
+      26891: { 2023: 4209.392265, 2024: 98.71794872, 2025: 17.41935484 },
+      35581: { 2023: 0, 2024: 0, 2025: 4677.376655 },
+      46179: { 2023: 1.11223458, 2024: 0, 2025: 0 },
+    };
+
+    const query = `
+      WITH channel_stats AS (
+        SELECT 
+          channel_id,
+          COUNT(*) as total_videos,
+          AVG(video_engagement_score) as avg_engagement_score,
+          AVG(view_count) as avg_views,
+          MAX(view_count) as max_views
+        FROM videos 
+        WHERE channel_id = ANY($1::int[])
+        GROUP BY channel_id
+      ),
+      overall_stats AS (
+        SELECT 
+          MAX(total_videos) as max_videos,
+          MAX(avg_engagement_score) as max_engagement,
+          MAX(avg_views) as max_views_overall
+        FROM channel_stats
+      )
+      SELECT 
+        cs.channel_id,
+        cs.total_videos,
+        cs.avg_engagement_score,
+        cs.avg_views,
+        os.max_videos,
+        os.max_engagement,
+        os.max_views_overall
+      FROM channel_stats cs
+      CROSS JOIN overall_stats os
+      ORDER BY cs.channel_id;
+    `;
+
+    const result = await pool.query(query, [channelIds]);
+
+    const performanceData = result.rows.map((row) => {
+      const channelId = row.channel_id.toString();
+
+      // Calculate Growth Rate from time series data (0-100 scale)
+      let growthRate = 0;
+      if (timeSeriesData[channelId]) {
+        const data = timeSeriesData[channelId];
+        const years = Object.keys(data)
+          .map((y) => parseInt(y))
+          .sort();
+        if (years.length >= 2) {
+          // Calculate average growth rate across years
+          const growthRates = [];
+          for (let i = 1; i < years.length; i++) {
+            const prevYear = years[i - 1];
+            const currentYear = years[i];
+            const growth = data[currentYear] - data[prevYear];
+            growthRates.push(Math.max(0, Math.min(100, growth))); // Cap between 0-100
+          }
+          growthRate =
+            growthRates.length > 0
+              ? growthRates.reduce((sum, rate) => sum + rate, 0) /
+                growthRates.length
+              : 0;
+        }
+      }
+
+      // Normalize scores to 0-100 scale
+      const audienceEngagementScore = Math.min(
+        100,
+        Math.max(0, parseFloat(row.avg_engagement_score) || 0)
+      );
+
+      const audienceReach = Math.min(
+        100,
+        Math.max(
+          0,
+          ((parseFloat(row.avg_views) || 0) /
+            (parseFloat(row.max_views_overall) || 1)) *
+            100
+        )
+      );
+
+      const productionRate = Math.min(
+        100,
+        Math.max(
+          0,
+          ((parseInt(row.total_videos) || 0) /
+            (parseInt(row.max_videos) || 1)) *
+            100
+        )
+      );
+
+      return {
+        channelId: channelId,
+        performanceMetrics: [
+          {
+            attribute: "Audience Engagement Score",
+            score: Math.round(audienceEngagementScore) * 10,
+          },
+          { attribute: "Audience Reach", score: Math.round(audienceReach) },
+          { attribute: "Production Rate", score: Math.round(productionRate) },
+          { attribute: "Growth Rate", score: Math.round(growthRate) * 10 },
+        ],
+      };
+    });
+
+    return performanceData;
+  } catch (error) {
+    console.error("Error in getInfluencerPerformanceAnalysis:", error);
+    throw error;
+  }
+}
+
 module.exports = {
   getVideoCategoryData,
   getVideoPlatformDistribution,
@@ -418,4 +741,8 @@ module.exports = {
   getVideoDurationAnalysis,
   getVideoMetrics,
   getCategoryLeaderboardData,
+  getHighestPotentialCategory,
+  getChannelMetrics,
+  getCategoryPerformanceAnalysis,
+  getInfluencerPerformanceAnalysis,
 };
