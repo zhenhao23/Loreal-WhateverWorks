@@ -39,7 +39,7 @@ function Chatbot() {
             color: "#5A6ACF",
           }}
         >
-          UnderTheHood - Data Pipeline Explorer
+          WhateverWorks - Data Pipeline Explorer
         </h1>
         <Button
           type="primary"
@@ -60,7 +60,7 @@ function Chatbot() {
       {/* Iframe Container */}
       <div style={{ height: "calc(100vh - 73px)" }}>
         <iframe
-          src="https://udify.app/chatbot/MOVKXx8R2fc7tLZF"
+          src="https://udify.app/chatbot/b8Vo6VJcOoC0fNzX"
           style={{
             width: "100%",
             height: "100%",
@@ -76,7 +76,7 @@ function Chatbot() {
       <Modal
         title={
           <span style={{ color: "#5A6ACF", fontSize: "18px", fontWeight: 600 }}>
-            UnderTheHood - Data Pipeline Explorer
+            WhateverWorks - Data Pipeline Explorer
           </span>
         }
         open={isModalVisible}
@@ -96,8 +96,8 @@ function Chatbot() {
       >
         <div style={{ lineHeight: "1.6", color: "#333" }}>
           <p style={{ marginBottom: "16px", fontSize: "16px", color: "#666" }}>
-            Curious about how your data was processed? UnderTheHood explains the
-            complete data pipeline behind this application - from raw data
+            Curious about how your data was processed? WhateverWorks explains
+            the complete data pipeline behind this application - from raw data
             cleaning and preprocessing steps, through the analysis methods used,
             to how the final visualizations were created. Ask questions about
             any part of the data methodology to understand the technical
@@ -124,7 +124,13 @@ function Chatbot() {
                 What analysis methods did you use and why?
               </li>
               <li style={{ marginBottom: "10px" }}>
-                How were these visualizations created?
+                What spam detection methods did you use?
+              </li>
+              <li style={{ marginBottom: "10px" }}>
+                How did you calculate KPI and Engagement Score?
+              </li>
+              <li style={{ marginBottom: "10px" }}>
+                What Machine learning models were used?
               </li>
             </ul>
           </div>
