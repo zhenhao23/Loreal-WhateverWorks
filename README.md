@@ -1,3 +1,11 @@
+# 🚀 WhateverWorks
+
+AI-powered platform that transforms social media comments and video engagement into actionable business insights, bridging technical analysis with strategy to drive ROI for all teams.
+
+![dashboard](./assets/dashboard.png)
+![upload](./assets/upload.png)
+![chatbot](./assets/chatbot.png)
+
 # 📊 Data Analysis Pipeline: Video & Comment Analysis
 
 ## Overview
