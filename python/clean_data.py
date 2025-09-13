@@ -6,7 +6,7 @@ def flush_print(msg):
 
 def main():
     flush_print("STEP: Data cleaning started")
-    time.sleep(2)  # simulate work
+    time.sleep(2)
     flush_print("STEP: Data cleaning completed")
 
     flush_print("STEP: Spam detection started")
