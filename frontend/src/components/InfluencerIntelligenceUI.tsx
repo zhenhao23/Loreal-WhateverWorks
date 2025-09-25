@@ -825,9 +825,18 @@ InfluencerIntelligenceUIProps) => {
                 }}
               >
                 {selectedChannelMetrics?.avgViews
-                  ? (selectedChannelMetrics.avgViews / 1000).toFixed(0) + "K"
+                  ? selectedChannelMetrics.avgViews >= 1000000
+                    ? (selectedChannelMetrics.avgViews / 1000000).toFixed(1) +
+                      "M"
+                    : selectedChannelMetrics.avgViews >= 1000
+                    ? (selectedChannelMetrics.avgViews / 1000).toFixed(0) + "K"
+                    : selectedChannelMetrics.avgViews.toString()
                   : influencerMetrics?.avgViews
-                  ? (influencerMetrics.avgViews / 1000000).toFixed(1) + "M"
+                  ? influencerMetrics.avgViews >= 1000000
+                    ? (influencerMetrics.avgViews / 1000000).toFixed(1) + "M"
+                    : influencerMetrics.avgViews >= 1000
+                    ? (influencerMetrics.avgViews / 1000).toFixed(0) + "K"
+                    : influencerMetrics.avgViews.toString()
                   : "0"}
               </div>
               <div
@@ -881,9 +890,18 @@ InfluencerIntelligenceUIProps) => {
                 }}
               >
                 {selectedChannelMetrics?.avgLikes
-                  ? (selectedChannelMetrics.avgLikes / 1000).toFixed(0) + "K"
+                  ? selectedChannelMetrics.avgLikes >= 1000000
+                    ? (selectedChannelMetrics.avgLikes / 1000000).toFixed(1) +
+                      "M"
+                    : selectedChannelMetrics.avgLikes >= 1000
+                    ? (selectedChannelMetrics.avgLikes / 1000).toFixed(0) + "K"
+                    : selectedChannelMetrics.avgLikes.toString()
                   : influencerMetrics?.avgLikes
-                  ? (influencerMetrics.avgLikes / 1000).toFixed(0) + "K"
+                  ? influencerMetrics.avgLikes >= 1000000
+                    ? (influencerMetrics.avgLikes / 1000000).toFixed(1) + "M"
+                    : influencerMetrics.avgLikes >= 1000
+                    ? (influencerMetrics.avgLikes / 1000).toFixed(0) + "K"
+                    : influencerMetrics.avgLikes.toString()
                   : "0"}
               </div>
               <div
@@ -937,9 +955,20 @@ InfluencerIntelligenceUIProps) => {
                 }}
               >
                 {selectedChannelMetrics?.avgComments
-                  ? selectedChannelMetrics.avgComments.toLocaleString()
+                  ? selectedChannelMetrics.avgComments >= 1000000
+                    ? (selectedChannelMetrics.avgComments / 1000000).toFixed(
+                        1
+                      ) + "M"
+                    : selectedChannelMetrics.avgComments >= 1000
+                    ? (selectedChannelMetrics.avgComments / 1000).toFixed(0) +
+                      "K"
+                    : selectedChannelMetrics.avgComments.toString()
                   : influencerMetrics?.avgComments
-                  ? (influencerMetrics.avgComments / 1000).toFixed(1) + "K"
+                  ? influencerMetrics.avgComments >= 1000000
+                    ? (influencerMetrics.avgComments / 1000000).toFixed(1) + "M"
+                    : influencerMetrics.avgComments >= 1000
+                    ? (influencerMetrics.avgComments / 1000).toFixed(0) + "K"
+                    : influencerMetrics.avgComments.toString()
                   : "0"}
               </div>
               <div

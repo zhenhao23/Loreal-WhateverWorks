@@ -31,11 +31,15 @@ import { overallSentimentData } from "./SentimentAnalysisMockData";
 interface ContentQualityKPIUIProps {
   data: ContentQualityKPIData;
   sentimentFilter: string;
+  onPaginationChange?: (page: number, pageSize: number) => void;
+  loading?: boolean;
 }
 
 const ContentQualityKPIUI = ({
   data,
   sentimentFilter,
+  onPaginationChange,
+  loading = false,
 }: ContentQualityKPIUIProps) => {
   const { kpiMetrics, wordCloudData, topComments, bubbleData, timelineData } =
     data;
@@ -146,6 +150,13 @@ const ContentQualityKPIUI = ({
       dataIndex: "sentiment",
       key: "sentiment",
       width: "15%",
+      sorter: (a, b) => {
+        const sentimentOrder = { positive: 3, neutral: 2, negative: 1 };
+        return (
+          (sentimentOrder[a.sentiment as keyof typeof sentimentOrder] || 0) -
+          (sentimentOrder[b.sentiment as keyof typeof sentimentOrder] || 0)
+        );
+      },
       render: (sentiment: string) => {
         const config = {
           positive: { color: "#52c41a", icon: <CheckCircleOutlined /> },
@@ -170,6 +181,7 @@ const ContentQualityKPIUI = ({
       dataIndex: "kpiScore",
       key: "kpiScore",
       width: "15%",
+      sorter: (a, b) => (a.kpiScore || 0) - (b.kpiScore || 0),
       render: (score: number) => (
         <div style={{ fontWeight: 600, color: "#5A6ACF", fontSize: "16px" }}>
           {score}/10
@@ -180,6 +192,8 @@ const ContentQualityKPIUI = ({
       title: "Engagement",
       key: "engagement",
       width: "25%",
+      sorter: (a, b) =>
+        (a.likes || 0) + (a.replies || 0) - ((b.likes || 0) + (b.replies || 0)),
       render: (record: any) => (
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -196,6 +210,35 @@ const ContentQualityKPIUI = ({
       ),
     },
   ];
+
+  // Handle both paginated and array data formats for comments
+  const commentsData = Array.isArray(topComments)
+    ? topComments
+    : topComments?.data || [];
+
+  const paginationConfig = Array.isArray(topComments)
+    ? {
+        current: 1,
+        pageSize: 10,
+        total: topComments.length,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        showTotal: (total: number, range: [number, number]) =>
+          `${range[0]}-${range[1]} of ${total} comments`,
+        onChange: onPaginationChange,
+        onShowSizeChange: onPaginationChange,
+      }
+    : {
+        current: topComments?.current || 1,
+        pageSize: topComments?.pageSize || 10,
+        total: topComments?.total || 0,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        showTotal: (total: number, range: [number, number]) =>
+          `${range[0]}-${range[1]} of ${total} comments`,
+        onChange: onPaginationChange,
+        onShowSizeChange: onPaginationChange,
+      };
 
   return (
     <div style={{ padding: "0 4px" }}>
@@ -584,8 +627,13 @@ const ContentQualityKPIUI = ({
                     fontWeight: 600,
                   }}
                 >
-                  Top 5 Comments - Real Customer Voices
+                  Customer Comments Analysis
                 </span>
+              </div>
+            }
+            extra={
+              <div style={{ fontSize: "12px", color: "#8B92B8" }}>
+                Click column headers to sort • Real customer feedback insights
               </div>
             }
             style={{
@@ -599,14 +647,17 @@ const ContentQualityKPIUI = ({
           >
             <Table
               dataSource={
-                topComments?.map((comment, index) => ({
+                commentsData?.map((comment: any, index: number) => ({
                   ...comment,
                   key: comment.key || `comment-${index}`,
                 })) || []
               }
               columns={commentColumns}
-              pagination={false}
+              rowKey="key"
+              loading={loading}
+              pagination={paginationConfig}
               size="middle"
+              scroll={{ x: 1000 }}
             />
           </Card>
         </Col>

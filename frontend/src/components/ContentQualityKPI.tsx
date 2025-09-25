@@ -29,7 +29,84 @@ const ContentQualityKPI = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Function to fetch data from API
+  // Pagination state for Customer Comments Analysis
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+
+  // Function to fetch comments from the dedicated comments API
+  const fetchComments = async (page: number, size: number) => {
+    try {
+      setCommentsLoading(true);
+
+      // Convert dateFilter to year-only format to avoid timezone issues
+      let processedDateFilter = null;
+      if (dateFilter && Array.isArray(dateFilter) && dateFilter.length === 2) {
+        processedDateFilter = [
+          dateFilter[0]?.year?.() ||
+            dateFilter[0]?.format?.("YYYY") ||
+            String(dateFilter[0]),
+          dateFilter[1]?.year?.() ||
+            dateFilter[1]?.format?.("YYYY") ||
+            String(dateFilter[1]),
+        ];
+      }
+
+      const response = await fetch("http://localhost:5000/api/comments/top", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dateFilter: processedDateFilter,
+          categoryFilter,
+          languageFilter,
+          sentimentFilter,
+          page,
+          pageSize: size,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Comments API request failed with status ${response.status}`
+        );
+      }
+
+      const apiData = await response.json();
+      console.log(
+        `Comments loaded: page ${page}, ${
+          apiData.data?.data?.length || 0
+        } comments`
+      );
+
+      // Return the comments data
+      return apiData.data || mockTopComments;
+    } catch (error) {
+      console.error("Failed to fetch comments:", error);
+      // Return mock data on error
+      return mockTopComments;
+    } finally {
+      setCommentsLoading(false);
+    }
+  }; // Handle pagination change
+  const handlePaginationChange = async (page: number, size: number) => {
+    setCurrentPage(page);
+    setPageSize(size);
+
+    // Fetch only comments for pagination (not entire dashboard)
+    const newComments = await fetchComments(page, size);
+
+    // Update the data with new comments
+    if (data) {
+      setData({
+        ...data,
+        topComments: newComments,
+      });
+    }
+  };
+
+  // Function to fetch data from API (without pagination - comments handled separately)
   const fetchContentQualityKPIData =
     async (): Promise<ContentQualityKPIData> => {
       try {
@@ -91,10 +168,7 @@ const ContentQualityKPI = ({
             apiData.wordCloudData && apiData.wordCloudData.length > 0
               ? apiData.wordCloudData
               : mockWordCloudData,
-          topComments:
-            apiData.topComments && apiData.topComments.length > 0
-              ? apiData.topComments
-              : mockTopComments,
+          topComments: mockTopComments, // Will be loaded separately
           bubbleData:
             apiData.bubbleData && apiData.bubbleData.length > 0
               ? apiData.bubbleData
@@ -123,6 +197,11 @@ const ContentQualityKPI = ({
     };
   };
 
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [dateFilter, categoryFilter, languageFilter, sentimentFilter]);
+
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -131,8 +210,16 @@ const ContentQualityKPI = ({
       try {
         // Try to fetch from API first
         const apiData = await fetchContentQualityKPIData();
-        setData(apiData);
         console.log("Content Quality KPI data loaded from API successfully");
+
+        // Fetch initial comments separately
+        const initialComments = await fetchComments(1, 10);
+
+        // Combine dashboard data with comments
+        setData({
+          ...apiData,
+          topComments: initialComments,
+        });
       } catch (apiError) {
         console.warn("API failed, falling back to mock data:", apiError);
         // Fallback to mock data if API fails
@@ -184,7 +271,12 @@ const ContentQualityKPI = ({
           closable
         />
       )}
-      <ContentQualityKPIUI data={data} sentimentFilter={sentimentFilter} />
+      <ContentQualityKPIUI
+        data={data}
+        sentimentFilter={sentimentFilter}
+        onPaginationChange={handlePaginationChange}
+        loading={commentsLoading}
+      />
     </div>
   );
 };

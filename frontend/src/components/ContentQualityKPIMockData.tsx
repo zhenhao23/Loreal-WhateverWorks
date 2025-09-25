@@ -234,12 +234,21 @@ export const mockTimelineData = [
   },
 ];
 
+// Type for paginated comments response
+export interface PaginatedComments {
+  data: typeof mockTopComments;
+  current: number;
+  pageSize: number;
+  total: number;
+  totalPages?: number;
+}
+
 export interface ContentQualityKPIData {
   kpiMetrics: typeof mockKPIMetrics;
   topKeywords: typeof mockTopKeywords;
   sentimentByTopics: typeof mockSentimentByTopics;
   wordCloudData: typeof mockWordCloudData;
-  topComments: typeof mockTopComments;
+  topComments: typeof mockTopComments | PaginatedComments;
   bubbleData: typeof mockBubbleData;
   timelineData: typeof mockTimelineData;
 }

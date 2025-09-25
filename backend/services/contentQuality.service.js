@@ -14,7 +14,6 @@ const {
 } = require("../db/queries/keywords.queries");
 
 const {
-  getTopComments,
   getCommentQualityAnalysis,
   getCommentEngagementMetrics,
   getCommentLengthAnalysis,
@@ -37,30 +36,45 @@ const { getTimelineData } = require("../db/queries/timeline.queries");
 async function getContentQualityKPI(filters = {}) {
   try {
     console.log("Fetching content quality KPI data with filters:", filters);
+    const overallStartTime = Date.now();
 
     // Parse filters from request
     const parsedFilters = parseFilters(filters);
 
-    // Fetch all data in parallel for better performance
-    const [
-      kpiMetrics,
-      topKeywords,
-      sentimentByTopics,
-      wordCloudData,
-      topComments,
-      bubbleData,
-      timelineData,
-      qualityScoreDistribution,
-    ] = await Promise.all([
-      getContentQualityKPIMetrics(parsedFilters),
-      getTopKeywords(parsedFilters),
-      getSentimentByTopics(parsedFilters),
-      getWordCloudData(parsedFilters),
-      getTopComments(parsedFilters),
-      getBubbleData(parsedFilters),
-      getTimelineData(parsedFilters),
-      getQualityScoreDistribution(parsedFilters),
-    ]);
+    // Execute queries individually with timing to identify bottleneck
+    const startTime = Date.now();
+    console.log("🚀 Starting queries execution with individual timing...");
+
+    console.log("⏱️  Starting getContentQualityKPIMetrics...");
+    const kpiStart = Date.now();
+    const kpiMetrics = await getContentQualityKPIMetrics(parsedFilters);
+    console.log(`📊 getContentQualityKPIMetrics: ${Date.now() - kpiStart}ms`);
+
+    console.log("⏱️  Starting getQualityScoreDistribution...");
+    const distStart = Date.now();
+    const qualityScoreDistribution = await getQualityScoreDistribution(
+      parsedFilters
+    );
+    console.log(`📊 getQualityScoreDistribution: ${Date.now() - distStart}ms`);
+
+    console.log("⏱️  Starting getTimelineData...");
+    const timelineStart = Date.now();
+    const timelineData = await getTimelineData(parsedFilters);
+    console.log(`📊 getTimelineData: ${Date.now() - timelineStart}ms`);
+
+    console.log("⏱️  Starting remaining quick queries...");
+    const quickStart = Date.now();
+    const [topKeywords, sentimentByTopics, wordCloudData, bubbleData] =
+      await Promise.all([
+        getTopKeywords(parsedFilters),
+        getSentimentByTopics(parsedFilters),
+        getWordCloudData(parsedFilters),
+        getBubbleData(parsedFilters),
+      ]);
+    console.log(`📊 Quick queries (4 total): ${Date.now() - quickStart}ms`);
+
+    const totalQueriesTime = Date.now() - startTime;
+    console.log(`⚡ All queries completed in: ${totalQueriesTime}ms`);
 
     // Add qualityScoreDistribution to kpiMetrics
     const enhancedKpiMetrics = {
@@ -74,12 +88,14 @@ async function getContentQualityKPI(filters = {}) {
       topKeywords,
       sentimentByTopics,
       wordCloudData,
-      topComments,
       bubbleData,
       timelineData,
     };
 
-    console.log("Successfully combined content quality KPI data");
+    const overallTotalTime = Date.now() - overallStartTime;
+    console.log(
+      `✅ Successfully combined content quality KPI data in ${overallTotalTime}ms total`
+    );
     return result;
   } catch (error) {
     console.error("Error in getContentQualityKPI service:", error);

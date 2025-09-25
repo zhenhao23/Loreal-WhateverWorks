@@ -12,7 +12,7 @@ async function getInfluencerIntelligenceData(filters = {}) {
   try {
     // Channel IDs from mockTopChannels
     const topChannelIds = [
-      26428, 48780, 53183, 6926, 14429, 25356, 26891, 35581, 46179,
+      26428, 48780, 53183, 6926, 14429, 25356, 26891, 20111, 27748,
     ];
 
     // Get highest potential category

@@ -548,8 +548,8 @@ async function getCategoryPerformanceAnalysis(channelIds = []) {
           ctt.total_videos,
           CASE 
             WHEN ct.normalized_topic LIKE '%skin%' OR ct.normalized_topic LIKE '%skincare%' THEN 'Skincare'
-            WHEN ct.normalized_topic LIKE '%body%' OR ct.normalized_topic LIKE '%bodycare%' THEN 'Body'
-            WHEN ct.normalized_topic LIKE '%hair%' OR ct.normalized_topic LIKE '%haircare%' THEN 'Hair'
+            WHEN ct.normalized_topic LIKE '%body%' OR ct.normalized_topic LIKE '%bodycare%' THEN 'Body Care'
+            WHEN ct.normalized_topic LIKE '%hair%' OR ct.normalized_topic LIKE '%haircare%' THEN 'Hair Care'
             WHEN ct.normalized_topic LIKE '%perfume%' OR ct.normalized_topic LIKE '%fragrance%' THEN 'Fragrance'
             WHEN ct.normalized_topic LIKE '%makeup%' OR ct.normalized_topic LIKE '%cosmetic%' THEN 'Makeup'
             ELSE 'Makeup'  -- Default to makeup for beauty content

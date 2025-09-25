@@ -27,6 +27,9 @@ async function contentQualityKPIHandler(req, res) {
         req.body.languageFilter || req.query.languageFilter || "all",
       sentimentFilter:
         req.body.sentimentFilter || req.query.sentimentFilter || "all",
+      // Add pagination parameters
+      page: parseInt(req.body.page || req.query.page || 1),
+      pageSize: parseInt(req.body.pageSize || req.query.pageSize || 10),
     };
 
     console.log("Processed filters:", filters);

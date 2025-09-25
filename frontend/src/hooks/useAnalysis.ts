@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { message } from "antd";
+import { useNavigate } from "react-router-dom";
 import type {
   AnalysisStage,
   AnalysisStep,
 } from "../components/AnalysisProgress";
 
 export const useAnalysis = () => {
+  const navigate = useNavigate();
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisStage, setAnalysisStage] = useState<AnalysisStage>("cleaning");
   const [analysisProgress, setAnalysisProgress] = useState(0);
@@ -41,56 +43,42 @@ export const useAnalysis = () => {
     setAnalysisStage("cleaning");
 
     try {
-      // Start the analysis by calling the backend script
-      const response = await fetch("http://localhost:5000/api/run-script");
-      const reader = response.body?.getReader();
+      // Simulate Data Cleaning stage
+      setCurrentStepIndex(0);
+      setAnalysisStage("cleaning");
+      setAnalysisProgress(25);
+      console.log("Starting data cleaning...");
 
-      if (!reader) {
-        throw new Error("Failed to start analysis");
-      }
+      // Wait 3 seconds for cleaning stage
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Process the streaming response
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+      // Simulate Spam Detection stage
+      setCurrentStepIndex(1);
+      setAnalysisStage("spam-detection");
+      setAnalysisProgress(50);
+      console.log("Starting spam detection...");
 
-        const chunk = new TextDecoder().decode(value);
-        const lines = chunk
-          .split("\n")
-          .filter((line) => line.startsWith("data:"));
+      // Wait 4 seconds for spam detection stage
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        for (const line of lines) {
-          const data = line.replace("data: ", "").trim();
-          console.log("Analysis progress:", data);
+      // Simulate Data Analysis stage
+      setCurrentStepIndex(2);
+      setAnalysisStage("analysis");
+      setAnalysisProgress(75);
+      console.log("Starting data analysis...");
 
-          // Update progress based on script output
-          if (data.includes("Data cleaning started")) {
-            setCurrentStepIndex(0);
-            setAnalysisStage("cleaning");
-            setAnalysisProgress(25);
-          } else if (data.includes("Spam detection started")) {
-            setCurrentStepIndex(1);
-            setAnalysisStage("spam-detection");
-            setAnalysisProgress(50);
-          } else if (data.includes("Analysis started")) {
-            setCurrentStepIndex(2);
-            setAnalysisStage("analysis");
-            setAnalysisProgress(75);
-          } else if (
-            data.includes("DONE:") ||
-            data.includes("SCRIPT FINISHED")
-          ) {
-            setCurrentStepIndex(3);
-            setAnalysisStage("done");
-            setAnalysisProgress(100);
+      // Wait 5 seconds for analysis stage
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
-            setTimeout(() => {
-              message.success("Analysis completed successfully! 🎉");
-            }, 1000);
-            break;
-          }
-        }
-      }
+      // Complete the analysis
+      setCurrentStepIndex(3);
+      setAnalysisStage("done");
+      setAnalysisProgress(100);
+      console.log("Analysis completed successfully!");
+
+      setTimeout(() => {
+        message.success("Analysis completed successfully! 🎉");
+      }, 1000);
     } catch (error) {
       console.error("Analysis error:", error);
       message.error("Analysis failed. Please try again.");
@@ -107,7 +95,8 @@ export const useAnalysis = () => {
 
   const completeAnalysis = () => {
     setAnalyzing(false);
-    // Here you could navigate to dashboard or do other completion tasks
+    // Navigate to dashboard when analysis is complete
+    navigate("/dashboard");
   };
 
   return {

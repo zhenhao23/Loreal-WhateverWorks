@@ -341,147 +341,38 @@ async function getQualityScoreDistribution(filters = {}) {
     const { whereClause, params } = buildWhereClause(filters);
     const whereCondition = whereClause ? `WHERE ${whereClause}` : "";
 
+    console.log("🚀 Using OPTIMIZED Quality Score Distribution query...");
+
     const query = `
-      WITH score_ranges AS (
+      WITH score_buckets AS (
         SELECT 
-          c.kpi * 10 as score, -- Convert 0-1 to 0-10 scale
-          CASE 
-            WHEN c.kpi * 10 >= 0 AND c.kpi * 10 < 0.2 THEN '0.0-0.2'
-            WHEN c.kpi * 10 >= 0.2 AND c.kpi * 10 < 0.4 THEN '0.2-0.4'
-            WHEN c.kpi * 10 >= 0.4 AND c.kpi * 10 < 0.6 THEN '0.4-0.6'
-            WHEN c.kpi * 10 >= 0.6 AND c.kpi * 10 < 0.8 THEN '0.6-0.8'
-            WHEN c.kpi * 10 >= 0.8 AND c.kpi * 10 < 1.0 THEN '0.8-1.0'
-            WHEN c.kpi * 10 >= 1.0 AND c.kpi * 10 < 1.2 THEN '1.0-1.2'
-            WHEN c.kpi * 10 >= 1.2 AND c.kpi * 10 < 1.4 THEN '1.2-1.4'
-            WHEN c.kpi * 10 >= 1.4 AND c.kpi * 10 < 1.6 THEN '1.4-1.6'
-            WHEN c.kpi * 10 >= 1.6 AND c.kpi * 10 < 1.8 THEN '1.6-1.8'
-            WHEN c.kpi * 10 >= 1.8 AND c.kpi * 10 < 2.0 THEN '1.8-2.0'
-            WHEN c.kpi * 10 >= 2.0 AND c.kpi * 10 < 2.2 THEN '2.0-2.2'
-            WHEN c.kpi * 10 >= 2.2 AND c.kpi * 10 < 2.4 THEN '2.2-2.4'
-            WHEN c.kpi * 10 >= 2.4 AND c.kpi * 10 < 2.6 THEN '2.4-2.6'
-            WHEN c.kpi * 10 >= 2.6 AND c.kpi * 10 < 2.8 THEN '2.6-2.8'
-            WHEN c.kpi * 10 >= 2.8 AND c.kpi * 10 < 3.0 THEN '2.8-3.0'
-            WHEN c.kpi * 10 >= 3.0 AND c.kpi * 10 < 3.2 THEN '3.0-3.2'
-            WHEN c.kpi * 10 >= 3.2 AND c.kpi * 10 < 3.4 THEN '3.2-3.4'
-            WHEN c.kpi * 10 >= 3.4 AND c.kpi * 10 < 3.6 THEN '3.4-3.6'
-            WHEN c.kpi * 10 >= 3.6 AND c.kpi * 10 < 3.8 THEN '3.6-3.8'
-            WHEN c.kpi * 10 >= 3.8 AND c.kpi * 10 < 4.0 THEN '3.8-4.0'
-            WHEN c.kpi * 10 >= 4.0 AND c.kpi * 10 < 4.2 THEN '4.0-4.2'
-            WHEN c.kpi * 10 >= 4.2 AND c.kpi * 10 < 4.4 THEN '4.2-4.4'
-            WHEN c.kpi * 10 >= 4.4 AND c.kpi * 10 < 4.6 THEN '4.4-4.6'
-            WHEN c.kpi * 10 >= 4.6 AND c.kpi * 10 < 4.8 THEN '4.6-4.8'
-            WHEN c.kpi * 10 >= 4.8 AND c.kpi * 10 < 5.0 THEN '4.8-5.0'
-            WHEN c.kpi * 10 >= 5.0 AND c.kpi * 10 < 5.2 THEN '5.0-5.2'
-            WHEN c.kpi * 10 >= 5.2 AND c.kpi * 10 < 5.4 THEN '5.2-5.4'
-            WHEN c.kpi * 10 >= 5.4 AND c.kpi * 10 < 5.6 THEN '5.4-5.6'
-            WHEN c.kpi * 10 >= 5.6 AND c.kpi * 10 < 5.8 THEN '5.6-5.8'
-            WHEN c.kpi * 10 >= 5.8 AND c.kpi * 10 < 6.0 THEN '5.8-6.0'
-            WHEN c.kpi * 10 >= 6.0 AND c.kpi * 10 < 6.2 THEN '6.0-6.2'
-            WHEN c.kpi * 10 >= 6.2 AND c.kpi * 10 < 6.4 THEN '6.2-6.4'
-            WHEN c.kpi * 10 >= 6.4 AND c.kpi * 10 < 6.6 THEN '6.4-6.6'
-            WHEN c.kpi * 10 >= 6.6 AND c.kpi * 10 < 6.8 THEN '6.6-6.8'
-            WHEN c.kpi * 10 >= 6.8 AND c.kpi * 10 < 7.0 THEN '6.8-7.0'
-            WHEN c.kpi * 10 >= 7.0 AND c.kpi * 10 < 7.2 THEN '7.0-7.2'
-            WHEN c.kpi * 10 >= 7.2 AND c.kpi * 10 < 7.4 THEN '7.2-7.4'
-            WHEN c.kpi * 10 >= 7.4 AND c.kpi * 10 < 7.6 THEN '7.4-7.6'
-            WHEN c.kpi * 10 >= 7.6 AND c.kpi * 10 < 7.8 THEN '7.6-7.8'
-            WHEN c.kpi * 10 >= 7.8 AND c.kpi * 10 < 8.0 THEN '7.8-8.0'
-            WHEN c.kpi * 10 >= 8.0 AND c.kpi * 10 < 8.2 THEN '8.0-8.2'
-            WHEN c.kpi * 10 >= 8.2 AND c.kpi * 10 < 8.4 THEN '8.2-8.4'
-            WHEN c.kpi * 10 >= 8.4 AND c.kpi * 10 < 8.6 THEN '8.4-8.6'
-            WHEN c.kpi * 10 >= 8.6 AND c.kpi * 10 < 8.8 THEN '8.6-8.8'
-            WHEN c.kpi * 10 >= 8.8 AND c.kpi * 10 < 9.0 THEN '8.8-9.0'
-            WHEN c.kpi * 10 >= 9.0 AND c.kpi * 10 < 9.2 THEN '9.0-9.2'
-            WHEN c.kpi * 10 >= 9.2 AND c.kpi * 10 < 9.4 THEN '9.2-9.4'
-            WHEN c.kpi * 10 >= 9.4 AND c.kpi * 10 < 9.6 THEN '9.4-9.6'
-            WHEN c.kpi * 10 >= 9.6 AND c.kpi * 10 < 9.8 THEN '9.6-9.8'
-            WHEN c.kpi * 10 >= 9.8 AND c.kpi * 10 <= 10.0 THEN '9.8-10.0'
-            ELSE 'unknown'
-          END as score_range
+          -- Calculate bucket index (0-49) using mathematical floor division
+          FLOOR(LEAST(c.kpi * 10, 9.99) / 0.2)::INTEGER as bucket_index,
+          COUNT(*) as frequency
         FROM comments c
         LEFT JOIN videos v ON c.video_id = v.video_id
         ${whereCondition}
         AND c.kpi IS NOT NULL
+        GROUP BY FLOOR(LEAST(c.kpi * 10, 9.99) / 0.2)::INTEGER
       ),
-      range_counts AS (
-        SELECT 
-          score_range,
-          COUNT(*) as frequency
-        FROM score_ranges
-        WHERE score_range != 'unknown'
-        GROUP BY score_range
+      all_buckets AS (
+        -- Generate all 50 buckets (0-49)
+        SELECT generate_series(0, 49) as bucket_index
       )
       SELECT 
-        score_range as "scoreRange",
-        frequency
-      FROM range_counts
-      ORDER BY 
-        CASE score_range
-          WHEN '0.0-0.2' THEN 1 WHEN '0.2-0.4' THEN 2 WHEN '0.4-0.6' THEN 3 WHEN '0.6-0.8' THEN 4 WHEN '0.8-1.0' THEN 5
-          WHEN '1.0-1.2' THEN 6 WHEN '1.2-1.4' THEN 7 WHEN '1.4-1.6' THEN 8 WHEN '1.6-1.8' THEN 9 WHEN '1.8-2.0' THEN 10
-          WHEN '2.0-2.2' THEN 11 WHEN '2.2-2.4' THEN 12 WHEN '2.4-2.6' THEN 13 WHEN '2.6-2.8' THEN 14 WHEN '2.8-3.0' THEN 15
-          WHEN '3.0-3.2' THEN 16 WHEN '3.2-3.4' THEN 17 WHEN '3.4-3.6' THEN 18 WHEN '3.6-3.8' THEN 19 WHEN '3.8-4.0' THEN 20
-          WHEN '4.0-4.2' THEN 21 WHEN '4.2-4.4' THEN 22 WHEN '4.4-4.6' THEN 23 WHEN '4.6-4.8' THEN 24 WHEN '4.8-5.0' THEN 25
-          WHEN '5.0-5.2' THEN 26 WHEN '5.2-5.4' THEN 27 WHEN '5.4-5.6' THEN 28 WHEN '5.6-5.8' THEN 29 WHEN '5.8-6.0' THEN 30
-          WHEN '6.0-6.2' THEN 31 WHEN '6.2-6.4' THEN 32 WHEN '6.4-6.6' THEN 33 WHEN '6.6-6.8' THEN 34 WHEN '6.8-7.0' THEN 35
-          WHEN '7.0-7.2' THEN 36 WHEN '7.2-7.4' THEN 37 WHEN '7.4-7.6' THEN 38 WHEN '7.6-7.8' THEN 39 WHEN '7.8-8.0' THEN 40
-          WHEN '8.0-8.2' THEN 41 WHEN '8.2-8.4' THEN 42 WHEN '8.4-8.6' THEN 43 WHEN '8.6-8.8' THEN 44 WHEN '8.8-9.0' THEN 45
-          WHEN '9.0-9.2' THEN 46 WHEN '9.2-9.4' THEN 47 WHEN '9.4-9.6' THEN 48 WHEN '9.6-9.8' THEN 49 WHEN '9.8-10.0' THEN 50
-        END;
+        (ab.bucket_index * 0.2)::NUMERIC(3,1) || '-' || 
+        ((ab.bucket_index + 1) * 0.2)::NUMERIC(3,1) as "scoreRange",
+        COALESCE(sb.frequency, 0) as frequency
+      FROM all_buckets ab
+      LEFT JOIN score_buckets sb ON ab.bucket_index = sb.bucket_index
+      ORDER BY ab.bucket_index;
     `;
 
     const result = await pool.query(query, params);
-
-    // Create all 50 ranges (0.2 intervals from 0 to 10)
-    const allRanges = [];
-    for (let i = 0; i < 50; i++) {
-      const start = (i * 0.2).toFixed(1);
-      const end = ((i + 1) * 0.2).toFixed(1);
-      allRanges.push(`${start}-${end}`);
-    }
-
-    const distributionMap = {};
-
-    // Initialize all ranges with 0
-    allRanges.forEach((range) => {
-      distributionMap[range] = 0;
-    });
-
-    // Fill in actual values
-    result.rows.forEach((row) => {
-      distributionMap[row.scoreRange] = parseInt(row.frequency);
-    });
-
-    // Convert to array format for frontend
-    const distribution = allRanges.map((range) => ({
-      scoreRange: range,
-      frequency: distributionMap[range],
-    }));
-
-    return distribution;
+    return result.rows || [];
   } catch (error) {
     console.error("Error fetching quality score distribution:", error);
-    console.log("Falling back to demo data for quality score distribution...");
-
-    // Return demo data for consistent frontend behavior (50 bars)
-    const demoData = [];
-    for (let i = 0; i < 50; i++) {
-      const start = (i * 0.2).toFixed(1);
-      const end = ((i + 1) * 0.2).toFixed(1);
-      // Create realistic bell curve distribution
-      const midpoint = 25; // Middle of 50 bars
-      const distance = Math.abs(i - midpoint);
-      const frequency = Math.max(
-        10,
-        Math.round(2000 * Math.exp(-distance / 8))
-      );
-
-      demoData.push({
-        scoreRange: `${start}-${end}`,
-        frequency: frequency,
-      });
-    }
-    return demoData;
+    throw error;
   }
 }
 

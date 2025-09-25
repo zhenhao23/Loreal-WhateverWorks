@@ -7,11 +7,29 @@ const pool = require("../db");
 
 /**
  * Get top quality comments with highest KPI scores
+ * Now supports pagination
  */
-async function getTopComments(filters = {}) {
+async function getTopComments(filters = {}, pagination = {}) {
   try {
+    const { page = 1, pageSize = 10 } = pagination;
+    const offset = (page - 1) * pageSize;
+
     const { whereClause, params } = buildWhereClause(filters);
     const whereCondition = whereClause ? `WHERE ${whereClause}` : "";
+
+    // First, get the total count
+    const countQuery = `
+      SELECT COUNT(*) as total
+      FROM comments c
+      LEFT JOIN videos v ON c.video_id = v.video_id
+      ${whereCondition}
+      AND c.text_original IS NOT NULL 
+      AND TRIM(c.text_original) != ''
+      AND c.kpi IS NOT NULL
+    `;
+
+    const countResult = await pool.query(countQuery, params);
+    const total = parseInt(countResult.rows[0].total) || 0;
 
     const query = `
       WITH comment_with_sentiment AS (
@@ -57,14 +75,30 @@ async function getTopComments(filters = {}) {
         aspect
       FROM comment_with_replies
       ORDER BY kpi_score DESC, like_count DESC
-      LIMIT 5
+      LIMIT $${params.length + 1} OFFSET $${params.length + 2}
     `;
 
-    const result = await pool.query(query, params);
-    return result.rows || [];
+    const paginatedParams = [...params, pageSize, offset];
+    const result = await pool.query(query, paginatedParams);
+
+    // Return paginated response format
+    return {
+      data: result.rows || [],
+      current: page,
+      pageSize: pageSize,
+      total: total,
+      totalPages: Math.ceil(total / pageSize),
+    };
   } catch (error) {
     console.error("Error fetching top comments:", error);
-    return [];
+    // Return paginated format even on error
+    return {
+      data: [],
+      current: page,
+      pageSize: pageSize,
+      total: 0,
+      totalPages: 0,
+    };
   }
 }
 
