@@ -346,18 +346,19 @@ async function getQualityScoreDistribution(filters = {}) {
     const query = `
       WITH score_buckets AS (
         SELECT 
-          -- Calculate bucket index (0-49) using mathematical floor division
-          FLOOR(LEAST(c.kpi * 10, 9.99) / 0.2)::INTEGER as bucket_index,
+          -- Calculate bucket index (0-34) using mathematical floor division for 0-7 range
+          FLOOR(LEAST(c.kpi * 10, 6.99) / 0.2)::INTEGER as bucket_index,
           COUNT(*) as frequency
         FROM comments c
         LEFT JOIN videos v ON c.video_id = v.video_id
         ${whereCondition}
         AND c.kpi IS NOT NULL
-        GROUP BY FLOOR(LEAST(c.kpi * 10, 9.99) / 0.2)::INTEGER
+        AND c.kpi * 10 <= 7.0  -- Only include scores up to 7.0
+        GROUP BY FLOOR(LEAST(c.kpi * 10, 6.99) / 0.2)::INTEGER
       ),
       all_buckets AS (
-        -- Generate all 50 buckets (0-49)
-        SELECT generate_series(0, 49) as bucket_index
+        -- Generate all 35 buckets (0-34) for 0-7 range
+        SELECT generate_series(0, 34) as bucket_index
       )
       SELECT 
         (ab.bucket_index * 0.2)::NUMERIC(3,1) || '-' || 

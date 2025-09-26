@@ -1,4 +1,4 @@
-import { Card, Row, Col, Table } from "antd";
+import { Card, Row, Col, Table, Tag, Space } from "antd";
 import {
   VideoCameraOutlined,
   BarChartOutlined,
@@ -8,10 +8,15 @@ import {
   MessageOutlined,
   RiseOutlined,
   LineChartOutlined,
+  BulbOutlined,
+  ClockCircleOutlined,
+  CalendarOutlined,
+  TagOutlined,
 } from "@ant-design/icons";
 import { Bar, Line } from "@ant-design/plots";
 import type { ColumnsType } from "antd/es/table";
 import type { VideoBreakdownData } from "./VideoBreakdownMockData";
+import { mockBestVideoTopicData } from "./BestVideoTopicMockData";
 
 interface VideoBreakdownUIProps {
   data: VideoBreakdownData;
@@ -635,7 +640,206 @@ const VideoBreakdownUI = ({
         </Col>
       </Row>
 
-      {/* 📈 Row 3 – Engagement Rate Timeline */}
+      {/* � Row 3 – Category Management Strategies */}
+      <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
+        <Col xs={24}>
+          <Card
+            title={
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                <BulbOutlined style={{ color: "#5A6ACF" }} />
+                <span
+                  style={{
+                    color: "#5A6ACF",
+                    fontSize: "18px",
+                    fontWeight: 600,
+                  }}
+                >
+                  Category Management Strategies
+                </span>
+              </div>
+            }
+            extra={
+              <div style={{ fontSize: "12px", color: "#8B92B8" }}>
+                Optimization recommendations based on best-performing content
+                patterns
+              </div>
+            }
+            style={{
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            }}
+            headStyle={{
+              background: "#fafbfc",
+              borderBottom: "1px solid #f0f2f7",
+            }}
+          >
+            <Table
+              dataSource={mockBestVideoTopicData.map((item, index) => ({
+                key: index + 1,
+                ...item,
+              }))}
+              columns={[
+                {
+                  title: "Topic Category",
+                  dataIndex: "topic",
+                  key: "topic",
+                  width: "12%",
+                  render: (text: string) => (
+                    <div
+                      style={{
+                        fontWeight: 600,
+                        color: "#5A6ACF",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {text}
+                    </div>
+                  ),
+                },
+                {
+                  title: "Recommended Keywords",
+                  dataIndex: "keywords",
+                  key: "keywords",
+                  width: "20%",
+                  render: (keywords: string[]) => (
+                    <div
+                      style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}
+                    >
+                      {keywords.map((keyword, index) => (
+                        <Tag
+                          key={index}
+                          color="blue"
+                          style={{
+                            fontSize: "11px",
+                            margin: "2px",
+                            borderRadius: "12px",
+                          }}
+                        >
+                          {keyword}
+                        </Tag>
+                      ))}
+                    </div>
+                  ),
+                },
+                {
+                  title: "Optimal Duration",
+                  dataIndex: "bestDurationGroup",
+                  key: "bestDurationGroup",
+                  width: "12%",
+                  render: (duration: string) => (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                      }}
+                    >
+                      <ClockCircleOutlined
+                        style={{ color: "#52c41a", fontSize: "14px" }}
+                      />
+                      <span style={{ fontWeight: 600, color: "#52c41a" }}>
+                        {duration}
+                      </span>
+                    </div>
+                  ),
+                },
+                {
+                  title: "Best Publishing Day",
+                  dataIndex: "bestDay",
+                  key: "bestDay",
+                  width: "12%",
+                  render: (day: string) => (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                      }}
+                    >
+                      <CalendarOutlined
+                        style={{ color: "#FF6961", fontSize: "14px" }}
+                      />
+                      <span style={{ fontWeight: 600, color: "#FF6961" }}>
+                        {day}
+                      </span>
+                    </div>
+                  ),
+                },
+                {
+                  title: "Optimal Time",
+                  dataIndex: "bestTime",
+                  key: "bestTime",
+                  width: "10%",
+                  render: (time: number) => (
+                    <div
+                      style={{
+                        textAlign: "center",
+                        fontWeight: 600,
+                        color: "#722ed1",
+                      }}
+                    >
+                      {time}:00
+                    </div>
+                  ),
+                },
+                {
+                  title: "Title Length",
+                  dataIndex: "bestTitleLength",
+                  key: "bestTitleLength",
+                  width: "12%",
+                  render: (length: string) => (
+                    <div
+                      style={{
+                        textAlign: "center",
+                        fontWeight: 600,
+                        color: "#eb2f96",
+                      }}
+                    >
+                      {length}
+                    </div>
+                  ),
+                },
+                {
+                  title: "Top Hashtags",
+                  dataIndex: "top5Hashtags",
+                  key: "top5Hashtags",
+                  width: "22%",
+                  render: (hashtags: string[]) => (
+                    <div
+                      style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}
+                    >
+                      {hashtags.map((hashtag, index) => (
+                        <Tag
+                          key={index}
+                          color="purple"
+                          style={{
+                            fontSize: "11px",
+                            margin: "2px",
+                            borderRadius: "12px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                          }}
+                        >
+                          <TagOutlined style={{ fontSize: "10px" }} />
+                          {hashtag}
+                        </Tag>
+                      ))}
+                    </div>
+                  ),
+                },
+              ]}
+              pagination={false}
+              size="middle"
+              scroll={{ x: 1200 }}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      {/* �📈 Row 4 – Engagement Rate Timeline */}
       <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
         <Col xs={24}>
           <Card
@@ -676,7 +880,7 @@ const VideoBreakdownUI = ({
         </Col>
       </Row>
 
-      {/* 🏆 Row 4 – Category Leaderboard Table */}
+      {/* 🏆 Row 5 – Category Leaderboard Table */}
       <Row gutter={[24, 24]}>
         <Col xs={24}>
           <Card
