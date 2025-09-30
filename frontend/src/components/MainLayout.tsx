@@ -3,10 +3,15 @@ import { Layout, Menu, Typography, Button } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   DashboardOutlined,
-  RobotOutlined,
   PlusOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  ApiOutlined,
+  TeamOutlined,
+  BulbOutlined,
+  GlobalOutlined,
+  MessageOutlined,
+  SendOutlined,
 } from "@ant-design/icons";
 
 const { Header, Sider, Content } = Layout;
@@ -24,22 +29,32 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   // Map routes to menu keys
   const routeToKeyMap: { [key: string]: string } = {
-    "/": "1",
-    "/upload": "1",
-    "/dashboard": "2",
-    "/chatbot": "3",
+    "/": "2",
+    "/api-fetch": "1",
+    "/upload": "2",
+    "/dashboard": "3",
+    "/product-team": "4",
+    "/internal-marketing": "5",
+    "/external-marketing": "6",
+    "/chatbot": "7",
+    "/ai-auto-reply": "8",
   };
 
   // Map menu keys to routes
   const keyToRouteMap: { [key: string]: string } = {
-    "1": "/upload",
-    "2": "/dashboard",
-    "3": "/chatbot",
+    "1": "/api-fetch",
+    "2": "/upload",
+    "3": "/dashboard",
+    "4": "/product-team",
+    "5": "/internal-marketing",
+    "6": "/external-marketing",
+    "7": "/chatbot",
+    "8": "/ai-auto-reply",
   };
 
   // Update selected key based on current route
   useEffect(() => {
-    const currentKey = routeToKeyMap[location.pathname] || "1";
+    const currentKey = routeToKeyMap[location.pathname] || "2";
     setSelectedKey(currentKey);
   }, [location.pathname]);
 
@@ -144,8 +159,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             items={[
               {
                 key: "1",
-                icon: <PlusOutlined />,
-                label: "Upload Dataset",
+                icon: <ApiOutlined />,
+                label: "API Fetch",
                 style: {
                   color:
                     selectedKey === "1" ? "#5A6ACF" : "rgba(166, 171, 200, 1)",
@@ -160,8 +175,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               },
               {
                 key: "2",
-                icon: <DashboardOutlined />,
-                label: "Dashboard",
+                icon: <PlusOutlined />,
+                label: "Upload Dataset",
                 style: {
                   color:
                     selectedKey === "2" ? "#5A6ACF" : "rgba(166, 171, 200, 1)",
@@ -176,8 +191,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               },
               {
                 key: "3",
-                icon: <RobotOutlined />,
-                label: "Chatbot",
+                icon: <DashboardOutlined />,
+                label: "Dashboard",
                 style: {
                   color:
                     selectedKey === "3" ? "#5A6ACF" : "rgba(166, 171, 200, 1)",
@@ -188,6 +203,86 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   margin: "4px 8px",
                   borderRadius: "6px",
                   fontWeight: selectedKey === "3" ? 600 : 400,
+                },
+              },
+              {
+                key: "4",
+                icon: <TeamOutlined />,
+                label: "Product Team",
+                style: {
+                  color:
+                    selectedKey === "4" ? "#5A6ACF" : "rgba(166, 171, 200, 1)",
+                  backgroundColor:
+                    selectedKey === "4"
+                      ? "rgba(112, 127, 221, 0.1)"
+                      : "transparent",
+                  margin: "4px 8px",
+                  borderRadius: "6px",
+                  fontWeight: selectedKey === "4" ? 600 : 400,
+                },
+              },
+              {
+                key: "5",
+                icon: <BulbOutlined />,
+                label: "Internal Marketing",
+                style: {
+                  color:
+                    selectedKey === "5" ? "#5A6ACF" : "rgba(166, 171, 200, 1)",
+                  backgroundColor:
+                    selectedKey === "5"
+                      ? "rgba(112, 127, 221, 0.1)"
+                      : "transparent",
+                  margin: "4px 8px",
+                  borderRadius: "6px",
+                  fontWeight: selectedKey === "5" ? 600 : 400,
+                },
+              },
+              {
+                key: "6",
+                icon: <GlobalOutlined />,
+                label: "External Marketing",
+                style: {
+                  color:
+                    selectedKey === "6" ? "#5A6ACF" : "rgba(166, 171, 200, 1)",
+                  backgroundColor:
+                    selectedKey === "6"
+                      ? "rgba(112, 127, 221, 0.1)"
+                      : "transparent",
+                  margin: "4px 8px",
+                  borderRadius: "6px",
+                  fontWeight: selectedKey === "6" ? 600 : 400,
+                },
+              },
+              {
+                key: "7",
+                icon: <MessageOutlined />,
+                label: "Super Chatbot",
+                style: {
+                  color:
+                    selectedKey === "7" ? "#5A6ACF" : "rgba(166, 171, 200, 1)",
+                  backgroundColor:
+                    selectedKey === "7"
+                      ? "rgba(112, 127, 221, 0.1)"
+                      : "transparent",
+                  margin: "4px 8px",
+                  borderRadius: "6px",
+                  fontWeight: selectedKey === "7" ? 600 : 400,
+                },
+              },
+              {
+                key: "8",
+                icon: <SendOutlined />,
+                label: "Smart Replies",
+                style: {
+                  color:
+                    selectedKey === "8" ? "#5A6ACF" : "rgba(166, 171, 200, 1)",
+                  backgroundColor:
+                    selectedKey === "8"
+                      ? "rgba(112, 127, 221, 0.1)"
+                      : "transparent",
+                  margin: "4px 8px",
+                  borderRadius: "6px",
+                  fontWeight: selectedKey === "8" ? 600 : 400,
                 },
               },
             ]}

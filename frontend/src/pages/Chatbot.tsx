@@ -39,7 +39,7 @@ function Chatbot() {
             color: "#5A6ACF",
           }}
         >
-          WhateverWorks - Data Pipeline Explorer
+          Super Chatbot
         </h1>
         <Button
           type="primary"

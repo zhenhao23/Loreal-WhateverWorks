@@ -84,7 +84,7 @@ const ContentQualityKPIUI = ({
       title: "Comment Text",
       dataIndex: "comment",
       key: "comment",
-      width: "45%",
+      width: "70%",
       render: (text: string, record: any) => {
         let processedText = text || "";
 
@@ -136,7 +136,7 @@ const ContentQualityKPIUI = ({
             style={{
               fontSize: "14px",
               lineHeight: "1.5",
-              maxWidth: "400px",
+              maxWidth: "90%",
             }}
             dangerouslySetInnerHTML={{
               __html: processedText,
@@ -188,27 +188,27 @@ const ContentQualityKPIUI = ({
         </div>
       ),
     },
-    {
-      title: "Engagement",
-      key: "engagement",
-      width: "25%",
-      sorter: (a, b) =>
-        (a.likes || 0) + (a.replies || 0) - ((b.likes || 0) + (b.replies || 0)),
-      render: (record: any) => (
-        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <HeartOutlined style={{ color: "#ff4d4f" }} />
-            <span style={{ fontWeight: 600 }}>{record.likes}</span>
-            <span style={{ color: "#8c8c8c", fontSize: "12px" }}>likes</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <MessageOutlined style={{ color: "#1890ff" }} />
-            <span style={{ fontWeight: 600 }}>{record.replies}</span>
-            <span style={{ color: "#8c8c8c", fontSize: "12px" }}>replies</span>
-          </div>
-        </div>
-      ),
-    },
+    // {
+    //   title: "Engagement",
+    //   key: "engagement",
+    //   width: "25%",
+    //   sorter: (a, b) =>
+    //     (a.likes || 0) + (a.replies || 0) - ((b.likes || 0) + (b.replies || 0)),
+    //   render: (record: any) => (
+    //     <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+    //       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+    //         <HeartOutlined style={{ color: "#ff4d4f" }} />
+    //         <span style={{ fontWeight: 600 }}>{record.likes}</span>
+    //         <span style={{ color: "#8c8c8c", fontSize: "12px" }}>likes</span>
+    //       </div>
+    //       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+    //         <MessageOutlined style={{ color: "#1890ff" }} />
+    //         <span style={{ fontWeight: 600 }}>{record.replies}</span>
+    //         <span style={{ color: "#8c8c8c", fontSize: "12px" }}>replies</span>
+    //       </div>
+    //     </div>
+    //   ),
+    // },
   ];
 
   // Handle both paginated and array data formats for comments

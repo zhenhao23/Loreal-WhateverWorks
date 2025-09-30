@@ -656,7 +656,7 @@ const VideoBreakdownUI = ({
                     fontWeight: 600,
                   }}
                 >
-                  Category Management Strategies
+                  Video Content Optimization Strategy
                 </span>
               </div>
             }
@@ -855,7 +855,7 @@ const VideoBreakdownUI = ({
                     fontWeight: 600,
                   }}
                 >
-                  Engagement Rate Trends by Category
+                  Engagement Score Trends by Category
                 </span>
               </div>
             }
