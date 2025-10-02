@@ -3,20 +3,26 @@ export const mockBestVideoTopicData = [
   {
     topic: "skin",
     keywords: ["journey", "tutorial", "transformation", "results", "routine"],
-    bestDurationGroup: "15-30 min",
+    bestDurationGroup: "3-4 min",
     bestDay: "Sunday",
     bestTime: 21,
     bestTitleLength: "16-20 words",
     top5Hashtags: ["#shorts", "#skincare", "#makeup", "#39", "#lipstick"],
+    avgEngagement: 35.6,
+    bestEngagement: 85.4,
+    perentIncrease: 140.1,
   },
   {
     topic: "body",
     keywords: ["secret", "results", "transformation"],
-    bestDurationGroup: "<5 min",
+    bestDurationGroup: "<1 min",
     bestDay: "Thursday",
     bestTime: 3,
     bestTitleLength: "7-10 words",
     top5Hashtags: ["#39", "#shorts", "#viral", "#skincare", "#perfume"],
+    avgEngagement: 38.2,
+    bestEngagement: 79.2,
+    perentIncrease: 107.2,
   },
   {
     topic: "hair",
@@ -29,11 +35,14 @@ export const mockBestVideoTopicData = [
       "review",
       "routine",
     ],
-    bestDurationGroup: "15-30 min",
+    bestDurationGroup: "2-3 min",
     bestDay: "Tuesday",
     bestTime: 17,
     bestTitleLength: "1-3 words",
     top5Hashtags: ["#shorts", "#hair", "#hairstyle", "#haircare", "#trending"],
+    avgEngagement: 38.1,
+    bestEngagement: 82.7,
+    perentIncrease: 116.8,
   },
   {
     topic: "perfume",
@@ -41,13 +50,16 @@ export const mockBestVideoTopicData = [
     bestDurationGroup: "<5 min",
     bestDay: "Thursday",
     bestTime: 18,
-    bestTitleLength: "16-20 words",
+    bestTitleLength: "1-2 words",
     top5Hashtags: ["#makeup", "#shorts", "#beauty", "#brows", "#bts"],
+    avgEngagement: 36.5,
+    bestEngagement: 79.6,
+    perentIncrease: 118.3,
   },
   {
     topic: "makeup",
     keywords: ["review", "top", "trending", "tips"],
-    bestDurationGroup: "5-15 min",
+    bestDurationGroup: "2-3 min",
     bestDay: "Sunday",
     bestTime: 14,
     bestTitleLength: "1-3 words",
@@ -58,6 +70,9 @@ export const mockBestVideoTopicData = [
       "#viral",
       "#makeuptutorial",
     ],
+    avgEngagement: 39.4,
+    bestEngagement: 78.8,
+    perentIncrease: 99.9,
   },
 ];
 
@@ -173,6 +188,9 @@ export interface BestVideoTopicData {
   bestTime: number;
   bestTitleLength: string;
   top5Hashtags: string[];
+  avgEngagement: number;
+  bestEngagement: number;
+  perentIncrease: number;
 }
 
 export interface DurationGroupStat {

@@ -15,6 +15,7 @@ import {
   BulbOutlined,
   ClockCircleOutlined,
   TagOutlined,
+  ArrowUpOutlined,
 } from "@ant-design/icons";
 import { mockBestVideoTopicData } from "../components/BestVideoTopicMockData";
 import { Bar, Line } from "@ant-design/plots";
@@ -351,7 +352,13 @@ const InternalMarketing = () => {
                           <ClockCircleOutlined
                             style={{ color: "#52c41a", fontSize: "14px" }}
                           />
-                          <span style={{ fontWeight: 600, color: "#52c41a" }}>
+                          <span
+                            style={{
+                              fontWeight: 600,
+                              color: "#52c41a",
+                              fontSize: "17px",
+                            }}
+                          >
                             {duration}
                           </span>
                         </div>
@@ -390,34 +397,35 @@ const InternalMarketing = () => {
                             textAlign: "center",
                             fontWeight: 600,
                             color: "#722ed1",
+                            fontSize: "17px",
                           }}
                         >
                           {time}:00
                         </div>
                       ),
                     },
-                    {
-                      title: "Title Length",
-                      dataIndex: "bestTitleLength",
-                      key: "bestTitleLength",
-                      width: "12%",
-                      render: (length: string) => (
-                        <div
-                          style={{
-                            textAlign: "center",
-                            fontWeight: 600,
-                            color: "#eb2f96",
-                          }}
-                        >
-                          {length}
-                        </div>
-                      ),
-                    },
+                    // {
+                    //   title: "Title Length",
+                    //   dataIndex: "bestTitleLength",
+                    //   key: "bestTitleLength",
+                    //   width: "12%",
+                    //   render: (length: string) => (
+                    //     <div
+                    //       style={{
+                    //         textAlign: "center",
+                    //         fontWeight: 600,
+                    //         color: "#eb2f96",
+                    //       }}
+                    //     >
+                    //       {length}
+                    //     </div>
+                    //   ),
+                    // },
                     {
                       title: "Top Hashtags",
                       dataIndex: "top5Hashtags",
                       key: "top5Hashtags",
-                      width: "22%",
+                      width: "18%",
                       render: (hashtags: string[]) => (
                         <div
                           style={{
@@ -443,6 +451,86 @@ const InternalMarketing = () => {
                               {hashtag}
                             </Tag>
                           ))}
+                        </div>
+                      ),
+                    },
+                    {
+                      title: "Avg Engagement",
+                      dataIndex: "avgEngagement",
+                      key: "avgEngagement",
+                      width: "10%",
+                      render: (rate: number) => (
+                        <div
+                          style={{
+                            textAlign: "center",
+                            fontWeight: 600,
+                            color: "#faad14",
+                            fontSize: "17px",
+                          }}
+                        >
+                          {rate}%
+                        </div>
+                      ),
+                    },
+                    {
+                      title: "Best Engagement",
+                      dataIndex: "bestEngagement",
+                      key: "bestEngagement",
+                      width: "10%",
+                      render: (rate: number) => (
+                        <div
+                          style={{
+                            textAlign: "center",
+                            fontWeight: 600,
+                            color: "#52c41a",
+                            fontSize: "17px",
+                          }}
+                        >
+                          {rate}%
+                        </div>
+                      ),
+                    },
+                    {
+                      title: "Potential Increase",
+                      dataIndex: "perentIncrease",
+                      key: "perentIncrease",
+                      width: "12%",
+                      render: (increase: number) => (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "4px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              backgroundColor: "#f6ffed",
+                              border: "1px solid #b7eb8f",
+                              borderRadius: "16px",
+                              padding: "4px 8px",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "4px",
+                            }}
+                          >
+                            <ArrowUpOutlined
+                              style={{
+                                color: "#52c41a",
+                                fontSize: "12px",
+                              }}
+                            />
+                            <span
+                              style={{
+                                fontWeight: 600,
+                                color: "#52c41a",
+                                fontSize: "15px",
+                              }}
+                            >
+                              +{increase}%
+                            </span>
+                          </div>
                         </div>
                       ),
                     },

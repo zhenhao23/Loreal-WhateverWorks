@@ -189,22 +189,22 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   fontWeight: selectedKey === "2" ? 600 : 400,
                 },
               },
-              {
-                key: "3",
-                icon: <DashboardOutlined />,
-                label: "Dashboard",
-                style: {
-                  color:
-                    selectedKey === "3" ? "#5A6ACF" : "rgba(166, 171, 200, 1)",
-                  backgroundColor:
-                    selectedKey === "3"
-                      ? "rgba(112, 127, 221, 0.1)"
-                      : "transparent",
-                  margin: "4px 8px",
-                  borderRadius: "6px",
-                  fontWeight: selectedKey === "3" ? 600 : 400,
-                },
-              },
+              // {
+              //   key: "3",
+              //   icon: <DashboardOutlined />,
+              //   label: "Dashboard",
+              //   style: {
+              //     color:
+              //       selectedKey === "3" ? "#5A6ACF" : "rgba(166, 171, 200, 1)",
+              //     backgroundColor:
+              //       selectedKey === "3"
+              //         ? "rgba(112, 127, 221, 0.1)"
+              //         : "transparent",
+              //     margin: "4px 8px",
+              //     borderRadius: "6px",
+              //     fontWeight: selectedKey === "3" ? 600 : 400,
+              //   },
+              // },
               {
                 key: "4",
                 icon: <TeamOutlined />,

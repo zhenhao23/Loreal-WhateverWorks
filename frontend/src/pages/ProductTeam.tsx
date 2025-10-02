@@ -58,9 +58,9 @@ const ProductTeam = () => {
         "uv-defender-serum": {
           name: "UV Defender UV Serum Protector",
           image: "/src/assets/products/defender.webp",
-          rating: 4.2,
-          monthlySales: 12500,
-          overallSentiment: 6.5,
+          rating: 4.8,
+          monthlySales: 12583,
+          overallSentiment: 8.7,
           loveWords: [
             "Lightweight",
             "Hydrating",
@@ -74,30 +74,31 @@ const ProductTeam = () => {
               key: "comment-1",
               user: "BeautyLover123",
               comment:
-                "Love how lightweight this serum feels! Perfect for daily use under makeup.",
+                "I used to be a fan of the UV Perfect range and was looking forward to trying this. Totally agree with OP, this is an exceptional sunscreen. It goes on like a dream (thick-ish and easy to spread) and finishes elegantly. I sweat a lot, but it seems quite sweat resistant on me and does not discolour when my forehead becomes moist. It also has excellent sunscreen filters (L'Oréal's Mexoryl filters). I actually love the packaging because it's very secure for aircraft travel, unlike flip top lids and pumps. Expensive but worth it.",
               sentiment: "positive",
               rating: 5,
               date: "2024-09-25",
-              kpiScore: 8.5,
+              kpiScore: 6.2,
             },
             {
               key: "comment-5",
               user: "GlowUp2024",
-              comment: "Perfect texture, absorbs quickly and gives nice glow!",
-              sentiment: "positive",
+              comment:
+                "I'm using this sunscreen rn and I quite like it but does it give the matte finish it promises? I was confused because it looked quite dewy on my skin but that maybe because of the skincare I use before hand so I'm wondering if it matte for you?",
+              sentiment: "neutral",
               rating: 5,
               date: "2024-09-12",
-              kpiScore: 8.1,
+              kpiScore: 6.1,
             },
             {
               key: "comment-3",
               user: "SunscreenAddict",
               comment:
-                "Amazing hydrating formula, doesn't leave white cast at all!",
+                "I LOVE THIS SUNSCREEN TOOO! Found my hg and have been recommending it to people on this sub left right and centre! Bought it for my brother, boyfr and mum too and they all love it!",
               sentiment: "positive",
               rating: 5,
               date: "2024-09-18",
-              kpiScore: 7.8,
+              kpiScore: 6.1,
             },
             {
               key: "comment-2",
@@ -107,7 +108,7 @@ const ProductTeam = () => {
               sentiment: "neutral",
               rating: 4,
               date: "2024-09-20",
-              kpiScore: 6.2,
+              kpiScore: 6.0,
             },
             {
               key: "comment-4",
@@ -117,7 +118,7 @@ const ProductTeam = () => {
               sentiment: "neutral",
               rating: 3,
               date: "2024-09-15",
-              kpiScore: 5.4,
+              kpiScore: 5.9,
             },
           ],
         },
@@ -125,7 +126,7 @@ const ProductTeam = () => {
           name: "Revitalift Day Cream",
           image: "/src/assets/products/loreal revitalift.webp",
           rating: 4.2,
-          monthlySales: 12800,
+          monthlySales: 12863,
           overallSentiment: 7.8,
           loveWords: [
             "Luxurious",
@@ -203,8 +204,8 @@ const ProductTeam = () => {
           name: "Intensive Long Lasting Sunscreen",
           image: "/src/assets/products/innisfree intensive.webp",
           rating: 4.5,
-          monthlySales: 8300,
-          overallSentiment: 8.2,
+          monthlySales: 8327,
+          overallSentiment: 6.5,
           loveWords: [
             "Lightweight",
             "Matte",
@@ -224,20 +225,21 @@ const ProductTeam = () => {
               key: "comment-1",
               user: "KBeautyFan",
               comment:
-                "Perfect lightweight formula! No white cast and lasts all day.",
-              sentiment: "positive",
+                "This is quite water resistance, texture is quite smudgy and thick, no white cast. Whether or not it causes breakout depends on your skin allergy and irritation, was alright for me. However I have put it aside and use another sunscreen because the water resistance texture isn't for everyday use for me, I preferred the round lab/ boj sunscreen for a light texture finish, but they are not water resistant tho. Double cleanse will remove just about any makeup/sunscreen.",
+              sentiment: "neutral",
               rating: 5,
               date: "2024-09-26",
-              kpiScore: 8.7,
+              kpiScore: 6.1,
             },
             {
               key: "comment-3",
               user: "OilySkinHelp",
-              comment: "Amazing for oily skin! Non-sticky and absorbs quickly.",
+              comment:
+                "I bought this in Korea last year! This branding looks a bit different though? It’s definitely thick and water resistant. I have darker skin, so I have to realllly rub it in. If I sweat, you can see the sunscreen lol I have pretty sensitive skin (mostly to all alcohols and some oils) and it’s one of the few that hasn’t broken me out if that says anything! If I rub for the full 90 seconds, I feel like my vanicream cleanser gets it off but I am lazy sometimes so I use micellar water and then my cleanser. All in all, I like this for the beach or any day when I know I am going to be outside for a long time! It’s def not my daily sunscreen though",
               sentiment: "positive",
               rating: 5,
               date: "2024-09-21",
-              kpiScore: 8.3,
+              kpiScore: 6.1,
             },
             {
               key: "comment-5",
@@ -247,7 +249,7 @@ const ProductTeam = () => {
               sentiment: "positive",
               rating: 4,
               date: "2024-09-13",
-              kpiScore: 7.2,
+              kpiScore: 6.0,
             },
             {
               key: "comment-2",
@@ -257,7 +259,7 @@ const ProductTeam = () => {
               sentiment: "neutral",
               rating: 4,
               date: "2024-09-23",
-              kpiScore: 6.5,
+              kpiScore: 6.0,
             },
             {
               key: "comment-4",
@@ -1004,7 +1006,7 @@ const ProductTeam = () => {
                       color: "#5A6ACF",
                     }}
                   >
-                    🧴 Skin Products (Top 5) in Malaysia
+                    🧴 Skin Products (Top 5)
                   </div>
                 }
                 style={{
@@ -1023,44 +1025,45 @@ const ProductTeam = () => {
                       rank: 1,
                       productName: "Hydrating Niacinamide Serum",
                       brand: "Skintific",
-                      totalReviews: 12500,
-                      sales: 18.7,
+                      totalReviews: 38,
+                      sales: 80,
                       growthRate: 35,
                     },
                     {
                       key: "2",
                       rank: 2,
-                      productName: "Oil-Control Facial Cleanser",
-                      brand: "Innisfree",
-                      totalReviews: 10200,
-                      sales: 15.3,
-                      growthRate: 28,
+                      productName: "Intensive CeraHydro Moisturizer Gel",
+                      brand: "ELFORMULA",
+                      totalReviews: 6.2,
+                      sales: 20,
+                      growthRate: 30,
                     },
                     {
                       key: "3",
                       rank: 3,
-                      productName: "Vitamin C Brightening Essence",
-                      brand: "The Ordinary",
-                      totalReviews: 9800,
-                      sales: 14.1,
-                      growthRate: 30,
+                      productName: "Pomegranate Niacinamide Power Bright Serum",
+                      brand: "Glad2Glow",
+                      totalReviews: 34.7,
+                      sales: 80,
+                      growthRate: 28,
                     },
                     {
                       key: "4",
                       rank: 4,
-                      productName: "Overnight Repair Retinol Night Cream",
-                      brand: "La Roche-Posay",
-                      totalReviews: 8500,
-                      sales: 12.6,
+                      productName:
+                        "8X Ceramides Durvillea Lazy Cream Moisturizer Skincare Barrier Repair Facial Whitening Day Cream Night Cream",
+                      brand: "GMEELAN",
+                      totalReviews: 15.8,
+                      sales: 30,
                       growthRate: 25,
                     },
                     {
                       key: "5",
                       rank: 5,
-                      productName: "Daily Sun Protection SPF50 Gel",
-                      brand: "Biore",
-                      totalReviews: 7400,
-                      sales: 10.2,
+                      productName: "Milk Amino Acid Gentle Cleanser",
+                      brand: "Glad2Glow",
+                      totalReviews: 5.4,
+                      sales: 10,
                       growthRate: 20,
                     },
                   ]}
@@ -1128,12 +1131,12 @@ const ProductTeam = () => {
                       width: "15%",
                       render: (value: number) => (
                         <Text style={{ fontSize: "14px", fontWeight: 600 }}>
-                          {value.toLocaleString()}
+                          {value.toLocaleString()}K
                         </Text>
                       ),
                     },
                     {
-                      title: "Sales (MYR millions)",
+                      title: "Sales (Units)",
                       dataIndex: "sales",
                       key: "sales",
                       width: "17%",
@@ -1145,7 +1148,7 @@ const ProductTeam = () => {
                             color: "#52c41a",
                           }}
                         >
-                          {value}M
+                          {value}K
                         </Text>
                       ),
                     },
@@ -1189,7 +1192,7 @@ const ProductTeam = () => {
                       color: "#5A6ACF",
                     }}
                   >
-                    🧴 Body Products (Top 5) in Malaysia
+                    🧴 Body Products (Top 5)
                   </div>
                 }
                 style={{
@@ -1447,7 +1450,7 @@ const ProductTeam = () => {
                   <Option value="youtube">YouTube</Option>
                   <Option value="tiktok">TikTok</Option>
                   <Option value="instagram">Instagram</Option>
-                  <Option value="all">Shoppee</Option>
+                  <Option value="all">Shopee</Option>
                 </Select>
               </Col>
             </Row>

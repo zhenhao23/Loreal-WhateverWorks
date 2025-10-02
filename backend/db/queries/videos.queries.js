@@ -550,7 +550,7 @@ async function getCategoryPerformanceAnalysis(channelIds = []) {
             WHEN ct.normalized_topic LIKE '%skin%' OR ct.normalized_topic LIKE '%skincare%' THEN 'Skincare'
             WHEN ct.normalized_topic LIKE '%body%' OR ct.normalized_topic LIKE '%bodycare%' THEN 'Body Care'
             WHEN ct.normalized_topic LIKE '%hair%' OR ct.normalized_topic LIKE '%haircare%' THEN 'Hair Care'
-            WHEN ct.normalized_topic LIKE '%perfume%' OR ct.normalized_topic LIKE '%fragrance%' THEN 'Fragrance'
+            WHEN ct.normalized_topic LIKE '%perfume%' OR ct.normalized_topic LIKE '%fragrance%' THEN 'Perfume'
             WHEN ct.normalized_topic LIKE '%makeup%' OR ct.normalized_topic LIKE '%cosmetic%' THEN 'Makeup'
             ELSE 'Makeup'  -- Default to makeup for beauty content
           END as beauty_category
@@ -589,7 +589,7 @@ async function getCategoryPerformanceAnalysis(channelIds = []) {
             Skincare: 0,
             Makeup: 0,
             "Hair Care": 0,
-            Fragrance: 0,
+            Perfume: 0,
             "Body Care": 0,
           },
         };

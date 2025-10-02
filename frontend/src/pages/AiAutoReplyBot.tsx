@@ -56,7 +56,7 @@ const AiAutoReplyBot = () => {
       videoThumbnail: "/src/assets/tiktok/tiktok4.png",
       videoTitle:
         "Come back stronger with fuller hair in 42 days. NEW Full Resist Anti Hair Fall range. #RescuedByFullResist #LorealParisMY",
-      draftReply: "ada sis.. Gaurdian juga",
+      draftReply: "ada sis.. Guardian juga",
       username: "@Afreena_Allysha🌷",
       platform: "TikTok",
     },
@@ -145,7 +145,7 @@ const AiAutoReplyBot = () => {
                       border: "1px solid rgba(166, 171, 200, 0.2)",
                     }}
                   >
-                    <Text style={{ color: "#333", fontSize: 14 }}>
+                    <Text style={{ color: "#333", fontSize: 18 }}>
                       "{reply.comment}"
                     </Text>
                   </div>
@@ -171,7 +171,7 @@ const AiAutoReplyBot = () => {
                       border: "1px solid #5A67BA",
                     }}
                   >
-                    <Text style={{ color: "#333", fontSize: 14 }}>
+                    <Text style={{ color: "#333", fontSize: 18 }}>
                       {reply.draftReply}
                     </Text>
                   </div>

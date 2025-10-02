@@ -17,68 +17,48 @@ async function getTopComments(filters = {}, pagination = {}) {
     const { whereClause, params } = buildWhereClause(filters);
     const whereCondition = whereClause ? `WHERE ${whereClause}` : "";
 
-    // First, get the total count
+    // First, get the total count for L'Oreal-specific comments
     const countQuery = `
       SELECT COUNT(*) as total
-      FROM comments c
-      LEFT JOIN videos v ON c.video_id = v.video_id
-      ${whereCondition}
-      AND c.text_original IS NOT NULL 
-      AND TRIM(c.text_original) != ''
-      AND c.kpi IS NOT NULL
+      FROM comments 
+      WHERE (text_original ILIKE '%loreal%' 
+             OR text_original ILIKE '%Loreal%' 
+             OR text_original ILIKE '%L''Oreal%' 
+             OR text_original ILIKE '%L''oreal%') 
+        AND kpi IS NOT NULL 
+        AND is_spam = 0
     `;
 
-    const countResult = await pool.query(countQuery, params);
+    const countResult = await pool.query(countQuery, []);
     const total = parseInt(countResult.rows[0].total) || 0;
 
+    // Updated query to focus on L'Oreal-specific comments with highest KPI scores
     const query = `
-      WITH comment_with_sentiment AS (
-        SELECT 
-          c.comment_id,
-          c.text_original,
-          ROUND(c.kpi * 10, 1) as kpi_score,
-          c.like_count,
-          c.aspect,
-          CASE 
-            WHEN c.positive > c.negative AND c.positive > c.neutral THEN 'positive'
-            WHEN c.negative > c.positive AND c.negative > c.neutral THEN 'negative'
-            ELSE 'neutral'
-          END as sentiment
-        FROM comments c
-        LEFT JOIN videos v ON c.video_id = v.video_id
-        ${whereCondition}
-        AND c.text_original IS NOT NULL 
-        AND TRIM(c.text_original) != ''
-        AND c.kpi IS NOT NULL
-      ),
-      comment_with_replies AS (
-        SELECT 
-          cws.*,
-          COALESCE(reply_counts.reply_count, 0) as replies
-        FROM comment_with_sentiment cws
-        LEFT JOIN (
-          SELECT 
-            parent_comment_id,
-            COUNT(*) as reply_count
-          FROM comments 
-          WHERE parent_comment_id IS NOT NULL
-          GROUP BY parent_comment_id
-        ) reply_counts ON cws.comment_id = reply_counts.parent_comment_id
-      )
       SELECT 
         text_original as comment,
-        sentiment,
-        kpi_score as "kpiScore",
-        like_count as likes,
-        replies,
+        ROUND(kpi * 10, 1) as "kpiScore",
         comment_id as key,
+        published_at,
+        CASE 
+          WHEN positive > negative AND positive > neutral THEN 'positive'
+          WHEN negative > positive AND negative > neutral THEN 'negative'
+          ELSE 'neutral'
+        END as sentiment,
+        like_count as likes,
+        0 as replies,
         aspect
-      FROM comment_with_replies
-      ORDER BY kpi_score DESC, like_count DESC
-      LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+      FROM comments 
+      WHERE (text_original ILIKE '%loreal%' 
+             OR text_original ILIKE '%Loreal%' 
+             OR text_original ILIKE '%L''Oreal%' 
+             OR text_original ILIKE '%L''oreal%') 
+        AND kpi IS NOT NULL 
+        AND is_spam = 0 
+      ORDER BY kpi DESC 
+      LIMIT $1 OFFSET $2
     `;
 
-    const paginatedParams = [...params, pageSize, offset];
+    const paginatedParams = [pageSize, offset];
     const result = await pool.query(query, paginatedParams);
 
     // Return paginated response format

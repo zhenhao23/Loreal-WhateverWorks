@@ -88,6 +88,13 @@ const ContentQualityKPIUI = ({
       render: (text: string, record: any) => {
         let processedText = text || "";
 
+        // Define keyword groups to highlight
+        const keywordGroups = [
+          ["guide", "instruction", "product recommendation"],
+          ["makeup", "imperfections", "face"],
+          ["class", "makeup", "routine"],
+        ];
+
         // First, handle aspect-based bolding
         if (record.aspect) {
           try {
@@ -125,9 +132,30 @@ const ContentQualityKPIUI = ({
           }
         }
 
-        // Then handle existing **bold** syntax
+        // Second, highlight specific keyword groups
+        keywordGroups.forEach((keywords) => {
+          keywords.forEach((keyword) => {
+            // Escape special regex characters
+            const escapedKeyword = keyword.replace(
+              /[.*+?^${}()|[\]\\]/g,
+              "\\$&"
+            );
+
+            // Create regex to match the keyword (case-insensitive, word boundaries)
+            const regex = new RegExp(`\\b(${escapedKeyword})\\b`, "gi");
+            processedText = processedText.replace(regex, "##$1##");
+          });
+        });
+
+        // Then handle existing **bold** syntax (aspect-based)
         processedText = processedText.replace(
           /\*\*(.*?)\*\*/g,
+          '<strong style="color: #5A6ACF;">$1</strong>'
+        );
+
+        // Finally handle keyword highlighting (##keyword##)
+        processedText = processedText.replace(
+          /##(.*?)##/g,
           '<strong style="color: #5A6ACF;">$1</strong>'
         );
 
@@ -486,7 +514,8 @@ const ContentQualityKPIUI = ({
                     fontWeight: 600,
                   }}
                 >
-                  Sentiment Timeline - Comments Volume & Average Quality Score
+                  {/* Sentiment Timeline - Comments Volume & Average Quality Score */}
+                  Comments Sentiment by Categories
                 </span>
               </div>
             }
@@ -539,16 +568,16 @@ const ContentQualityKPIUI = ({
                       tickLine={false}
                       tick={{ fontSize: 12, fill: "#666" }}
                       domain={[0, 10]}
-                      label={{
-                        value: "Average Sentiment Score",
-                        angle: 90,
-                        position: "insideRight",
-                        style: {
-                          textAnchor: "middle",
-                          fill: "#666",
-                          fontSize: "12px",
-                        },
-                      }}
+                      // label={{
+                      //   value: "Average Sentiment Score",
+                      //   angle: 90,
+                      //   position: "insideRight",
+                      //   style: {
+                      //     textAnchor: "middle",
+                      //     fill: "#666",
+                      //     fontSize: "12px",
+                      //   },
+                      // }}
                     />
                   )}
                   <Tooltip
@@ -593,7 +622,7 @@ const ContentQualityKPIUI = ({
                     radius={[4, 4, 0, 0]}
                     name="Negative"
                   />
-                  {sentimentFilter === "all" && (
+                  {/* {sentimentFilter === "all" && (
                     <Line
                       yAxisId="sentiment"
                       type="monotone"
@@ -603,7 +632,7 @@ const ContentQualityKPIUI = ({
                       dot={{ fill: "#5A6ACF", strokeWidth: 2, r: 5 }}
                       name="Sentiment Score"
                     />
-                  )}
+                  )} */}
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
